@@ -89,9 +89,62 @@
             </LinearLayout>
         </LinearLayout>
 
+        <!--
+        <LinearLayout
+            android:gravity="right"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:weightSum="10"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="2.5"
+                android:orientation="vertical"
+                android:weightSum="10"
+                android:gravity="bottom">
+
+        <FrameLayout
+            android:layout_marginBottom="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1.25">
 
 
+        <android.support.design.widget.FloatingActionButton
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clickable="true" android:id="@+id/getIntermediateButton"
+  android:backgroundTint="#ffffff"
+            app:srcCompat="@drawable/placeholder_gray"
+            android:scaleType="fitXY"
+            app:borderWidth="0dp"
+            app:fabSize="normal"
+            />
+              <TextView
+                android:layout_gravity="center"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:text="asdads"/>
+              </FrameLayout>
+            </LinearLayout>
+        </LinearLayout>
+        -->
 
+        <android.support.design.widget.FloatingActionButton
+            android:layout_marginBottom="15dp"
+            android:layout_marginEnd="15dp"
+            android:layout_gravity="bottom|end"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:id="@+id/getIntermediateButton"
+            android:backgroundTint="#ffffff"
+            app:srcCompat="@drawable/placeholder_big"
+            android:scaleType="centerCrop"
+            app:borderWidth="0dp"
+            app:fabSize="auto"
+            />
     </FrameLayout>
-
 </LinearLayout>
