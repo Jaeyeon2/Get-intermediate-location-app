@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.EditText;
@@ -141,6 +142,18 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
         return true;
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item){
+        switch(item.getItemId()){
+            case R.id.action_search:
+                return true;
+            case android.R.id.home:
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
     @UiThread
     @Override
     public void onMapReady(@NonNull NaverMap naverMap) {
@@ -205,56 +218,4 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
         super.onLowMemory();
         mapView.onLowMemory();
     }
-
-    public String getNaverSearch(String keyword) {
-
-        String clientID = "xSSmW1XTfHB1VKB6JMMH";
-        String clientSecret = "BPOCBux60g";
-        StringBuffer sb = new StringBuffer();
-        try {
-            String text = URLEncoder.encode(keyword, "UTF-8");
-            String apiURL = "https://openapi.naver.com/v1/search/local.xml?query=" + text + "&display=10" + "&start=1";
-
-            URL url = new URL(apiURL);
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("GET");
-            conn.setRequestProperty("X-Naver-Client-Id", clientID);
-            conn.setRequestProperty("X-Naver-Client-Secret", clientSecret);
-
-            XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
-            XmlPullParser xpp = factory.newPullParser();
-            String tag;
-            //inputStream으로부터 xml값 받기
-            xpp.setInput(new InputStreamReader(conn.getInputStream(), "UTF-8"));
-
-            xpp.next();
-            int eventType = xpp.getEventType();
-
-            while (eventType != XmlPullParser.END_DOCUMENT) {
-                switch (eventType) {
-                    case XmlPullParser.START_TAG:
-                        tag = xpp.getName(); //태그 이름 얻어오기
-
-                        if (tag.equals("item")) ; //첫번째 검색 결과
-                        else if (tag.equals("title")) {
-                            sb.append("제목 : ");
-                            xpp.next();
-                            sb.append(xpp.getText().replaceAll("<(/)?([a-zA-Z]*)(\\\\s[a-zA-Z]*=[^>]*)?(\\\\s)*(/)?>", ""));
-                            sb.append("\n");
-                        } else if (tag.equals("description")) {
-                            sb.append("내용 : ");
-                            xpp.next();
-                            sb.append(xpp.getText().replaceAll("<(/)?([a-zA-Z]*)(\\\\s[a-zA-Z]*=[^>]*)?(\\\\s)*(/)?>", ""));
-                            sb.append("\n");
-                        }
-                        break;
-                }
-                eventType = xpp.next();
-            }
-        } catch (Exception e) {
-            return e.toString();
-        }
-        return sb.toString();
-    }
-
 }

@@ -90,7 +90,7 @@
                                 </View>
 
                                             <TextView
- android:layout_marginStart="10dp"                                               android:layout_gravity="center_vertical"
+                                                android:layout_gravity="center"
                                                 android:layout_width="wrap_content"
                                                 android:layout_height="wrap_content"
                                                 android:text="위치를 입력하세요"

@@ -41,7 +41,7 @@
                     android:gravity="center"
                     android:textSize="15sp"
                     android:hint="위치를 입력하세요."
-                    android:id="@+id/input_location"
+                    android:id="@+id/search_location"
                     android:background="@drawable/rect_text_edit"
                     android:singleLine="true"
                     android:layout_width="match_parent"
@@ -58,4 +58,20 @@
         android:layout_width="match_parent"
         android:layout_height="0.3dp"
         android:background="#cccccc"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="8.99">
+
+        <TextView
+            android:id="@+id/searchResult"
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="검색 결과"
+            />
+
+
+    </LinearLayout>
 </LinearLayout>
