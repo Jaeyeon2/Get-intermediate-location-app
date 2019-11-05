@@ -21,6 +21,9 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.gigamole.library.ShadowLayout;
+import com.naver.maps.geometry.LatLng;
+import com.naver.maps.map.CameraAnimation;
+import com.naver.maps.map.CameraUpdate;
 import com.naver.maps.map.LocationTrackingMode;
 import com.naver.maps.map.MapView;
 import com.naver.maps.map.NaverMap;
@@ -28,6 +31,7 @@ import com.naver.maps.map.NaverMapOptions;
 import com.naver.maps.map.NaverMapSdk;
 import com.naver.maps.map.OnMapReadyCallback;
 import com.naver.maps.map.UiSettings;
+import com.naver.maps.map.overlay.Marker;
 import com.naver.maps.map.util.FusedLocationSource;
 import com.naver.maps.map.widget.LocationButtonView;
 import com.naver.maps.map.widget.ZoomControlView;
@@ -45,6 +49,10 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
     View et_inputLocation;
     LinearLayout ll_input;
     LocationButtonView myLocation_btn;
+    String user_location = "false";
+    String location_mapx;
+    String location_mapy;
+    Intent intent;
 
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1000;
     private FusedLocationSource locationSource;
@@ -56,7 +64,6 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
 
         NaverMapSdk.getInstance(this).setClient(
                 new NaverMapSdk.NaverCloudPlatformClient("kafivuks0k"));
-
         myLocation_btn = findViewById(R.id.myLocation_btn);
         et_inputLocation = findViewById(R.id.input_location);
         mapView = findViewById(R.id.map_view);
@@ -66,7 +73,6 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
         mapView.requestFocus();
 
         int colorValue = Color.parseColor("#cccccc");
-
         Toolbar toolbar = findViewById(R.id.home_toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
@@ -118,6 +124,14 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
         };
 
         et_inputLocation.setOnClickListener(clickListener);
+
+        intent = getIntent();
+
+
+        if(intent.getStringExtra("location_mapx") != null)
+        {
+            Log.d("location_mapx111", intent.getStringExtra("location_mapx"));
+        }
     }
 
     public void myLocationOnClick(View view) {
@@ -175,6 +189,29 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
                 Toast.makeText(MainActivity.this, "마커 1 클릭", Toast.LENGTH_SHORT).show();
             }
         });
+
+        if(intent.getStringExtra("user_location") == null)
+        {
+            Log.d("user_locationsss" ,"ss");
+        }
+        else{
+          Log.d("location_mapxClicked", intent.getStringExtra("location_mapx"));
+            Log.d("location_mapyClicked", intent.getStringExtra("location_mapy"));
+            GeoTransPoint oKA = new GeoTransPoint(Double.valueOf(intent.getStringExtra("location_mapx")), Double.valueOf(intent.getStringExtra("location_mapy")));
+
+            GeoTransPoint oGeo = GeoTrans.convert(GeoTrans.KATEC, GeoTrans.GEO, oKA);
+            double lat = oGeo.getY();
+            double lng = oGeo.getX();
+
+            Log.d("lat1111", String.valueOf(lat));
+            Log.d("lng1111", String.valueOf(lng));
+
+            Marker marker = new Marker();
+            marker.setPosition(new LatLng(lat, lng));
+            marker.setMap(naverMap);
+            CameraUpdate cameraUpdate = CameraUpdate.scrollTo(new LatLng(lat, lng));
+            naverMap.moveCamera(cameraUpdate);
+        }
     }
 
     @Override

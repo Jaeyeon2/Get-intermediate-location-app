@@ -2,7 +2,9 @@ package com.example.findintermediateapp;
 
 import android.content.Context;
 import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -62,8 +64,19 @@ public class LocationResultAdapter extends RecyclerView.Adapter<LocationResultAd
                 @Override
                 public void onClick(View v) {
                     int pos = getAdapterPosition();
-
+                    LocationResultItem item = ResultData.get(pos);
                     if(pos != RecyclerView.NO_POSITION) {
+
+                        Intent mainIntent = new Intent(context, MainActivity.class);
+
+                        mainIntent.putExtra("user_location", "true");
+                        mainIntent.putExtra("location_mapx", item.getResultMapx());
+                        mainIntent.putExtra("location_mapy", item.getResultMapy());
+
+                        Log.d("location_mapx", item.getResultMapx());
+                        Log.d("location_mapy", item.getResultMapy());
+
+                        context.startActivity(mainIntent);
                      }
                 }
             });

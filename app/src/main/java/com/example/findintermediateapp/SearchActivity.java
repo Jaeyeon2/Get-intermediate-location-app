@@ -69,11 +69,13 @@ public class SearchActivity extends ChangeStateBar {
         locationRecyclerView.addItemDecoration(dividerItemDecoration);
     }
 
-    public void addLocation(String name, String location) {
+    public void addLocation(String name, String location, String mapx, String mapy) {
 
         LocationResultItem result = new LocationResultItem();
         result.setResultName(name);
         result.setResultLocation(location);
+        result.setResultMapx(mapx);
+        result.setResultMapy(mapy);
 
         resultList.add(result);
 
@@ -184,8 +186,7 @@ public class SearchActivity extends ChangeStateBar {
                     Log.d("roadAddress잘나오니:",roadAddress[0] + roadAddress[1] + roadAddress[2]);
                     for(int i = 0; i < k; i++)
                     {
-                        addLocation(title[i], roadAddress[i]);
-
+                        addLocation(title[i], roadAddress[i], mapx[i], mapy[i]);
                         if(i == (k-1))
                         {
                             runOnUiThread(new Runnable() {
