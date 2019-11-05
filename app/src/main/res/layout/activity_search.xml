@@ -9,13 +9,13 @@
     android:orientation="vertical"
     android:weightSum="10">
 
-<LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".SearchActivity"
-    android:background="#ffffff"
-    android:orientation="vertical"
-    android:weightSum="10">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".SearchActivity"
+        android:background="#ffffff"
+        android:orientation="vertical"
+        android:weightSum="10">
 
         <FrameLayout
             android:layout_width="match_parent"
@@ -35,57 +35,57 @@
                 android:weightSum="10"
                 android:gravity="center">
 
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_weight="7.5"
-                android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:weightSum="10"
-                android:gravity="center">
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_weight="7.5"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:weightSum="10"
+                    android:gravity="center">
 
-                <EditText
-                    android:layout_marginLeft="3dp"
-                    android:gravity="center"
-                    android:textSize="15sp"
-                    android:hint="위치를 입력하세요."
-                    android:id="@+id/searchInput"
-                    android:background="@drawable/rect_text_edit"
-                    android:singleLine="true"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="6.5"
-                    android:focusable="true"
-                    android:focusableInTouchMode="true"/>
+                    <EditText
+                        android:layout_marginLeft="3dp"
+                        android:gravity="center"
+                        android:textSize="15sp"
+                        android:hint="위치를 입력하세요."
+                        android:id="@+id/searchInput"
+                        android:background="@drawable/rect_text_edit"
+                        android:singleLine="true"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="6.5"
+                        android:focusable="true"
+                        android:focusableInTouchMode="true"/>
 
 
 
-            </LinearLayout>
+                </LinearLayout>
             </LinearLayout>
         </FrameLayout>
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="0.3dp"
-        android:background="#cccccc"/>
-
-
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="10">
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-
-        <android.support.v7.widget.RecyclerView
+        <View
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/result_list"
-            android:overScrollMode="never"/>
+            android:layout_height="0.3dp"
+            android:background="#cccccc"/>
 
-    </LinearLayout>
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="10">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <android.support.v7.widget.RecyclerView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/result_list"
+                    android:overScrollMode="never"/>
+
+            </LinearLayout>
         </ScrollView>
     </LinearLayout>
 </LinearLayout>
