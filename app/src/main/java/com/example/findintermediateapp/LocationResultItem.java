@@ -6,6 +6,9 @@ public class LocationResultItem {
     private String resultLocation;
     private String resultMapx;
     private String resultMapy;
+    private int resultNumber = 0;
+
+    public void setResultNumberIncre() { resultNumber = resultNumber + 1; }
 
     public void setResultName(String name) { resultName = name; }
 
@@ -26,5 +29,7 @@ public class LocationResultItem {
     public String getResultMapx() { return this.resultMapx; }
 
     public String getResultMapy() { return this.resultMapy; }
+
+    public int getResultNumber() { return this.resultNumber; }
 
 }

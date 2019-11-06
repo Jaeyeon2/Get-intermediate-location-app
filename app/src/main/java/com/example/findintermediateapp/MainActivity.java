@@ -5,9 +5,12 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.annotation.UiThread;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -43,16 +46,29 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
     private MapView mapView;
+    private Cursor mCursor;
+
+    private final long FINISH_INTERVAL_TIME = 2000;
+    private long backPressedTime = 0;
+
     View et_inputLocation;
     LinearLayout ll_input;
     LocationButtonView myLocation_btn;
     String user_location = "false";
     String location_mapx;
     String location_mapy;
+    SQLiteDatabase db;
     Intent intent;
+    double user_mapX;
+    double user_mapY;
+    int locationNum;
+    int markerCount;
+    SharedPreferences sf;
 
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1000;
     private FusedLocationSource locationSource;
@@ -61,7 +77,6 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         NaverMapSdk.getInstance(this).setClient(
                 new NaverMapSdk.NaverCloudPlatformClient("kafivuks0k"));
         myLocation_btn = findViewById(R.id.myLocation_btn);
@@ -88,11 +103,8 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
 
         locationSource = new FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE);
 
-
-
         mapView.getMapAsync(naverMap -> {
             myLocation_btn.setMap(naverMap);
-
             myLocation_btn.setOnClickListener(overlay -> {
                 Toast.makeText(this, "마커 1 클릭", Toast.LENGTH_SHORT).show();
             });
@@ -102,13 +114,21 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
         et_inputLocation.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View view, boolean hasFocus) {
-                if(!hasFocus){
 
-                }else{
-                    Intent searchIntent = new Intent(MainActivity.this, SearchActivity.class);
-                    startActivity(searchIntent);
+                    if (!hasFocus) {
+
+                    } else {
+                        if(markerCount < 5) {
+                            Intent searchIntent = new Intent(MainActivity.this, SearchActivity.class);
+                            startActivity(searchIntent);
+                        }
+                        else
+                        {
+                            Toast.makeText(MainActivity.this, "위치 추가는 최대 5번까지만 가능합니다", Toast.LENGTH_SHORT).show();
+                        }
+                    }
                 }
-            }
+
         });
 
         View.OnClickListener clickListener = new View.OnClickListener() {
@@ -116,9 +136,14 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
             public void onClick(View v) {
                 switch(v.getId()){
                     case R.id.input_location:
-                        Intent searchIntent2 = new Intent(MainActivity.this, SearchActivity.class);
-                        startActivity(searchIntent2);
-                        break;
+                        if(markerCount < 5) {
+                            Intent searchIntent2 = new Intent(MainActivity.this, SearchActivity.class);
+                            startActivity(searchIntent2);
+                            break;
+                        }
+                        else{
+                            Toast.makeText(MainActivity.this, "위치 추가는 최대 5번 가능합니다.", Toast.LENGTH_SHORT).show();
+                        }
                 }
             }
         };
@@ -192,27 +217,151 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
 
         if(intent.getStringExtra("user_location") == null)
         {
-            Log.d("user_locationsss" ,"ss");
+            sf = getSharedPreferences("sFile", MODE_PRIVATE);
+            SharedPreferences.Editor editor = sf.edit();
+            editor.putInt("count", 0);
+            markerCount = sf.getInt("count", 0);
+            editor.commit();
+            Log.d("위치 선택전 markerCount", String.valueOf(markerCount));
         }
         else{
-          Log.d("location_mapxClicked", intent.getStringExtra("location_mapx"));
-            Log.d("location_mapyClicked", intent.getStringExtra("location_mapy"));
-            GeoTransPoint oKA = new GeoTransPoint(Double.valueOf(intent.getStringExtra("location_mapx")), Double.valueOf(intent.getStringExtra("location_mapy")));
+            sf = getSharedPreferences("sFile", MODE_PRIVATE);
+            SharedPreferences.Editor editor = sf.edit();
+            editor.putInt("count", (sf.getInt("count",0)+1));
+            editor.commit();
+            markerCount = sf.getInt("count", 0);
 
+            Log.d("위치 선택후 markerCount", String.valueOf(markerCount));
+
+            // 카텍좌표계 -> 경위도 좌표계 변환
+            GeoTransPoint oKA = new GeoTransPoint(Double.valueOf(intent.getStringExtra("location_mapx")), Double.valueOf(intent.getStringExtra("location_mapy")));
             GeoTransPoint oGeo = GeoTrans.convert(GeoTrans.KATEC, GeoTrans.GEO, oKA);
             double lat = oGeo.getY();
             double lng = oGeo.getX();
 
-            Log.d("lat1111", String.valueOf(lat));
-            Log.d("lng1111", String.valueOf(lng));
+            user_mapX = lat;
+            user_mapY = lng;
 
-            Marker marker = new Marker();
-            marker.setPosition(new LatLng(lat, lng));
-            marker.setMap(naverMap);
-            CameraUpdate cameraUpdate = CameraUpdate.scrollTo(new LatLng(lat, lng));
-            naverMap.moveCamera(cameraUpdate);
+            if(markerCount == 1) {
+                CameraUpdate cameraUpdate1 = CameraUpdate.scrollTo(new LatLng(lat, lng));
+                naverMap.moveCamera(cameraUpdate1);
+                // 첫번째 마커 찍기
+                Marker firstMarker = new Marker();
+                firstMarker.setPosition(new LatLng(user_mapX, user_mapY));
+                editor.putString("firstMapX", String.valueOf(user_mapX));
+                editor.putString("firstMapY", String.valueOf(user_mapY));
+                editor.commit();
+
+                firstMarker.setMap(naverMap);
+              }
+              else if(markerCount == 2) {
+                double firstMapX = Double.valueOf(sf.getString("firstMapX", "0"));
+                double firstMapY = Double.valueOf(sf.getString("firstMapY", "0"));
+                editor.putString("secondMapX", String.valueOf(user_mapX));
+                editor.putString("secondMapY", String.valueOf(user_mapY));
+                editor.commit();
+                Log.d("firstMapX", sf.getString("firstMapX", "0"));
+                Marker firstMarker = new Marker();
+                firstMarker.setPosition(new LatLng(firstMapX, firstMapY));
+                firstMarker.setMap(naverMap);
+
+                CameraUpdate cameraUpdate2 = CameraUpdate.scrollTo(new LatLng(lat, lng));
+                naverMap.moveCamera(cameraUpdate2);
+                // 두번째 마커 찍기
+                Marker secondMarker = new Marker();
+                secondMarker.setPosition(new LatLng(user_mapX, user_mapY));
+                secondMarker.setMap(naverMap);
+            }
+             else if(markerCount == 3) {
+                double firstMapX = Double.valueOf(sf.getString("firstMapX", "0"));
+                double firstMapY = Double.valueOf(sf.getString("firstMapY", "0"));
+                double secondMapX = Double.valueOf(sf.getString("secondMapX", "0"));
+                double secondMapY = Double.valueOf(sf.getString("secondMapY", "0"));
+                editor.putString("thirdMapX", String.valueOf(user_mapX));
+                editor.putString("thirdMapY", String.valueOf(user_mapY));
+
+                editor.commit();
+                Log.d("firstMapX", sf.getString("firstMapX", "0"));
+                Marker firstMarker = new Marker();
+                firstMarker.setPosition(new LatLng(firstMapX, firstMapY));
+                firstMarker.setMap(naverMap);
+                Marker secondMarker = new Marker();
+                secondMarker.setPosition(new LatLng(secondMapX, secondMapY));
+                secondMarker.setMap(naverMap);
+
+                CameraUpdate cameraUpdate3 = CameraUpdate.scrollTo(new LatLng(lat, lng));
+                naverMap.moveCamera(cameraUpdate3);
+                // 세번째 마커 찍기
+                Marker thirdMarker = new Marker();
+                thirdMarker.setPosition(new LatLng(user_mapX, user_mapY));
+                thirdMarker.setMap(naverMap);
+            }
+             else if(markerCount == 4) {
+                double firstMapX = Double.valueOf(sf.getString("firstMapX", "0"));
+                double firstMapY = Double.valueOf(sf.getString("firstMapY", "0"));
+                double secondMapX = Double.valueOf(sf.getString("secondMapX", "0"));
+                double secondMapY = Double.valueOf(sf.getString("secondMapY", "0"));
+                double thirdMapX = Double.valueOf(sf.getString("thirdMapX", "0"));
+                double thirdMapY = Double.valueOf(sf.getString("thirdMapY", "0"));
+                editor.putString("fourthMapX", String.valueOf(user_mapX));
+                editor.putString("fourthMapY", String.valueOf(user_mapY));
+                editor.commit();
+                Log.d("firstMapX", sf.getString("firstMapX", "0"));
+                Marker firstMarker = new Marker();
+                firstMarker.setPosition(new LatLng(firstMapX, firstMapY));
+                firstMarker.setMap(naverMap);
+                Marker secondMarker = new Marker();
+                secondMarker.setPosition(new LatLng(secondMapX, secondMapY));
+                secondMarker.setMap(naverMap);
+                Marker thirdMarker = new Marker();
+                thirdMarker.setPosition(new LatLng(thirdMapX, thirdMapY));
+                thirdMarker.setMap(naverMap);
+
+                CameraUpdate cameraUpdate4 = CameraUpdate.scrollTo(new LatLng(lat, lng));
+                naverMap.moveCamera(cameraUpdate4);
+                // 네번째 마커 찍기
+                Marker fourthMarker = new Marker();
+                fourthMarker.setPosition(new LatLng(user_mapX, user_mapY));
+                fourthMarker.setMap(naverMap);
+            }
+             else if(markerCount == 5)
+             {
+                 double firstMapX = Double.valueOf(sf.getString("firstMapX", "0"));
+                 double firstMapY = Double.valueOf(sf.getString("firstMapY", "0"));
+                 double secondMapX = Double.valueOf(sf.getString("secondMapX", "0"));
+                 double secondMapY = Double.valueOf(sf.getString("secondMapY", "0"));
+                 double thirdMapX = Double.valueOf(sf.getString("thirdMapX", "0"));
+                 double thirdMapY = Double.valueOf(sf.getString("thirdMapY", "0"));
+                 double fourthMapX = Double.valueOf(sf.getString("fourthMapX", "0"));
+                 double fourthMapY = Double.valueOf(sf.getString("fourthMapY", "0"));
+                 editor.putString("fifthMapX", String.valueOf(user_mapX));
+                 editor.putString("fifthMapY", String.valueOf(user_mapY));
+                 editor.commit();
+                 Log.d("firstMapX", sf.getString("firstMapX", "0"));
+                 Marker firstMarker = new Marker();
+                 firstMarker.setPosition(new LatLng(firstMapX, firstMapY));
+                 firstMarker.setMap(naverMap);
+                 Marker secondMarker = new Marker();
+                 secondMarker.setPosition(new LatLng(secondMapX, secondMapY));
+                 secondMarker.setMap(naverMap);
+                 Marker thirdMarker = new Marker();
+                 thirdMarker.setPosition(new LatLng(thirdMapX, thirdMapY));
+                 thirdMarker.setMap(naverMap);
+                 Marker fourthMarker = new Marker();
+                 fourthMarker.setPosition(new LatLng(fourthMapX, fourthMapY));
+                 fourthMarker.setMap(naverMap);
+
+                 CameraUpdate cameraUpdate5 = CameraUpdate.scrollTo(new LatLng(lat, lng));
+                 naverMap.moveCamera(cameraUpdate5);
+                 // 다섯번째 마커 찍기
+                 Marker fifthMarker = new Marker();
+                 fifthMarker.setPosition(new LatLng(user_mapX, user_mapY));
+                 fifthMarker.setMap(naverMap);
+             }
         }
     }
+
+
 
     @Override
     protected void onStart() {
@@ -254,5 +403,24 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
     public void onLowMemory() {
         super.onLowMemory();
         mapView.onLowMemory();
+    }
+
+    @Override
+    public void onBackPressed() {
+        long tempTime = System.currentTimeMillis();
+        long intervalTime = tempTime - backPressedTime;
+
+        if(0 <= intervalTime && FINISH_INTERVAL_TIME >= intervalTime) {
+            markerCount = 0;
+            SharedPreferences.Editor editor = sf.edit();
+            editor.clear();
+            editor.commit();
+           ActivityCompat.finishAffinity(this);
+        }
+        else
+        {
+            backPressedTime = tempTime;
+            Toast.makeText(getApplicationContext(), "뒤로 가기 버튼을 한번 더 누르면 종료됩니다.", Toast.LENGTH_SHORT).show();
+        }
     }
 }

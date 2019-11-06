@@ -204,7 +204,6 @@ public class SearchActivity extends ChangeStateBar {
                 }
             }
         }.start();
-
     }
 }
 
