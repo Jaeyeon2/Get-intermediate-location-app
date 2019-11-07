@@ -17,6 +17,7 @@ public class LocationResultAdapter extends RecyclerView.Adapter<LocationResultAd
 
     Context context;
     private ArrayList<LocationResultItem> ResultData = null;
+    MainActivity main = new MainActivity();
 
     // 생성자에서 데이터 리스트 객체를 전달받음
     LocationResultAdapter(ArrayList<LocationResultItem> list)
@@ -70,15 +71,11 @@ public class LocationResultAdapter extends RecyclerView.Adapter<LocationResultAd
                         Intent mainIntent = new Intent(context, MainActivity.class);
 
                         item.setResultNumberIncre();
-
                         mainIntent.putExtra("resultNumber", String.valueOf(item.getResultNumber()));
                         mainIntent.putExtra("user_location", "true");
                         mainIntent.putExtra("location_mapx", item.getResultMapx());
                         mainIntent.putExtra("location_mapy", item.getResultMapy());
                         mainIntent.putExtra("location_name", item.getResultName());
-
-
-
                         Log.d("location_mapx", item.getResultMapx());
                         Log.d("location_mapy", item.getResultMapy());
 

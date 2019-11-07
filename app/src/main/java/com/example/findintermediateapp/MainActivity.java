@@ -55,10 +55,13 @@ import java.util.Map;
 public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
     private MapView mapView;
     private Cursor mCursor;
-
+    public static Marker firstMarker;
+    public static Marker secondMarker;
+    public static Marker thirdMarker;
+    public static Marker fourthMarker;
+    public static Marker fifthMarker;
     private final long FINISH_INTERVAL_TIME = 2000;
     private long backPressedTime = 0;
-
     View et_inputLocation;
     LinearLayout ll_input;
     LocationButtonView myLocation_btn;
@@ -71,7 +74,7 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
     double user_mapY;
     int locationNum;
     int markerCount;
-    SharedPreferences sf;
+    public static SharedPreferences sf;
 
     RecyclerView markerRecyclerView = null;
     MarkerListAdapter markerListAdapter = null;
@@ -258,7 +261,7 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
                 CameraUpdate cameraUpdate1 = CameraUpdate.scrollTo(new LatLng(lat, lng));
                 naverMap.moveCamera(cameraUpdate1);
                 // 첫번째 마커 찍기
-                Marker firstMarker = new Marker();
+                firstMarker = new Marker();
                 addMarkerList(markerCount, intent.getStringExtra("location_name"));
                 markerListAdapter.notifyDataSetChanged();
 
@@ -285,14 +288,14 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
                 editor.putString("secondMapY", String.valueOf(user_mapY));
                 editor.commit();
                 Log.d("firstMapX", sf.getString("firstMapX", "0"));
-                Marker firstMarker = new Marker();
+                firstMarker = new Marker();
                 firstMarker.setPosition(new LatLng(firstMapX, firstMapY));
                 firstMarker.setMap(naverMap);
 
                 CameraUpdate cameraUpdate2 = CameraUpdate.scrollTo(new LatLng(lat, lng));
                 naverMap.moveCamera(cameraUpdate2);
                 // 두번째 마커 찍기
-                Marker secondMarker = new Marker();
+                secondMarker = new Marker();
                 secondMarker.setPosition(new LatLng(user_mapX, user_mapY));
                 secondMarker.setMap(naverMap);
             }
@@ -323,7 +326,7 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
                 CameraUpdate cameraUpdate3 = CameraUpdate.scrollTo(new LatLng(lat, lng));
                 naverMap.moveCamera(cameraUpdate3);
                 // 세번째 마커 찍기
-                Marker thirdMarker = new Marker();
+                thirdMarker = new Marker();
                 thirdMarker.setPosition(new LatLng(user_mapX, user_mapY));
                 thirdMarker.setMap(naverMap);
             }
@@ -345,20 +348,20 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
                 editor.putString("markerName4", intent.getStringExtra("location_name"));
                 editor.commit();
                 Log.d("firstMapX", sf.getString("firstMapX", "0"));
-                Marker firstMarker = new Marker();
+                firstMarker = new Marker();
                 firstMarker.setPosition(new LatLng(firstMapX, firstMapY));
                 firstMarker.setMap(naverMap);
-                Marker secondMarker = new Marker();
+                secondMarker = new Marker();
                 secondMarker.setPosition(new LatLng(secondMapX, secondMapY));
                 secondMarker.setMap(naverMap);
-                Marker thirdMarker = new Marker();
+                thirdMarker = new Marker();
                 thirdMarker.setPosition(new LatLng(thirdMapX, thirdMapY));
                 thirdMarker.setMap(naverMap);
 
                 CameraUpdate cameraUpdate4 = CameraUpdate.scrollTo(new LatLng(lat, lng));
                 naverMap.moveCamera(cameraUpdate4);
                 // 네번째 마커 찍기
-                Marker fourthMarker = new Marker();
+                fourthMarker = new Marker();
                 fourthMarker.setPosition(new LatLng(user_mapX, user_mapY));
                 fourthMarker.setMap(naverMap);
             }
@@ -384,23 +387,23 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
                  editor.putString("markerName5", intent.getStringExtra("location_name"));
                  editor.commit();
                  Log.d("firstMapX", sf.getString("firstMapX", "0"));
-                 Marker firstMarker = new Marker();
+                 firstMarker = new Marker();
                  firstMarker.setPosition(new LatLng(firstMapX, firstMapY));
                  firstMarker.setMap(naverMap);
-                 Marker secondMarker = new Marker();
+                 secondMarker = new Marker();
                  secondMarker.setPosition(new LatLng(secondMapX, secondMapY));
                  secondMarker.setMap(naverMap);
-                 Marker thirdMarker = new Marker();
+                 thirdMarker = new Marker();
                  thirdMarker.setPosition(new LatLng(thirdMapX, thirdMapY));
                  thirdMarker.setMap(naverMap);
-                 Marker fourthMarker = new Marker();
+                 fourthMarker = new Marker();
                  fourthMarker.setPosition(new LatLng(fourthMapX, fourthMapY));
                  fourthMarker.setMap(naverMap);
 
                  CameraUpdate cameraUpdate5 = CameraUpdate.scrollTo(new LatLng(lat, lng));
                  naverMap.moveCamera(cameraUpdate5);
                  // 다섯번째 마커 찍기
-                 Marker fifthMarker = new Marker();
+                 fifthMarker = new Marker();
                  fifthMarker.setPosition(new LatLng(user_mapX, user_mapY));
                  fifthMarker.setMap(naverMap);
              }
@@ -477,4 +480,5 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
             Toast.makeText(getApplicationContext(), "뒤로 가기 버튼을 한번 더 누르면 종료됩니다.", Toast.LENGTH_SHORT).show();
         }
     }
+
 }

@@ -2,6 +2,8 @@ package com.example.findintermediateapp;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -9,12 +11,25 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.naver.maps.map.NaverMap;
+import com.naver.maps.map.overlay.Marker;
+
 import java.util.ArrayList;
+
+import static com.example.findintermediateapp.MainActivity.fifthMarker;
+import static com.example.findintermediateapp.MainActivity.firstMarker;
+import static com.example.findintermediateapp.MainActivity.fourthMarker;
+import static com.example.findintermediateapp.MainActivity.secondMarker;
+import static com.example.findintermediateapp.MainActivity.sf;
+import static com.example.findintermediateapp.MainActivity.thirdMarker;
 
 public class MarkerListAdapter extends RecyclerView.Adapter<MarkerListAdapter.ViewHolder> {
 
     Context context;
     private ArrayList<MarkerListItem> markerData = null;
+    MainActivity activity_main = new MainActivity();
+    NaverMap naverMap;
 
     // 생성자에서 데이터 리스트 객체를 전달받음
     MarkerListAdapter(ArrayList<MarkerListItem> list) {
@@ -44,13 +59,53 @@ public class MarkerListAdapter extends RecyclerView.Adapter<MarkerListAdapter.Vi
 
         holder.iv_markerDelete.setOnClickListener(new View.OnClickListener() {
 
+
             @Override
             public void onClick(View view) {
                 markerData.remove(position);
                 notifyDataSetChanged();
-
-
-
+                Log.d("position11", String.valueOf(position));
+                SharedPreferences.Editor editor = sf.edit();
+                if(position == 0) {
+                    editor.putString("firstMapX", "0");
+                    editor.putString("firstMapY", "0");
+                    editor.putInt("count", (sf.getInt("count", 0)-1));
+                    editor.commit();
+                    firstMarker.setMap(null);
+                    Log.d("position11", String.valueOf(position));
+                }
+                else if(position == 1) {
+                    editor.putString("secondMapX", "0");
+                    editor.putString("secondMapY", "0");
+                    editor.putInt("count", (sf.getInt("count", 0)-1));
+                    editor.commit();
+                    secondMarker.setMap(null);
+                    Log.d("position11", String.valueOf(position));
+                }
+                else if(position == 2) {
+                    editor.putString("thirdMapX", "0");
+                    editor.putString("thirdMapY", "0");
+                    editor.putInt("count", (sf.getInt("count", 0)-1));
+                    editor.commit();
+                    thirdMarker.setMap(null);
+                    Log.d("position11", String.valueOf(position));
+                }
+                else if(position == 3) {
+                    editor.putString("fourthMapX", "0");
+                    editor.putString("fourthMapY", "0");
+                    editor.putInt("count", (sf.getInt("count", 0)-1));
+                    editor.commit();
+                    fourthMarker.setMap(null);
+                    Log.d("position11", String.valueOf(position));
+                }
+                else if(position == 4) {
+                    editor.putString("fifthMapX", "0");
+                    editor.putString("fifthMapY", "0");
+                    editor.putInt("count", (sf.getInt("count", 0)-1));
+                    editor.commit();
+                    fifthMarker.setMap(null);
+                    Log.d("position11", String.valueOf(position));
+                }
             }
         });
     }
