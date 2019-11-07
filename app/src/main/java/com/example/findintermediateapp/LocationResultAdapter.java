@@ -75,6 +75,7 @@ public class LocationResultAdapter extends RecyclerView.Adapter<LocationResultAd
                         mainIntent.putExtra("user_location", "true");
                         mainIntent.putExtra("location_mapx", item.getResultMapx());
                         mainIntent.putExtra("location_mapy", item.getResultMapy());
+                        mainIntent.putExtra("location_name", item.getResultName());
 
 
 

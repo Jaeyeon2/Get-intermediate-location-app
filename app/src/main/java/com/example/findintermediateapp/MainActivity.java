@@ -13,6 +13,8 @@ import android.support.annotation.UiThread;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -46,6 +48,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -70,6 +73,10 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
     int markerCount;
     SharedPreferences sf;
 
+    RecyclerView markerRecyclerView = null;
+    MarkerListAdapter markerListAdapter = null;
+    ArrayList<MarkerListItem> markerList = new ArrayList<MarkerListItem>();
+
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1000;
     private FusedLocationSource locationSource;
 
@@ -87,18 +94,23 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
         mapView.setFocusableInTouchMode(true);
         mapView.requestFocus();
 
-        int colorValue = Color.parseColor("#cccccc");
+        int colorValue = Color.parseColor("#a3a3a3");
         Toolbar toolbar = findViewById(R.id.home_toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_menu_aa);
 
+        markerRecyclerView = findViewById(R.id.marker_list);
+        markerListAdapter = new MarkerListAdapter(markerList);
+        markerRecyclerView.setAdapter(markerListAdapter);
+        markerRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+
         final ShadowLayout shadowLayout = (ShadowLayout)findViewById(R.id.toolbar_shadow);
         shadowLayout.setIsShadowed(true);
         shadowLayout.setShadowAngle(5);
-        shadowLayout.setShadowRadius(50);
-        shadowLayout.setShadowDistance(-5);
+        shadowLayout.setShadowRadius(25);
+        shadowLayout.setShadowDistance(0);
         shadowLayout.setShadowColor(colorValue);
 
         locationSource = new FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE);
@@ -247,7 +259,12 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
                 naverMap.moveCamera(cameraUpdate1);
                 // 첫번째 마커 찍기
                 Marker firstMarker = new Marker();
+                addMarkerList(markerCount, intent.getStringExtra("location_name"));
+                markerListAdapter.notifyDataSetChanged();
+
                 firstMarker.setPosition(new LatLng(user_mapX, user_mapY));
+                editor.putString("markerName1", intent.getStringExtra("location_name"));
+                editor.putInt("markerNum1", markerCount);
                 editor.putString("firstMapX", String.valueOf(user_mapX));
                 editor.putString("firstMapY", String.valueOf(user_mapY));
                 editor.commit();
@@ -255,8 +272,15 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
                 firstMarker.setMap(naverMap);
               }
               else if(markerCount == 2) {
+                  Log.d("markerCount2", String.valueOf(markerCount));
                 double firstMapX = Double.valueOf(sf.getString("firstMapX", "0"));
                 double firstMapY = Double.valueOf(sf.getString("firstMapY", "0"));
+                addMarkerList(sf.getInt("marKerNum1", 1), sf.getString("markerName1", "0"));
+                addMarkerList(markerCount, intent.getStringExtra("location_name"));
+                Log.d("sf.getInt(\"marKerNum1\", 0)", String.valueOf(sf.getInt("marKerNum1", 0)));
+                markerListAdapter.notifyDataSetChanged();
+                editor.putString("markerName2", intent.getStringExtra("location_name"));
+                editor.putInt("markerNum2", markerCount);
                 editor.putString("secondMapX", String.valueOf(user_mapX));
                 editor.putString("secondMapY", String.valueOf(user_mapY));
                 editor.commit();
@@ -277,10 +301,17 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
                 double firstMapY = Double.valueOf(sf.getString("firstMapY", "0"));
                 double secondMapX = Double.valueOf(sf.getString("secondMapX", "0"));
                 double secondMapY = Double.valueOf(sf.getString("secondMapY", "0"));
+                addMarkerList(sf.getInt("markerNum1",1), sf.getString("markerName1", "0"));
+                addMarkerList(sf.getInt("markerNum2", 2), sf.getString("markerName2", "0"));
+                addMarkerList(markerCount, intent.getStringExtra("location_name"));
+                markerListAdapter.notifyDataSetChanged();
+
                 editor.putString("thirdMapX", String.valueOf(user_mapX));
                 editor.putString("thirdMapY", String.valueOf(user_mapY));
-
+                editor.putInt("markerNum3", markerCount);
+                editor.putString("markerName3", intent.getStringExtra("location_name"));
                 editor.commit();
+
                 Log.d("firstMapX", sf.getString("firstMapX", "0"));
                 Marker firstMarker = new Marker();
                 firstMarker.setPosition(new LatLng(firstMapX, firstMapY));
@@ -303,8 +334,15 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
                 double secondMapY = Double.valueOf(sf.getString("secondMapY", "0"));
                 double thirdMapX = Double.valueOf(sf.getString("thirdMapX", "0"));
                 double thirdMapY = Double.valueOf(sf.getString("thirdMapY", "0"));
+                addMarkerList(sf.getInt("markerNum1",1), sf.getString("markerName1", "0"));
+                addMarkerList(sf.getInt("markerNum2", 2), sf.getString("markerName2", "0"));
+                addMarkerList(sf.getInt("markerNum3", 3), sf.getString("markerName3", "0"));
+                addMarkerList(markerCount, intent.getStringExtra("location_name"));
+                markerListAdapter.notifyDataSetChanged();
                 editor.putString("fourthMapX", String.valueOf(user_mapX));
                 editor.putString("fourthMapY", String.valueOf(user_mapY));
+                editor.putInt("markerNum4", markerCount);
+                editor.putString("markerName4", intent.getStringExtra("location_name"));
                 editor.commit();
                 Log.d("firstMapX", sf.getString("firstMapX", "0"));
                 Marker firstMarker = new Marker();
@@ -334,8 +372,16 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
                  double thirdMapY = Double.valueOf(sf.getString("thirdMapY", "0"));
                  double fourthMapX = Double.valueOf(sf.getString("fourthMapX", "0"));
                  double fourthMapY = Double.valueOf(sf.getString("fourthMapY", "0"));
+                 addMarkerList(sf.getInt("markerNum1",1), sf.getString("markerName1", "0"));
+                 addMarkerList(sf.getInt("markerNum2", 2), sf.getString("markerName2", "0"));
+                 addMarkerList(sf.getInt("markerNum3", 3), sf.getString("markerName3", "0"));
+                 addMarkerList(sf.getInt("markerNum4", 4), sf.getString("markerName4", "0"));
+                 addMarkerList(markerCount, intent.getStringExtra("location_name"));
+                 markerListAdapter.notifyDataSetChanged();
                  editor.putString("fifthMapX", String.valueOf(user_mapX));
                  editor.putString("fifthMapY", String.valueOf(user_mapY));
+                 editor.putInt("markerNum5", markerCount);
+                 editor.putString("markerName5", intent.getStringExtra("location_name"));
                  editor.commit();
                  Log.d("firstMapX", sf.getString("firstMapX", "0"));
                  Marker firstMarker = new Marker();
@@ -361,6 +407,14 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
         }
     }
 
+    public void addMarkerList(int num, String location)
+    {
+        MarkerListItem item = new MarkerListItem();
+        item.setMarkerNum(num);
+        item.setMarkerLocation(location);
+
+        markerList.add(item);
+    }
 
 
     @Override
@@ -409,8 +463,8 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
     public void onBackPressed() {
         long tempTime = System.currentTimeMillis();
         long intervalTime = tempTime - backPressedTime;
-
-        if(0 <= intervalTime && FINISH_INTERVAL_TIME >= intervalTime) {
+        if(0 <= intervalTime && FINISH_INTERVAL_TIME >= intervalTime)
+        {
             markerCount = 0;
             SharedPreferences.Editor editor = sf.edit();
             editor.clear();

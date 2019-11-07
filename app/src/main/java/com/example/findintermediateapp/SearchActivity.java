@@ -111,7 +111,6 @@ public class SearchActivity extends ChangeStateBar {
 
         // 네트워크 연결은 Thread 생성 필요
         new Thread() {
-
             @Override
             public void run() {
                 try {
