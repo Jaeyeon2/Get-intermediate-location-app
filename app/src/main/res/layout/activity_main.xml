@@ -202,6 +202,14 @@
             android:onClick="myLocationOnClick"
             />
 
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:id="@+id/marker_image"
+            android:src="@drawable/image"
+            android:visibility="invisible"
+            />
+
     </FrameLayout>
 
 </LinearLayout>

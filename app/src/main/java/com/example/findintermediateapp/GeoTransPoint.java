@@ -1,18 +1,12 @@
 package com.example.findintermediateapp;
 
 public class GeoTransPoint {
-
         double x;
-
         double y;
-
         double z;
 
-
         /**
-
          *
-
          */
 
         public GeoTransPoint() {

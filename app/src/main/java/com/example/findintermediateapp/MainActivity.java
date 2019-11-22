@@ -7,7 +7,17 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Matrix;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.Rect;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.UiThread;
 import android.support.v4.app.ActivityCompat;
@@ -16,12 +26,16 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.EditText;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
@@ -37,6 +51,7 @@ import com.naver.maps.map.NaverMapSdk;
 import com.naver.maps.map.OnMapReadyCallback;
 import com.naver.maps.map.UiSettings;
 import com.naver.maps.map.overlay.Marker;
+import com.naver.maps.map.overlay.OverlayImage;
 import com.naver.maps.map.util.FusedLocationSource;
 import com.naver.maps.map.widget.LocationButtonView;
 import com.naver.maps.map.widget.ZoomControlView;
@@ -52,6 +67,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
     private MapView mapView;
     private Cursor mCursor;
@@ -60,6 +77,7 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
     public static Marker thirdMarker;
     public static Marker fourthMarker;
     public static Marker fifthMarker;
+    public static Marker firstMarkerImage;
     private final long FINISH_INTERVAL_TIME = 2000;
     private long backPressedTime = 0;
     View et_inputLocation;
@@ -80,6 +98,9 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
     MarkerListAdapter markerListAdapter = null;
     ArrayList<MarkerListItem> markerList = new ArrayList<MarkerListItem>();
 
+    FrameLayout.LayoutParams params;
+    ImageView img;
+
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1000;
     private FusedLocationSource locationSource;
 
@@ -96,6 +117,9 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
         mapView.getMapAsync(this);
         mapView.setFocusableInTouchMode(true);
         mapView.requestFocus();
+
+        img = findViewById(R.id.marker_image);
+        params = (FrameLayout.LayoutParams)img.getLayoutParams();
 
         int colorValue = Color.parseColor("#a3a3a3");
         Toolbar toolbar = findViewById(R.id.home_toolbar);
@@ -133,13 +157,13 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
                     if (!hasFocus) {
 
                     } else {
-                        if(markerCount < 5) {
+                        if(markerCount < 2) {
                             Intent searchIntent = new Intent(MainActivity.this, SearchActivity.class);
                             startActivity(searchIntent);
                         }
                         else
                         {
-                            Toast.makeText(MainActivity.this, "위치 추가는 최대 5번까지만 가능합니다", Toast.LENGTH_SHORT).show();
+  //                         Toast.makeText(MainActivity.this, "위치 추가는 최대 2번까지만 가능합니다", Toast.LENGTH_SHORT).show();
                         }
                     }
                 }
@@ -151,13 +175,13 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
             public void onClick(View v) {
                 switch(v.getId()){
                     case R.id.input_location:
-                        if(markerCount < 5) {
+                        if(markerCount < 2) {
                             Intent searchIntent2 = new Intent(MainActivity.this, SearchActivity.class);
                             startActivity(searchIntent2);
                             break;
                         }
                         else{
-                            Toast.makeText(MainActivity.this, "위치 추가는 최대 5번 가능합니다.", Toast.LENGTH_SHORT).show();
+//                            Toast.makeText(MainActivity.this, "위치 추가는 최대 2번 가능합니다.", Toast.LENGTH_SHORT).show();
                         }
                 }
             }
@@ -262,17 +286,51 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
                 naverMap.moveCamera(cameraUpdate1);
                 // 첫번째 마커 찍기
                 firstMarker = new Marker();
+                firstMarkerImage = new Marker();
+                firstMarker.setZIndex(1);
+                firstMarkerImage.setZIndex(0);
                 addMarkerList(markerCount, intent.getStringExtra("location_name"));
                 markerListAdapter.notifyDataSetChanged();
 
                 firstMarker.setPosition(new LatLng(user_mapX, user_mapY));
+                firstMarkerImage.setPosition(new LatLng(user_mapX+0.000005, user_mapY));
+
                 editor.putString("markerName1", intent.getStringExtra("location_name"));
                 editor.putInt("markerNum1", markerCount);
                 editor.putString("firstMapX", String.valueOf(user_mapX));
                 editor.putString("firstMapY", String.valueOf(user_mapY));
                 editor.commit();
 
+                ImageView iv_marker = new ImageView(this);
+                CircleImageView iv_image = new CircleImageView(this);
+                //img = findViewById(R.id.marker_image);
+
+                Bitmap size = BitmapFactory.decodeResource(getResources(), R.drawable.location_marker);
+                size = Bitmap.createScaledBitmap(size, 225, 225, true);
+                iv_marker.setImageBitmap(size);
+
+                Bitmap image = BitmapFactory.decodeResource(getResources(), R.drawable.image);
+                image = Bitmap.createScaledBitmap(image, 150, 150, true);
+                iv_image.setImageBitmap(image);
+                Bitmap photo = getCroppedBitmap(image);
+
+                Canvas canvas = new Canvas(size);
+                canvas.drawBitmap(photo, 38, 18, null);
+
+
+/*
+                params.width = metrics.widthPixels / 10;
+                params.height= metrics.widthPixels / 10;
+                img.setLayoutParams(params);
+
+                img.setImageResource(R.drawable.image);
+                img.setScaleType(ImageView.ScaleType.FIT_XY);
+
+ */
+                firstMarker.setIcon(OverlayImage.fromView(iv_marker));
+//                firstMarkerImage.setIcon(OverlayImage.fromView(iv_image));
                 firstMarker.setMap(naverMap);
+//                firstMarkerImage.setMap(naverMap);
               }
               else if(markerCount == 2) {
                   Log.d("markerCount2", String.valueOf(markerCount));
@@ -316,10 +374,10 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
                 editor.commit();
 
                 Log.d("firstMapX", sf.getString("firstMapX", "0"));
-                Marker firstMarker = new Marker();
+                firstMarker = new Marker();
                 firstMarker.setPosition(new LatLng(firstMapX, firstMapY));
                 firstMarker.setMap(naverMap);
-                Marker secondMarker = new Marker();
+                secondMarker = new Marker();
                 secondMarker.setPosition(new LatLng(secondMapX, secondMapY));
                 secondMarker.setMap(naverMap);
 
@@ -481,4 +539,25 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
         }
     }
 
+    public Bitmap getCroppedBitmap(Bitmap bitmap) {
+        Bitmap output = Bitmap.createBitmap(bitmap.getWidth(),
+                bitmap.getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(output);
+
+        final int color = 0xff424242;
+        final Paint paint = new Paint();
+        final Rect rect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
+
+        paint.setAntiAlias(true);
+        canvas.drawARGB(0, 0, 0, 0);
+        paint.setColor(color);
+        // canvas.drawRoundRect(rectF, roundPx, roundPx, paint);
+        canvas.drawCircle(bitmap.getWidth() / 2, bitmap.getHeight() / 2,
+                bitmap.getWidth() / 2, paint);
+        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
+        canvas.drawBitmap(bitmap, rect, rect, paint);
+        //Bitmap _bmp = Bitmap.createScaledBitmap(output, 60, 60, false);
+        //return _bmp;
+        return output;
+    }
 }

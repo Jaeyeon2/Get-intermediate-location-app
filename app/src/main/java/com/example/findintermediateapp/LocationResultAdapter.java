@@ -68,8 +68,8 @@ public class LocationResultAdapter extends RecyclerView.Adapter<LocationResultAd
                     LocationResultItem item = ResultData.get(pos);
                     if(pos != RecyclerView.NO_POSITION) {
 
-                        Intent mainIntent = new Intent(context, MainActivity.class);
 
+                        Intent mainIntent = new Intent(context, MainActivity.class);
                         item.setResultNumberIncre();
                         mainIntent.putExtra("resultNumber", String.valueOf(item.getResultNumber()));
                         mainIntent.putExtra("user_location", "true");
@@ -80,7 +80,14 @@ public class LocationResultAdapter extends RecyclerView.Adapter<LocationResultAd
                         Log.d("location_mapy", item.getResultMapy());
 
                         context.startActivity(mainIntent);
+
+                         /*
+                        Intent addmemoIntent = new Intent(context, AddMemo.class);
+                        addmemoIntent.putExtra("location", item.getResultName());
+                        context.startActivity(addmemoIntent);
+                     */
                      }
+
                 }
             });
 

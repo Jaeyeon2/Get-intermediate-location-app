@@ -25,4 +25,5 @@ public class MarkerListItem {
     }
 
     public int getDeleteMarker() { return this.deleteMarker;}
+
 }

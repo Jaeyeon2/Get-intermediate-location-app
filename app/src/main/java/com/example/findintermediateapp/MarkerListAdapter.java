@@ -64,47 +64,47 @@ public class MarkerListAdapter extends RecyclerView.Adapter<MarkerListAdapter.Vi
             public void onClick(View view) {
                 markerData.remove(position);
                 notifyDataSetChanged();
-                Log.d("position11", String.valueOf(position));
+                Log.d("pos", String.valueOf(position));
                 SharedPreferences.Editor editor = sf.edit();
                 if(position == 0) {
+                    firstMarker.setMap(null);
+                    Log.d("position00", String.valueOf(position));
                     editor.putString("firstMapX", "0");
                     editor.putString("firstMapY", "0");
                     editor.putInt("count", (sf.getInt("count", 0)-1));
                     editor.commit();
-                    firstMarker.setMap(null);
-                    Log.d("position11", String.valueOf(position));
                 }
                 else if(position == 1) {
+                    secondMarker.setMap(null);
+                    Log.d("position11", String.valueOf(position));
                     editor.putString("secondMapX", "0");
                     editor.putString("secondMapY", "0");
                     editor.putInt("count", (sf.getInt("count", 0)-1));
                     editor.commit();
-                    secondMarker.setMap(null);
-                    Log.d("position11", String.valueOf(position));
                 }
                 else if(position == 2) {
+                    thirdMarker.setMap(null);
+                    Log.d("position22", String.valueOf(position));
                     editor.putString("thirdMapX", "0");
                     editor.putString("thirdMapY", "0");
                     editor.putInt("count", (sf.getInt("count", 0)-1));
                     editor.commit();
-                    thirdMarker.setMap(null);
-                    Log.d("position11", String.valueOf(position));
                 }
                 else if(position == 3) {
+                    fourthMarker.setMap(null);
+                    Log.d("position33", String.valueOf(position));
                     editor.putString("fourthMapX", "0");
                     editor.putString("fourthMapY", "0");
                     editor.putInt("count", (sf.getInt("count", 0)-1));
                     editor.commit();
-                    fourthMarker.setMap(null);
-                    Log.d("position11", String.valueOf(position));
                 }
                 else if(position == 4) {
+                    fifthMarker.setMap(null);
+                    Log.d("position44", String.valueOf(position));
                     editor.putString("fifthMapX", "0");
                     editor.putString("fifthMapY", "0");
                     editor.putInt("count", (sf.getInt("count", 0)-1));
                     editor.commit();
-                    fifthMarker.setMap(null);
-                    Log.d("position11", String.valueOf(position));
                 }
             }
         });
