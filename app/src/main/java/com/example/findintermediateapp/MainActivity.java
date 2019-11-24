@@ -1,6 +1,7 @@
 package com.example.findintermediateapp;
 
 import android.app.AlertDialog;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -93,6 +94,8 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
     int locationNum;
     int markerCount;
     public static SharedPreferences sf;
+    int dataCount = 0;
+    FeedReaderDbHelper dbHelper = new FeedReaderDbHelper(this);
 
     RecyclerView markerRecyclerView = null;
     MarkerListAdapter markerListAdapter = null;
@@ -196,6 +199,17 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
         {
             Log.d("location_mapx111", intent.getStringExtra("location_mapx"));
         }
+
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(FeedReaderContract.FeedEntry.NAME, "부경대");
+        values.put(FeedReaderContract.FeedEntry.ADDRESS, "부산광역시 남구 대연동");
+        values.put(FeedReaderContract.FeedEntry.MEMO, "내 대학교");
+        values.put(FeedReaderContract.FeedEntry.PHOTO, "ss");
+        values.put(FeedReaderContract.FeedEntry.COORDINATE_X, "35.134067");
+        values.put(FeedReaderContract.FeedEntry.COORDINATE_Y, "129.103179");
+
+        long newRowId = db.insert(FeedReaderContract.FeedEntry.TABLE_NAME, null, values);
     }
 
     public void myLocationOnClick(View view) {
@@ -466,6 +480,25 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
                  fifthMarker.setMap(naverMap);
              }
         }
+
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        Cursor cursor = db.query(
+                FeedReaderContract.FeedEntry.TABLE_NAME,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null
+        );
+
+        int data_count = 0;
+        while(cursor.moveToNext()) {
+            data_count = data_count + 1;
+            Log.d("data_count", String.valueOf(data_count));
+        }
+
+        cursor.close();
     }
 
     public void addMarkerList(int num, String location)
