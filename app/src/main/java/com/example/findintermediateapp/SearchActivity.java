@@ -65,10 +65,8 @@ public class SearchActivity extends ChangeStateBar {
 
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(getApplicationContext(), LinearLayoutManager.VERTICAL);
         dividerItemDecoration.setDrawable(getApplicationContext().getResources().getDrawable(R.drawable.custom_divider));
-
         locationRecyclerView.addItemDecoration(dividerItemDecoration);
     }
-
     public void addLocation(String name, String location, String mapx, String mapy) {
 
         LocationResultItem result = new LocationResultItem();

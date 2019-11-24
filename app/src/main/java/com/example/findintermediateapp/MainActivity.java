@@ -38,6 +38,7 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.gigamole.library.ShadowLayout;
@@ -70,6 +71,9 @@ import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
+import static android.view.View.INVISIBLE;
+import static android.view.View.VISIBLE;
+
 public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
     private MapView mapView;
     private Cursor mCursor;
@@ -79,6 +83,8 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
     public static Marker fourthMarker;
     public static Marker fifthMarker;
     public static Marker firstMarkerImage;
+    public static Marker addMemoMarker;
+
     private final long FINISH_INTERVAL_TIME = 2000;
     private long backPressedTime = 0;
     View et_inputLocation;
@@ -97,6 +103,7 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
     int dataCount = 0;
     FeedReaderDbHelper dbHelper = new FeedReaderDbHelper(this);
 
+    LinearLayout ll_markerDelete;
     RecyclerView markerRecyclerView = null;
     MarkerListAdapter markerListAdapter = null;
     ArrayList<MarkerListItem> markerList = new ArrayList<MarkerListItem>();
@@ -106,6 +113,7 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
 
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1000;
     private FusedLocationSource locationSource;
+    RelativeLayout rl_clickedLocation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -120,9 +128,20 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
         mapView.getMapAsync(this);
         mapView.setFocusableInTouchMode(true);
         mapView.requestFocus();
-
+        rl_clickedLocation = findViewById(R.id.clicked_location_name);
+        ll_markerDelete = findViewById(R.id.marker_delete_layout);
+        addMemoMarker = new Marker();
         img = findViewById(R.id.marker_image);
         params = (FrameLayout.LayoutParams)img.getLayoutParams();
+
+        ll_markerDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                addMemoMarker.setPosition(new LatLng(0, 0));
+                addMemoMarker.setMap(null);
+                rl_clickedLocation.setVisibility(INVISIBLE);
+            }
+        });
 
         int colorValue = Color.parseColor("#a3a3a3");
         Toolbar toolbar = findViewById(R.id.home_toolbar);
@@ -130,11 +149,6 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_menu_aa);
-
-        markerRecyclerView = findViewById(R.id.marker_list);
-        markerListAdapter = new MarkerListAdapter(markerList);
-        markerRecyclerView.setAdapter(markerListAdapter);
-        markerRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         final ShadowLayout shadowLayout = (ShadowLayout)findViewById(R.id.toolbar_shadow);
         shadowLayout.setIsShadowed(true);
@@ -157,36 +171,16 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
             @Override
             public void onFocusChange(View view, boolean hasFocus) {
 
-                    if (!hasFocus) {
-
-                    } else {
-                        if(markerCount < 2) {
                             Intent searchIntent = new Intent(MainActivity.this, SearchActivity.class);
                             startActivity(searchIntent);
                         }
-                        else
-                        {
-  //                         Toast.makeText(MainActivity.this, "위치 추가는 최대 2번까지만 가능합니다", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                }
-
         });
 
         View.OnClickListener clickListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                switch(v.getId()){
-                    case R.id.input_location:
-                        if(markerCount < 2) {
                             Intent searchIntent2 = new Intent(MainActivity.this, SearchActivity.class);
                             startActivity(searchIntent2);
-                            break;
-                        }
-                        else{
-//                            Toast.makeText(MainActivity.this, "위치 추가는 최대 2번 가능합니다.", Toast.LENGTH_SHORT).show();
-                        }
-                }
             }
         };
 
@@ -200,6 +194,7 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
             Log.d("location_mapx111", intent.getStringExtra("location_mapx"));
         }
 
+        /*
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(FeedReaderContract.FeedEntry.NAME, "부경대");
@@ -210,6 +205,7 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
         values.put(FeedReaderContract.FeedEntry.COORDINATE_Y, "129.103179");
 
         long newRowId = db.insert(FeedReaderContract.FeedEntry.TABLE_NAME, null, values);
+    */
     }
 
     public void myLocationOnClick(View view) {
@@ -295,6 +291,44 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
             user_mapX = lat;
             user_mapY = lng;
 
+
+            SQLiteDatabase db = dbHelper.getReadableDatabase();
+            dbHelper.onOpen(db);
+            Cursor cursor = db.query(
+                    FeedReaderContract.FeedEntry.TABLE_NAME,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null
+            );
+
+            int data_count = 0;
+            while(cursor.moveToNext()) {
+                data_count = data_count + 1;
+                Log.d("data_count", String.valueOf(data_count));
+                String tempName = cursor.getString(cursor.getColumnIndex("name"));
+                String tempX = cursor.getString(cursor.getColumnIndex("coordinate_x"));
+                String tempY = cursor.getString(cursor.getColumnIndex("coordinate_y"));
+                if(!tempName.equals(intent.getStringExtra("location_name")))
+                {
+                    Double coorX = Double.valueOf(tempX);
+                    Double coorY = Double.valueOf(tempY);
+
+                    CameraUpdate cameraUpdate = CameraUpdate.scrollTo(new LatLng(coorX, coorY));
+                    naverMap.moveCamera(cameraUpdate);
+                    ImageView iv_addMemoMarker = new ImageView(this);
+                    addMemoMarker.setPosition(new LatLng(coorX, coorY));
+                    Bitmap smallMarker = BitmapFactory.decodeResource(getResources(), R.drawable.location_plus_marker4);
+                    smallMarker = Bitmap.createScaledBitmap(smallMarker, 200, 200, true);
+                    iv_addMemoMarker.setImageBitmap(smallMarker);
+                    addMemoMarker.setIcon(OverlayImage.fromView(iv_addMemoMarker));
+                    addMemoMarker.setMap(naverMap);
+                    rl_clickedLocation.setVisibility(VISIBLE);
+                }
+            }
+            /*
             if(markerCount == 1) {
                 CameraUpdate cameraUpdate1 = CameraUpdate.scrollTo(new LatLng(lat, lng));
                 naverMap.moveCamera(cameraUpdate1);
@@ -332,7 +366,7 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
                 canvas.drawBitmap(photo, 38, 18, null);
 
 
-/*
+
                 params.width = metrics.widthPixels / 10;
                 params.height= metrics.widthPixels / 10;
                 img.setLayoutParams(params);
@@ -340,7 +374,7 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
                 img.setImageResource(R.drawable.image);
                 img.setScaleType(ImageView.ScaleType.FIT_XY);
 
- */
+
                 firstMarker.setIcon(OverlayImage.fromView(iv_marker));
 //                firstMarkerImage.setIcon(OverlayImage.fromView(iv_image));
                 firstMarker.setMap(naverMap);
@@ -479,26 +513,8 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
                  fifthMarker.setPosition(new LatLng(user_mapX, user_mapY));
                  fifthMarker.setMap(naverMap);
              }
+             */
         }
-
-        SQLiteDatabase db = dbHelper.getReadableDatabase();
-        Cursor cursor = db.query(
-                FeedReaderContract.FeedEntry.TABLE_NAME,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null
-        );
-
-        int data_count = 0;
-        while(cursor.moveToNext()) {
-            data_count = data_count + 1;
-            Log.d("data_count", String.valueOf(data_count));
-        }
-
-        cursor.close();
     }
 
     public void addMarkerList(int num, String location)

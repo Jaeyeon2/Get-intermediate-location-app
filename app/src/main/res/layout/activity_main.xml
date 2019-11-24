@@ -124,11 +124,88 @@
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:layout_weight="8.9"
+                    android:layout_weight="8.5"
                     android:weightSum="10">
->
 
+                    <!--
             <android.support.v7.widget.RecyclerView android:id="@+id/marker_list" android:layout_width="0dp" android:layout_weight="7.0" android:layout_height="match_parent"/>
+            -->
+                    <RelativeLayout
+                        android:id="@+id/clicked_location_name"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:clipChildren="false"
+                        android:clipToPadding="false"
+                        android:visibility="invisible">
+
+                        <android.support.v7.widget.CardView
+                            android:id="@+id/cardview"
+                            app:cardElevation="3dp"
+                            app:cardCornerRadius="7dp"
+                            android:outlineAmbientShadowColor="#f3f3f3"
+                            app:cardUseCompatPadding="true"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="0dp">
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="25dp"
+                                android:weightSum="9"
+                                android:orientation="horizontal">
+
+
+                                <View
+                                    android:layout_width="0.3dp"
+                                    android:layout_height="match_parent"
+                                    android:background="#c3c3c3"/>
+
+                                <LinearLayout
+                                    android:layout_width="0dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_weight="7.7">
+
+                                    <TextView
+                                        android:layout_marginLeft="10dp"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="match_parent"
+                                        android:text="선택된 위치"
+                                        android:gravity="center"
+                                        android:textSize="13sp"/>
+
+                                    <TextView
+                                        android:id="@+id/marker_location"
+                                        android:layout_marginLeft="15dp"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="match_parent"
+                                        android:text="부경대학교 대연캠퍼스 누리관"
+                                        android:textColor="#000000"
+                                        android:gravity="center"
+                                        android:textSize="13sp"/>
+
+                                </LinearLayout>
+
+                                <View
+                                    android:layout_width="0.3dp"
+                                    android:layout_height="match_parent"
+                                    android:background="#c3c3c3"/>
+
+                                <LinearLayout
+                                    android:id="@+id/marker_delete_layout"
+                                    android:layout_width="0dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_weight="1.3"
+                                    android:gravity="center">
+
+                                    <ImageView
+                                        android:id="@+id/marker_delete"
+                                        android:layout_width="11dp"
+                                        android:layout_height="11dp"
+                                        android:src="@drawable/close_cross"
+                                        />
+                                </LinearLayout>
+                            </LinearLayout>
+                        </android.support.v7.widget.CardView>
+                    </RelativeLayout>
 
                 </LinearLayout>
             </LinearLayout>
@@ -176,7 +253,7 @@
             </LinearLayout>
         </LinearLayout>
         -->
-
+        <!--
         <android.support.design.widget.FloatingActionButton
             android:layout_marginBottom="15dp"
             android:layout_marginEnd="15dp"
@@ -191,7 +268,7 @@
             app:borderWidth="0dp"
             app:fabSize="auto"
             />
-
+-->
         <com.naver.maps.map.widget.LocationButtonView
             android:id="@+id/myLocation_btn"
             android:layout_width="wrap_content"
