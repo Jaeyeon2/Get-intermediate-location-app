@@ -15,5 +15,11 @@
         android:layout_height="wrap_content"
         android:text="asdasd"/>
 
+    <Button
+        android:id="@+id/add_memo_button"
+        android:layout_width="200dp"
+        android:layout_height="70dp"
+        android:text="메모 저장"/>
+
 
 </LinearLayout>

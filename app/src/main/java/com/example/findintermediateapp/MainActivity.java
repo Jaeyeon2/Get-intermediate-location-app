@@ -39,6 +39,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.gigamole.library.ShadowLayout;
@@ -53,6 +54,7 @@ import com.naver.maps.map.NaverMapSdk;
 import com.naver.maps.map.OnMapReadyCallback;
 import com.naver.maps.map.UiSettings;
 import com.naver.maps.map.overlay.Marker;
+import com.naver.maps.map.overlay.Overlay;
 import com.naver.maps.map.overlay.OverlayImage;
 import com.naver.maps.map.util.FusedLocationSource;
 import com.naver.maps.map.widget.LocationButtonView;
@@ -84,6 +86,7 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
     public static Marker fifthMarker;
     public static Marker firstMarkerImage;
     public static Marker addMemoMarker;
+//    public static Marker savedMarker;
 
     private final long FINISH_INTERVAL_TIME = 2000;
     private long backPressedTime = 0;
@@ -93,7 +96,6 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
     String user_location = "false";
     String location_mapx;
     String location_mapy;
-    SQLiteDatabase db;
     Intent intent;
     double user_mapX;
     double user_mapY;
@@ -102,6 +104,10 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
     public static SharedPreferences sf;
     int dataCount = 0;
     FeedReaderDbHelper dbHelper = new FeedReaderDbHelper(this);
+    TextView tv_markerLocation;
+    Cursor cursor;
+    SQLiteDatabase db;
+
 
     LinearLayout ll_markerDelete;
     RecyclerView markerRecyclerView = null;
@@ -130,7 +136,9 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
         mapView.requestFocus();
         rl_clickedLocation = findViewById(R.id.clicked_location_name);
         ll_markerDelete = findViewById(R.id.marker_delete_layout);
+        tv_markerLocation = findViewById(R.id.marker_location);
         addMemoMarker = new Marker();
+//        savedMarker = new Marker();
         img = findViewById(R.id.marker_image);
         params = (FrameLayout.LayoutParams)img.getLayoutParams();
 
@@ -184,10 +192,13 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
             }
         };
 
+        addMemoMarker.setOnClickListener(overlay -> {
+            Intent addMemoIntent = new Intent(MainActivity.this, AddMemo.class);
+            startActivity(addMemoIntent);
+            return true;
+        });
         et_inputLocation.setOnClickListener(clickListener);
-
         intent = getIntent();
-
 
         if(intent.getStringExtra("location_mapx") != null)
         {
@@ -206,6 +217,18 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
 
         long newRowId = db.insert(FeedReaderContract.FeedEntry.TABLE_NAME, null, values);
     */
+
+        db = dbHelper.getReadableDatabase();
+        dbHelper.onOpen(db);
+        cursor = db.query(
+                FeedReaderContract.FeedEntry.TABLE_NAME,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null
+        );
     }
 
     public void myLocationOnClick(View view) {
@@ -257,12 +280,33 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
         NaverMapOptions options = new NaverMapOptions()
                 .locationButtonEnabled(false);
 
+
+
         myLocation_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Toast.makeText(MainActivity.this, "마커 1 클릭", Toast.LENGTH_SHORT).show();
             }
         });
+        int cursorCount = 0;
+        while(cursor.moveToNext()){
+            cursorCount++;
+            String tempName = cursor.getString(cursor.getColumnIndex("name"));
+            String tempAddress = cursor.getString(cursor.getColumnIndex("address"));
+            String tempMemo = cursor.getString(cursor.getColumnIndex("memo"));
+            String tempPhoto = cursor.getString(cursor.getColumnIndex("photo"));
+            String tempX = cursor.getString(cursor.getColumnIndex("coordinate_x"));
+            String tempY = cursor.getString(cursor.getColumnIndex("coordinate_y"));
+
+            Double x = Double.valueOf(tempX);
+            Double y = Double.valueOf(tempY);
+
+            Marker savedMarker;
+            savedMarker = new Marker();
+
+            savedMarker.setPosition(new LatLng(x, y));
+            savedMarker.setMap(naverMap);
+        }
 
         if(intent.getStringExtra("user_location") == null)
         {
@@ -272,6 +316,7 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
             markerCount = sf.getInt("count", 0);
             editor.commit();
             Log.d("위치 선택전 markerCount", String.valueOf(markerCount));
+
         }
         else{
             sf = getSharedPreferences("sFile", MODE_PRIVATE);
@@ -291,10 +336,10 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
             user_mapX = lat;
             user_mapY = lng;
 
+            int data_count = 0;
 
-            SQLiteDatabase db = dbHelper.getReadableDatabase();
-            dbHelper.onOpen(db);
-            Cursor cursor = db.query(
+            Cursor cursor2;
+            cursor2 = db.query(
                     FeedReaderContract.FeedEntry.TABLE_NAME,
                     null,
                     null,
@@ -303,28 +348,31 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
                     null,
                     null
             );
+            boolean existingLocation = false;
 
-            int data_count = 0;
-            while(cursor.moveToNext()) {
+            while(cursor2.moveToNext()) {
                 data_count = data_count + 1;
                 Log.d("data_count", String.valueOf(data_count));
-                String tempName = cursor.getString(cursor.getColumnIndex("name"));
-                String tempX = cursor.getString(cursor.getColumnIndex("coordinate_x"));
-                String tempY = cursor.getString(cursor.getColumnIndex("coordinate_y"));
-                if(!tempName.equals(intent.getStringExtra("location_name")))
+                String tempName = cursor2.getString(cursor2.getColumnIndex("name"));
+                Double tempX = Double.valueOf(cursor2.getString(cursor2.getColumnIndex("coordinate_x")));
+                Double tempY = Double.valueOf(cursor2.getString(cursor2.getColumnIndex("coordinate_y")));
+                if(tempName.equals(intent.getStringExtra("location_name")))
                 {
-                    Double coorX = Double.valueOf(tempX);
-                    Double coorY = Double.valueOf(tempY);
-
-                    CameraUpdate cameraUpdate = CameraUpdate.scrollTo(new LatLng(coorX, coorY));
+                    CameraUpdate cameraUpdate = CameraUpdate.scrollTo(new LatLng(tempX, tempY));
+                    naverMap.moveCamera(cameraUpdate);
+                    existingLocation = true;
+                    break;
+                }else if(existingLocation == false && data_count == cursorCount){
+                    CameraUpdate cameraUpdate = CameraUpdate.scrollTo(new LatLng(user_mapX, user_mapY));
                     naverMap.moveCamera(cameraUpdate);
                     ImageView iv_addMemoMarker = new ImageView(this);
-                    addMemoMarker.setPosition(new LatLng(coorX, coorY));
+                    addMemoMarker.setPosition(new LatLng(user_mapX, user_mapY));
                     Bitmap smallMarker = BitmapFactory.decodeResource(getResources(), R.drawable.location_plus_marker4);
                     smallMarker = Bitmap.createScaledBitmap(smallMarker, 200, 200, true);
                     iv_addMemoMarker.setImageBitmap(smallMarker);
                     addMemoMarker.setIcon(OverlayImage.fromView(iv_addMemoMarker));
                     addMemoMarker.setMap(naverMap);
+                    tv_markerLocation.setText(getIntent().getStringExtra("location_name"));
                     rl_clickedLocation.setVisibility(VISIBLE);
                 }
             }
