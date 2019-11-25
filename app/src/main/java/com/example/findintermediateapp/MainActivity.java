@@ -27,6 +27,7 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Base64;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
@@ -87,6 +88,7 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
     public static Marker fifthMarker;
     public static Marker firstMarkerImage;
     public static Marker addMemoMarker;
+    public static String[] photoArr;
 //    public static Marker savedMarker;
 
     private final long FINISH_INTERVAL_TIME = 2000;
@@ -105,6 +107,7 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
     public static SharedPreferences sf;
     int dataCount = 0;
     FeedReaderDbHelper dbHelper = new FeedReaderDbHelper(this);
+    MemoImagesDbHelper imagesDbHelper = new MemoImagesDbHelper(this);
     TextView tv_markerLocation;
     Cursor cursor;
     SQLiteDatabase db;
@@ -195,6 +198,10 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
 
         addMemoMarker.setOnClickListener(overlay -> {
             Intent addMemoIntent = new Intent(MainActivity.this, AddMemo.class);
+            addMemoIntent.putExtra("location", getIntent().getStringExtra("location_name"));
+            addMemoIntent.putExtra("address", getIntent().getStringExtra("location_address"));
+            addMemoIntent.putExtra("mapx", getIntent().getStringExtra("location_mapx"));
+            addMemoIntent.putExtra("mapy", getIntent().getStringExtra("location_mapy"));
             startActivity(addMemoIntent);
             return true;
         });
@@ -218,18 +225,21 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
 
         long newRowId = db.insert(FeedReaderContract.FeedEntry.TABLE_NAME, null, values);
     */
+        /*
 
-        db = dbHelper.getReadableDatabase();
-        dbHelper.onOpen(db);
-        cursor = db.query(
-                FeedReaderContract.FeedEntry.TABLE_NAME,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null
-        );
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(FeedReaderContract.FeedEntry.NAME, "울산대학교");
+        values.put(FeedReaderContract.FeedEntry.ADDRESS, "93 대학로 무거동 남구 울산광역시");
+        values.put(FeedReaderContract.FeedEntry.MEMO, "울산대울산대");
+        values.put(FeedReaderContract.FeedEntry.PHOTO, "");
+        values.put(FeedReaderContract.FeedEntry.COORDINATE_X, "35.543895");
+        values.put(FeedReaderContract.FeedEntry.COORDINATE_Y, "129.256328");
+        long newRowId = db.insert(FeedReaderContract.FeedEntry.TABLE_NAME, null, values);
+         */
+
+//        SQLiteDatabase db = dbHelper.getWritableDatabase();
+//        db.delete(FeedReaderContract.FeedEntry.TABLE_NAME, null, null);
     }
 
     public void myLocationOnClick(View view) {
@@ -292,23 +302,67 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
             }
         });
         int cursorCount = 0;
-        while(cursor.moveToNext()){
-            cursorCount++;
-            String tempName = cursor.getString(cursor.getColumnIndex("name"));
-            String tempAddress = cursor.getString(cursor.getColumnIndex("address"));
-            String tempMemo = cursor.getString(cursor.getColumnIndex("memo"));
-            String tempPhoto = cursor.getString(cursor.getColumnIndex("photo"));
-            String tempX = cursor.getString(cursor.getColumnIndex("coordinate_x"));
-            String tempY = cursor.getString(cursor.getColumnIndex("coordinate_y"));
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        Cursor cursor = db.rawQuery("select name, address, memo, coordinate_x, coordinate_y from location_memo" , null);
+        Log.d("cursor.getCount()", String.valueOf(cursor.getCount()));
+                while(cursor.moveToNext()){
+                    cursorCount++;
+                    Log.d("cursor.moveToNext()실행", String.valueOf(cursorCount));
+                String tempName = cursor.getString(0);
+                Log.d("tempNameasd", tempName);
+                String tempAddress = cursor.getString(1);
+                String tempMemo = cursor.getString(2);
+                String tempX = cursor.getString(3);
+                Log.d("tempXzzz", tempX);
+                String tempY = cursor.getString(4);
+                Log.d("tempYzzz", tempY);
+                Double x = Double.valueOf(tempX);
+                Double y = Double.valueOf(tempY);
+                    GeoTransPoint oKA = new GeoTransPoint(x, y);
+                    GeoTransPoint oGeo = GeoTrans.convert(GeoTrans.KATEC, GeoTrans.GEO, oKA);
+                    double lat_x = oGeo.getY();
+                    double lng_y = oGeo.getX();
+                    Marker savedMarker;
+                Marker savedImageMarker;
+                savedMarker = new Marker();
+                savedImageMarker = new Marker();
+                    Bitmap blobToBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.add_work_no2);
 
-            Double x = Double.valueOf(tempX);
-            Double y = Double.valueOf(tempY);
+                    SQLiteDatabase imagesDb = imagesDbHelper.getWritableDatabase();
+                Cursor imageCursor = imagesDb.rawQuery("select photo, name from memo_image_table", null);
+                Log.d("imageCursor.getCount()", String.valueOf(imageCursor.getCount()));
+                while(imageCursor.moveToNext())
+                {
+                    Log.d("사진존재", "1");
+                    if(imageCursor.getString(1).equals(tempName))
+                    {
+                        Log.d("해당위치에 해당하는 사진존재", "1");
+                        byte[] blob = imageCursor.getBlob(0);
+                        blobToBitmap = BitmapFactory.decodeByteArray(blob, 0, blob.length);
+                        break;
+                    }
+                }
+                savedMarker.setPosition(new LatLng(lat_x, lng_y));
 
-            Marker savedMarker;
-            savedMarker = new Marker();
+                savedImageMarker.setPosition(new LatLng(x + 0.000005, y));
 
-            savedMarker.setPosition(new LatLng(x, y));
-            savedMarker.setMap(naverMap);
+                ImageView iv_marker = new ImageView(this);
+                CircleImageView iv_image = new CircleImageView(this);
+
+                Bitmap marker_size = BitmapFactory.decodeResource(getResources(), R.drawable.location_marker);
+                marker_size = Bitmap.createScaledBitmap(marker_size, 225, 225, true);
+                iv_marker.setImageBitmap(marker_size);
+
+//            Bitmap image_size = BitmapFactory.decodeResource(getResources(), R.drawable.image);
+                blobToBitmap = Bitmap.createScaledBitmap(blobToBitmap, 150, 150, true);
+                iv_image.setImageBitmap(blobToBitmap);
+                Bitmap photo = getCroppedBitmap(blobToBitmap);
+
+                Canvas canvas = new Canvas(marker_size);
+                canvas.drawBitmap(photo, 38, 18, null);
+
+                savedMarker.setIcon(OverlayImage.fromView(iv_marker));
+                savedMarker.setMap(naverMap);
         }
 
         if(intent.getStringExtra("user_location") == null)
@@ -322,13 +376,7 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
 
         }
         else{
-
-            sf = getSharedPreferences("sFile", MODE_PRIVATE);
-            SharedPreferences.Editor editor = sf.edit();
-            editor.putInt("count", (sf.getInt("count",0)+1));
-            editor.commit();
             markerCount = sf.getInt("count", 0);
-
             Log.d("위치 선택후 markerCount", String.valueOf(markerCount));
 
             // 카텍좌표계 -> 경위도 좌표계 변환
@@ -366,20 +414,38 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
                     naverMap.moveCamera(cameraUpdate);
                     existingLocation = true;
                     break;
-                }else if(existingLocation == false && data_count == cursorCount){
-                    CameraUpdate cameraUpdate = CameraUpdate.scrollTo(new LatLng(user_mapX, user_mapY));
-                    naverMap.moveCamera(cameraUpdate);
-                    ImageView iv_addMemoMarker = new ImageView(this);
-                    addMemoMarker.setPosition(new LatLng(user_mapX, user_mapY));
-                    Bitmap smallMarker = BitmapFactory.decodeResource(getResources(), R.drawable.location_plus_marker4);
-                    smallMarker = Bitmap.createScaledBitmap(smallMarker, 200, 200, true);
-                    iv_addMemoMarker.setImageBitmap(smallMarker);
-                    addMemoMarker.setIcon(OverlayImage.fromView(iv_addMemoMarker));
-                    addMemoMarker.setMap(naverMap);
-                    tv_markerLocation.setText(getIntent().getStringExtra("location_name"));
-                    rl_clickedLocation.setVisibility(VISIBLE);
                 }
             }
+            if(existingLocation == false && data_count == cursorCount){
+                Log.d("해당위치에 존재하는 메모가 업습니다.", "1");
+                CameraUpdate cameraUpdate = CameraUpdate.scrollTo(new LatLng(user_mapX, user_mapY));
+                naverMap.moveCamera(cameraUpdate);
+                ImageView iv_addMemoMarker = new ImageView(this);
+                addMemoMarker.setPosition(new LatLng(user_mapX, user_mapY));
+                Bitmap smallMarker = BitmapFactory.decodeResource(getResources(), R.drawable.location_plus_marker4);
+                smallMarker = Bitmap.createScaledBitmap(smallMarker, 200, 200, true);
+                iv_addMemoMarker.setImageBitmap(smallMarker);
+                addMemoMarker.setIcon(OverlayImage.fromView(iv_addMemoMarker));
+                addMemoMarker.setMap(naverMap);
+                tv_markerLocation.setText(getIntent().getStringExtra("location_name"));
+                rl_clickedLocation.setVisibility(VISIBLE);
+            }
+
+            if(cursor.getCount() == 0)
+            {
+                CameraUpdate cameraUpdate = CameraUpdate.scrollTo(new LatLng(user_mapX, user_mapY));
+                naverMap.moveCamera(cameraUpdate);
+                ImageView iv_addMemoMarker = new ImageView(this);
+                addMemoMarker.setPosition(new LatLng(user_mapX, user_mapY));
+                Bitmap smallMarker = BitmapFactory.decodeResource(getResources(), R.drawable.location_plus_marker4);
+                smallMarker = Bitmap.createScaledBitmap(smallMarker, 200, 200, true);
+                iv_addMemoMarker.setImageBitmap(smallMarker);
+                addMemoMarker.setIcon(OverlayImage.fromView(iv_addMemoMarker));
+                addMemoMarker.setMap(naverMap);
+                tv_markerLocation.setText(getIntent().getStringExtra("location_name"));
+                rl_clickedLocation.setVisibility(VISIBLE);
+            }
+
             /*
             if(markerCount == 1) {
                 CameraUpdate cameraUpdate1 = CameraUpdate.scrollTo(new LatLng(lat, lng));

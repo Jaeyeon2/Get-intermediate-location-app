@@ -98,7 +98,7 @@ getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_left_arrow);
                     img= BitmapFactory.decodeStream(in);
                     in.close();
                     memo_work=new Bitmap[addcount];
-                    Bitmap bitmap=BitmapFactory.decodeResource(getApplicationContext().getResources(),R.drawable.add_work_no);
+                    Bitmap bitmap=BitmapFactory.decodeResource(getApplicationContext().getResources(),R.drawable.add_work_no2);
                     addedBitmap[addcount-1]=img;
                     for(int i=0;i<addcount;i++){
                         Log.d("addedBitmap",String.valueOf(addedBitmap[i]));
@@ -163,7 +163,7 @@ public class ImageAdapter extends BaseAdapter{
             }
 if(pos==memo_image.length-1)
 {
-    imageView.setImageResource(R.drawable.add_work_no);
+    imageView.setImageResource(R.drawable.add_work_no2);
     imageView.setOnClickListener(new View.OnClickListener(){
 
         @Override

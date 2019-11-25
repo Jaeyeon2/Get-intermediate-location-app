@@ -5,40 +5,93 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".AddMemo"
-    android:weightSum="10"
     android:orientation="vertical"
-    android:padding="5dp">
+    android:weightSum="10"
+    android:background="#ffffff"
+    >
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp">
+        <!--  툴바 설정하기ㅣ
+        -->
+        <android.support.v7.widget.Toolbar
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/tools"
+            android:background="#ffffff"
+            ></android.support.v7.widget.Toolbar>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="메모 저장하기"
+            android:textSize="20sp"
+            android:layout_gravity="center"
+            android:textColor="#000000"
+            />
+
+
+
+    </FrameLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.3dp"
+        android:background="#C3C3C3"></View>
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="300dp"
-        android:orientation="horizontal"
-        android:weightSum="10">
+        android:layout_height="60dp"
+        android:orientation="vertical"
+        android:paddingLeft="15dp"
+        android:paddingTop="10dp"
+        >
+        <TextView
+            android:id="@+id/min"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:textColor="#000000"
 
-    <ImageView
-        android:src="@drawable/plus2"
-        android:id="@+id/add_memo_image1"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="5"/>
+            ></TextView>
+
+        <TextView
+            android:id="@+id/jae"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            ></TextView>
+        ></LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.3dp"
+        android:background="#C3C3C3"></View>
+
+    <EditText
+        android:background="@drawable/no_line_text_edit"
+        android:paddingLeft="15dp"
+        android:layout_width="match_parent"
+        android:layout_height="121dp"
+        android:id="@+id/add_memo_content"
+        android:hint="내용"
+        android:textSize="16sp"
+        ></EditText>
 
 
-        <ImageView
-            android:src="@drawable/plus2"
-            android:id="@+id/add_memo_image2"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="5"/>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.3dp"
+        android:background="#C3C3C3"></View>
 
-
-    </LinearLayout>
-
-
-    <Button
-        android:id="@+id/add_memo_button"
-        android:layout_width="200dp"
-        android:layout_height="70dp"
-        android:text="메모 저장"/>
-
+    <GridView
+        android:background="#ffffff"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/gridview"
+        android:gravity="center"
+        android:verticalSpacing="1dp"
+        android:numColumns="3"
+        android:paddingBottom="5dp"
+        android:overScrollMode="never"/>
 
 </LinearLayout>

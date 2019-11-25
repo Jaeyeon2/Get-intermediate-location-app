@@ -76,15 +76,16 @@ public class LocationResultAdapter extends RecyclerView.Adapter<LocationResultAd
                         mainIntent.putExtra("location_mapx", item.getResultMapx());
                         mainIntent.putExtra("location_mapy", item.getResultMapy());
                         mainIntent.putExtra("location_name", item.getResultName());
+                        mainIntent.putExtra("location_address", item.getResultLocation());
                         Log.d("location_mapx", item.getResultMapx());
                         Log.d("location_mapy", item.getResultMapy());
 
                         context.startActivity(mainIntent);
-                         /*
+                        /*
                         Intent addmemoIntent = new Intent(context, AddMemo.class);
                         addmemoIntent.putExtra("location", item.getResultName());
                         context.startActivity(addmemoIntent);
-                     */
+                         */
                      }
 
                 }

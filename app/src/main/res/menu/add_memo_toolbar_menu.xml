@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:layout_width="4dp"
+        android:layout_height="4dp"
+        android:id="@+id/tool_menu"
+        android:icon="@drawable/ic_right"
+        android:title="finish"
+        app:showAsAction="always"/>
+
+</menu>
