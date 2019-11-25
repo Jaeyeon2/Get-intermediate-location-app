@@ -9,11 +9,27 @@
     android:orientation="vertical"
     android:padding="5dp">
 
-    <TextView
-        android:id="@+id/add_page_location"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="asdasd"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:orientation="horizontal"
+        android:weightSum="10">
+
+    <ImageView
+        android:id="@+id/add_memo_image1"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="5"/>
+
+
+        <ImageView android:id="@+id/add_memo_image2"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="5"/>
+
+
+    </LinearLayout>
+
 
     <Button
         android:id="@+id/add_memo_button"

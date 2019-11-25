@@ -45,6 +45,7 @@ import android.widget.Toast;
 import com.gigamole.library.ShadowLayout;
 import com.naver.maps.geometry.LatLng;
 import com.naver.maps.map.CameraAnimation;
+import com.naver.maps.map.CameraPosition;
 import com.naver.maps.map.CameraUpdate;
 import com.naver.maps.map.LocationTrackingMode;
 import com.naver.maps.map.MapView;
@@ -276,11 +277,13 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
 
         naverMap.setLocationSource(locationSource);
         naverMap.setLocationTrackingMode(LocationTrackingMode.None);
-
         NaverMapOptions options = new NaverMapOptions()
                 .locationButtonEnabled(false);
 
-
+        // 초기 카메라위치 조정
+        CameraPosition earlyCameraPosition = new CameraPosition(new LatLng(36.456943, 127.829456), 6);
+        CameraUpdate earlyCameraUpdate = CameraUpdate.toCameraPosition(earlyCameraPosition);
+        naverMap.moveCamera(earlyCameraUpdate);
 
         myLocation_btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -319,6 +322,7 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
 
         }
         else{
+
             sf = getSharedPreferences("sFile", MODE_PRIVATE);
             SharedPreferences.Editor editor = sf.edit();
             editor.putInt("count", (sf.getInt("count",0)+1));

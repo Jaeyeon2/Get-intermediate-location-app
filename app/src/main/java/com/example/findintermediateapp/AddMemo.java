@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 public class AddMemo extends AppCompatActivity {
@@ -14,16 +15,19 @@ public class AddMemo extends AppCompatActivity {
     TextView tv_addedLocation;
     Button btn_addMemo;
     FeedReaderDbHelper dbHelper = new FeedReaderDbHelper(this);
+    ImageView iv_memoImage1;
+    ImageView iv_memoImage2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_memo);
         addedLocation = getIntent().getStringExtra("location");
-        tv_addedLocation = findViewById(R.id.add_page_location);
+//        tv_addedLocation = findViewById(R.id.add_page_location);
         btn_addMemo = findViewById(R.id.add_memo_button);
-        tv_addedLocation.setText(addedLocation);
-
+//        tv_addedLocation.setText(addedLocation);
+        iv_memoImage1 = findViewById(R.id.add_memo_image1);
+        iv_memoImage2 = findViewById(R.id.add_memo_image2);
         btn_addMemo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

@@ -13,7 +13,6 @@ public class FeedReaderContract {
         public static final String PHOTO = "photo";
         public static final String COORDINATE_X = "coordinate_x";
         public static final String COORDINATE_Y = "coordinate_y";
-
         public static final String SQL_CREATE_ENTRIES = "CREATE TABLE " + FeedEntry.TABLE_NAME + " ("  +
                 FeedEntry._ID + " INTEGER PRIMARY KEY," +
                 FeedEntry.NAME + " TEXT," +
