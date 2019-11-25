@@ -1,0 +1,14 @@
+{
+    "android": {
+        "awscloudformation": {
+            "AuthRoleName": "amplify-mapmemo-android-41109-authRole",
+            "UnauthRoleArn": "arn:aws:iam::831524510023:role/amplify-mapmemo-android-41109-unauthRole",
+            "AuthRoleArn": "arn:aws:iam::831524510023:role/amplify-mapmemo-android-41109-authRole",
+            "Region": "us-east-1",
+            "DeploymentBucketName": "amplify-mapmemo-android-41109-deployment",
+            "UnauthRoleName": "amplify-mapmemo-android-41109-unauthRole",
+            "StackName": "amplify-mapmemo-android-41109",
+            "StackId": "arn:aws:cloudformation:us-east-1:831524510023:stack/amplify-mapmemo-android-41109/579e37c0-0fb7-11ea-a588-0a28f59d0ab4"
+        }
+    }
+}

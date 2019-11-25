@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "456660048110",
+    "firebase_url": "https://mapmemo-34c00.firebaseio.com",
+    "project_id": "mapmemo-34c00",
+    "storage_bucket": "mapmemo-34c00.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:456660048110:android:0cec12cfd5509d36ccfbff",
+        "android_client_info": {
+          "package_name": "com.example.findintermediateapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "456660048110-ocsq55fth790ih11jc1ajaimpk5su7gi.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCpcZYxz2EZS1D9gXeaQ9fRcRfE8bwqB9M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "456660048110-ocsq55fth790ih11jc1ajaimpk5su7gi.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

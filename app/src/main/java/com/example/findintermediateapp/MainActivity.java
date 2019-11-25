@@ -19,6 +19,9 @@ import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
+import android.provider.MediaStore;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.UiThread;
 import android.support.v4.app.ActivityCompat;
@@ -43,6 +46,14 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.amazonaws.auth.AWSCredentialsProvider;
+import com.amazonaws.mobile.client.AWSMobileClient;
+import com.amazonaws.mobile.client.AWSStartupHandler;
+import com.amazonaws.mobile.client.AWSStartupResult;
+import com.amazonaws.mobile.config.AWSConfiguration;
+import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBMapper;
+import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBMapperConfig;
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
 import com.gigamole.library.ShadowLayout;
 import com.naver.maps.geometry.LatLng;
 import com.naver.maps.map.CameraAnimation;
@@ -65,6 +76,10 @@ import com.naver.maps.map.widget.ZoomControlView;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserFactory;
 
+import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -77,6 +92,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 import static android.view.View.INVISIBLE;
 import static android.view.View.VISIBLE;
+import static com.example.findintermediateapp.MemoImagesDatabase.MemoImages.TABLE_NAME;
 
 public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
     private MapView mapView;
@@ -90,7 +106,7 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
     public static Marker addMemoMarker;
     public static String[] photoArr;
 //    public static Marker savedMarker;
-
+    public static String androidId;
     private final long FINISH_INTERVAL_TIME = 2000;
     private long backPressedTime = 0;
     View et_inputLocation;
@@ -111,6 +127,7 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
     TextView tv_markerLocation;
     Cursor cursor;
     SQLiteDatabase db;
+    public String regPhoto;
 
 
     LinearLayout ll_markerDelete;
@@ -124,11 +141,19 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1000;
     private FusedLocationSource locationSource;
     RelativeLayout rl_clickedLocation;
+    DynamoDBMapper dynamoDBMapper;
+    DynamoDBMapperConfig config;
+    String tempName;
+    public Bitmap decodedBitmap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        androidId = Settings.Secure.getString(getContentResolver(),
+                Settings.Secure.ANDROID_ID);
+        Log.d("device androidId", androidId);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         NaverMapSdk.getInstance(this).setClient(
                 new NaverMapSdk.NaverCloudPlatformClient("kafivuks0k"));
         myLocation_btn = findViewById(R.id.myLocation_btn);
@@ -145,6 +170,10 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
 //        savedMarker = new Marker();
         img = findViewById(R.id.marker_image);
         params = (FrameLayout.LayoutParams)img.getLayoutParams();
+
+        Bitmap bitmap_ex = BitmapFactory.decodeResource(getResources(), R.drawable.image);
+        String bitmap_ste = getBase64String(bitmap_ex);
+        Log.d("bitmap_str", bitmap_ste);
 
         ll_markerDelete.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -238,8 +267,19 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
         long newRowId = db.insert(FeedReaderContract.FeedEntry.TABLE_NAME, null, values);
          */
 
-//        SQLiteDatabase db = dbHelper.getWritableDatabase();
-//        db.delete(FeedReaderContract.FeedEntry.TABLE_NAME, null, null);
+       // db에서 데이터 삭제
+        /*
+       SQLiteDatabase db = dbHelper.getWritableDatabase();
+       db.delete(FeedReaderContract.FeedEntry.TABLE_NAME, null, null);
+       SQLiteDatabase imageDb = imagesDbHelper.getWritableDatabase();
+       imageDb.delete(TABLE_NAME, null, null);
+         */
+        AWSMobileClient.getInstance().initialize(this, new AWSStartupHandler() {
+            @Override
+            public void onComplete(AWSStartupResult awsStartupResult) {
+                Log.d("YourMainActivity", "AWSMobileClient is instantiated and you are connected to AWS!");
+            }
+        }).execute();
     }
 
     public void myLocationOnClick(View view) {
@@ -294,21 +334,23 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
         CameraPosition earlyCameraPosition = new CameraPosition(new LatLng(36.456943, 127.829456), 6);
         CameraUpdate earlyCameraUpdate = CameraUpdate.toCameraPosition(earlyCameraPosition);
         naverMap.moveCamera(earlyCameraUpdate);
-
         myLocation_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Toast.makeText(MainActivity.this, "마커 1 클릭", Toast.LENGTH_SHORT).show();
             }
         });
+
         int cursorCount = 0;
+        SQLiteDatabase imageDb = imagesDbHelper.getWritableDatabase();
+        Cursor imageCursor = imageDb.rawQuery("select name, photo from memo_image_table", null);
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         Cursor cursor = db.rawQuery("select name, address, memo, coordinate_x, coordinate_y from location_memo" , null);
         Log.d("cursor.getCount()", String.valueOf(cursor.getCount()));
                 while(cursor.moveToNext()){
                     cursorCount++;
                     Log.d("cursor.moveToNext()실행", String.valueOf(cursorCount));
-                String tempName = cursor.getString(0);
+                    tempName = cursor.getString(0);
                 Log.d("tempNameasd", tempName);
                 String tempAddress = cursor.getString(1);
                 String tempMemo = cursor.getString(2);
@@ -322,46 +364,49 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
                     GeoTransPoint oGeo = GeoTrans.convert(GeoTrans.KATEC, GeoTrans.GEO, oKA);
                     double lat_x = oGeo.getY();
                     double lng_y = oGeo.getX();
-                    Marker savedMarker;
-                Marker savedImageMarker;
-                savedMarker = new Marker();
-                savedImageMarker = new Marker();
-                    Bitmap blobToBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.add_work_no2);
-
-                    SQLiteDatabase imagesDb = imagesDbHelper.getWritableDatabase();
-                Cursor imageCursor = imagesDb.rawQuery("select photo, name from memo_image_table", null);
-                Log.d("imageCursor.getCount()", String.valueOf(imageCursor.getCount()));
-                while(imageCursor.moveToNext())
-                {
-                    Log.d("사진존재", "1");
-                    if(imageCursor.getString(1).equals(tempName))
+                    String tempPath = "aa";
+                    Uri imageUri;
+                    Bitmap bitmap2 = null;
+                    while(imageCursor.moveToNext())
                     {
-                        Log.d("해당위치에 해당하는 사진존재", "1");
-                        byte[] blob = imageCursor.getBlob(0);
-                        blobToBitmap = BitmapFactory.decodeByteArray(blob, 0, blob.length);
-                        break;
+                        if(imageCursor.getString(0).equals(tempName))
+                        {
+                            tempPath = imageCursor.getString(1);
+                            imageUri = Uri.parse(tempPath);
+                            try {
+                                bitmap2 = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri);
+                            } catch (FileNotFoundException e) {
+                                // TODO Auto-generated catch block
+                                e.printStackTrace();
+                            } catch (IOException e) {
+                                // TODO Auto-generated catch block
+                                e.printStackTrace();
+                            }
+                            break;
+                        }
+                        else {
+                          bitmap2 = BitmapFactory.decodeResource(getResources(), R.drawable.add_work_no2);
+                        }
                     }
-                }
+
+
+                    Marker savedMarker;
+                savedMarker = new Marker();
+
                 savedMarker.setPosition(new LatLng(lat_x, lng_y));
-
-                savedImageMarker.setPosition(new LatLng(x + 0.000005, y));
-
                 ImageView iv_marker = new ImageView(this);
-                CircleImageView iv_image = new CircleImageView(this);
 
                 Bitmap marker_size = BitmapFactory.decodeResource(getResources(), R.drawable.location_marker);
                 marker_size = Bitmap.createScaledBitmap(marker_size, 225, 225, true);
-                iv_marker.setImageBitmap(marker_size);
 
-//            Bitmap image_size = BitmapFactory.decodeResource(getResources(), R.drawable.image);
-                blobToBitmap = Bitmap.createScaledBitmap(blobToBitmap, 150, 150, true);
-                iv_image.setImageBitmap(blobToBitmap);
-                Bitmap photo = getCroppedBitmap(blobToBitmap);
+                bitmap2 = Bitmap.createScaledBitmap(bitmap2, 150, 150, true);
+                Bitmap photo = getCroppedBitmap(bitmap2);
 
                 Canvas canvas = new Canvas(marker_size);
                 canvas.drawBitmap(photo, 38, 18, null);
+                iv_marker.setImageBitmap(marker_size);
 
-                savedMarker.setIcon(OverlayImage.fromView(iv_marker));
+                    savedMarker.setIcon(OverlayImage.fromView(iv_marker));
                 savedMarker.setMap(naverMap);
         }
 
@@ -727,4 +772,34 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
         //return _bmp;
         return output;
     }
+
+    public String getBase64String(Bitmap bitmap)
+    {
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
+        byte[] imageBytes = byteArrayOutputStream.toByteArray();
+        return Base64.encodeToString(imageBytes, Base64.NO_WRAP);
+    }
+
+    /*
+    public void readMemoImage() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+                MemoDO memoItem = dynamoDBMapper.load(
+                        MemoDO.class,
+                        androidId,
+                        tempName
+                        );
+
+                Log.d("Memo Item : ", memoItem.toString());
+                regPhoto = memoItem.getImage();
+                byte[] decodedByteArray = Base64.decode(regPhoto, Base64.NO_WRAP);
+                decodedBitmap = BitmapFactory.decodeByteArray(decodedByteArray, 0, decodedByteArray.length);
+            }
+        }).start();
+    }
+
+     */
 }
