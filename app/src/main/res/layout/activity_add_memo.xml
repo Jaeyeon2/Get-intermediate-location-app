@@ -16,13 +16,16 @@
         android:weightSum="10">
 
     <ImageView
+        android:src="@drawable/plus2"
         android:id="@+id/add_memo_image1"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="5"/>
 
 
-        <ImageView android:id="@+id/add_memo_image2"
+        <ImageView
+            android:src="@drawable/plus2"
+            android:id="@+id/add_memo_image2"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="5"/>
