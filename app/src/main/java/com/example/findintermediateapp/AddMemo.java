@@ -340,9 +340,12 @@ public class AddMemo extends ChangeStateBar {
         SQLiteDatabase imageDb = imagesDbHelper.getWritableDatabase();
         ContentValues cv = new ContentValues();
         SQLiteStatement p = imageDb.compileStatement("insert into memo_image_table(name, photo) values(?, ?)");
-        for (int i = 0; i < addcount; i++) {
+
+        for (int i = 0; i < addcount-1; i++) {
             Log.d("addedBitmap", String.valueOf(addedBitmap[i]));
+            str_allRegPhoto = str_allRegPhoto + String.valueOf(filePathArray[i+1]) + "|";
         }
+
         if (addcount == 2) {
             cv.put("name", location_name);
             cv.put("photo",String.valueOf(filePathArray[1]));
@@ -356,12 +359,15 @@ public class AddMemo extends ChangeStateBar {
                 imageDb.insert("memo_image_table", null, cv);
             }
         }
+
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
 
         values.put(FeedReaderContract.FeedEntry.NAME, location_name);
         values.put(FeedReaderContract.FeedEntry.ADDRESS, location_address);
         values.put(FeedReaderContract.FeedEntry.MEMO, memo_content);
+        values.put(FeedReaderContract.FeedEntry.PHOTO, str_allRegPhoto);
+        Log.d("str_allRegPhoto", str_allRegPhoto);
         values.put(FeedReaderContract.FeedEntry.COORDINATE_X, location_x);
         values.put(FeedReaderContract.FeedEntry.COORDINATE_Y, location_y);
         db.insert(FeedReaderContract.FeedEntry.TABLE_NAME, null, values);
@@ -411,7 +417,6 @@ public class AddMemo extends ChangeStateBar {
                     URL url = new URL(urls[0]);
 //연결을 함
                     con = (HttpURLConnection) url.openConnection();
-
                     con.setRequestMethod("POST");//POST방식으로 보냄
                     con.setRequestProperty("Cache-Control", "no-cache");//캐시 설정
                     con.setRequestProperty("Content-Type", "application/json");//application JSON 형식으로 전송

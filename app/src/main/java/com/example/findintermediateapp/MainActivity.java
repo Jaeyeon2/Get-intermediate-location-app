@@ -145,6 +145,7 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
     DynamoDBMapperConfig config;
     String tempName;
     public Bitmap decodedBitmap;
+    String allMemoImages = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -268,18 +269,12 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
          */
 
        // db에서 데이터 삭제
-        /*
+/*
        SQLiteDatabase db = dbHelper.getWritableDatabase();
        db.delete(FeedReaderContract.FeedEntry.TABLE_NAME, null, null);
        SQLiteDatabase imageDb = imagesDbHelper.getWritableDatabase();
        imageDb.delete(TABLE_NAME, null, null);
-         */
-        AWSMobileClient.getInstance().initialize(this, new AWSStartupHandler() {
-            @Override
-            public void onComplete(AWSStartupResult awsStartupResult) {
-                Log.d("YourMainActivity", "AWSMobileClient is instantiated and you are connected to AWS!");
-            }
-        }).execute();
+ */
     }
 
     public void myLocationOnClick(View view) {
@@ -345,7 +340,7 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
         SQLiteDatabase imageDb = imagesDbHelper.getWritableDatabase();
         Cursor imageCursor = imageDb.rawQuery("select name, photo from memo_image_table", null);
         SQLiteDatabase db = dbHelper.getWritableDatabase();
-        Cursor cursor = db.rawQuery("select name, address, memo, coordinate_x, coordinate_y from location_memo" , null);
+        Cursor cursor = db.rawQuery("select name, address, memo, photo, coordinate_x, coordinate_y from location_memo" , null);
         Log.d("cursor.getCount()", String.valueOf(cursor.getCount()));
                 while(cursor.moveToNext()){
                     cursorCount++;
@@ -355,71 +350,69 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
                 String memo_location = cursor.getString(0);
                 String tempAddress = cursor.getString(1);
                 String tempMemo = cursor.getString(2);
-                String tempX = cursor.getString(3);
-                Log.d("tempXzzz", tempX);
-                String tempY = cursor.getString(4);
-                Log.d("tempYzzz", tempY);
+                String tempPhoto = cursor.getString(3);
+                    Bitmap bitmap2 = null;
+                    if(tempPhoto.equals(""))
+                {
+                    bitmap2 = BitmapFactory.decodeResource(getResources(), R.drawable.add_work_no2);
+                }
+                else {
+                    String[] eachPhoto = tempPhoto.split("\\|");
+                    Uri imageUri = Uri.parse(eachPhoto[0]);
+
+                    try {
+                        bitmap2 = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri);
+                    } catch (FileNotFoundException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    } catch (IOException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
+                }
+
+                    String tempX = cursor.getString(4);
+                String tempY = cursor.getString(5);
                 Double x = Double.valueOf(tempX);
                 Double y = Double.valueOf(tempY);
                     GeoTransPoint oKA = new GeoTransPoint(x, y);
                     GeoTransPoint oGeo = GeoTrans.convert(GeoTrans.KATEC, GeoTrans.GEO, oKA);
                     double lat_x = oGeo.getY();
                     double lng_y = oGeo.getX();
-                    String tempPath = "aa";
-                    Uri imageUri;
-                    Bitmap bitmap2 = null;
-                    while(imageCursor.moveToNext())
-                    {
-                        if(imageCursor.getString(0).equals(tempName))
-                        {
-                            tempPath = imageCursor.getString(1);
-                            imageUri = Uri.parse(tempPath);
-                            try {
-                                bitmap2 = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri);
-                            } catch (FileNotFoundException e) {
-                                // TODO Auto-generated catch block
-                                e.printStackTrace();
-                            } catch (IOException e) {
-                                // TODO Auto-generated catch block
-                                e.printStackTrace();
-                            }
-                            break;
-                        }
-                        else {
-                            bitmap2 = BitmapFactory.decodeResource(getResources(), R.drawable.add_work_no2);
-                        }
-                    }
 
                     Marker savedMarker;
-                savedMarker = new Marker();
+                    savedMarker = new Marker();
 
-                savedMarker.setPosition(new LatLng(lat_x, lng_y));
-                ImageView iv_marker = new ImageView(this);
+                    savedMarker.setPosition(new LatLng(lat_x, lng_y));
+                    ImageView iv_marker = new ImageView(this);
 
-                Bitmap marker_size = BitmapFactory.decodeResource(getResources(), R.drawable.location_marker);
-                marker_size = Bitmap.createScaledBitmap(marker_size, 225, 225, true);
+                    Bitmap marker_size = BitmapFactory.decodeResource(getResources(), R.drawable.location_marker);
+                    marker_size = Bitmap.createScaledBitmap(marker_size, 225, 225, true);
 
-                bitmap2 = Bitmap.createScaledBitmap(bitmap2, 150, 150, true);
-                Bitmap photo = getCroppedBitmap(bitmap2);
+                    bitmap2 = Bitmap.createScaledBitmap(bitmap2, 150, 150, true);
+                    Bitmap photo = getCroppedBitmap(bitmap2);
 
-                Canvas canvas = new Canvas(marker_size);
-                canvas.drawBitmap(photo, 38, 18, null);
-                iv_marker.setImageBitmap(marker_size);
+                    Canvas canvas = new Canvas(marker_size);
+                    canvas.drawBitmap(photo, 38, 18, null);
+                    iv_marker.setImageBitmap(marker_size);
 
                     savedMarker.setIcon(OverlayImage.fromView(iv_marker));
-                savedMarker.setMap(naverMap);
+                    savedMarker.setMap(naverMap);
+
 
                     savedMarker.setOnClickListener(overlay -> {
 
                         Intent memoPageIntent = new Intent(MainActivity.this, MemoPage.class);
                         memoPageIntent.putExtra("memo_location",memo_location);
                         memoPageIntent.putExtra("memo_content", tempMemo);
+                        if(!tempPhoto.equals("")) {
+                            memoPageIntent.putExtra("memo_allImages", tempPhoto);
+                        }else {
+                            memoPageIntent.putExtra("memo_allImages", "noImage");
+                        }
                         startActivity(memoPageIntent);
-
                         return true;
                     });
-
-
         }
 
         if(intent.getStringExtra("user_location") == null)

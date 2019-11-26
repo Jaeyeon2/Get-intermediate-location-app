@@ -9,7 +9,7 @@ import static com.example.findintermediateapp.FeedReaderContract.FeedEntry.SQL_D
 
 public class FeedReaderDbHelper extends SQLiteOpenHelper {
     // If you change the database schema, you must increment the database version.
-    public static final int DATABASE_VERSION = 1;
+    public static final int DATABASE_VERSION = 2;
     public static final String DATABASE_NAME = "FeedReader.db";
 
     public FeedReaderDbHelper(Context context) {

@@ -10,7 +10,7 @@ public class FeedReaderContract {
         public static final String NAME = "name";
         public static final String ADDRESS = "address";
         public static final String MEMO = "memo";
-       // public static final String PHOTO = "photo";
+        public static final String PHOTO = "photo";
         public static final String COORDINATE_X = "coordinate_x";
         public static final String COORDINATE_Y = "coordinate_y";
         public static final String SQL_CREATE_ENTRIES = "CREATE TABLE " + FeedEntry.TABLE_NAME + " ("  +
@@ -18,7 +18,7 @@ public class FeedReaderContract {
                 FeedEntry.NAME + " TEXT," +
                 FeedEntry.ADDRESS + " TEXT," +
                 FeedEntry.MEMO + " TEXT," +
-         //       FeedEntry.PHOTO + " BLOB," +
+                FeedEntry.PHOTO + " TEXT," +
                 FeedEntry.COORDINATE_X + " TEXT," +
                 FeedEntry.COORDINATE_Y + " TEXT)";
 
