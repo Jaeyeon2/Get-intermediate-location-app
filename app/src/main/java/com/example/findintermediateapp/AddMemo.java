@@ -344,21 +344,15 @@ public class AddMemo extends ChangeStateBar {
             Log.d("addedBitmap", String.valueOf(addedBitmap[i]));
         }
         if (addcount == 2) {
-
-            ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            addedBitmap[1].compress(Bitmap.CompressFormat.JPEG, 100, stream);
-            convertedBitmap = getBase64String(addedBitmap[1]);
             cv.put("name", location_name);
             cv.put("photo",String.valueOf(filePathArray[1]));
             Log.d("filePathArray[1]",String.valueOf(filePathArray[1]));
             imageDb.insert("memo_image_table", null, cv);
         } else if (addcount > 2) {
             for (int i = 0; i < addcount - 1; i++) {
-                ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                addedBitmap[i + 1].compress(Bitmap.CompressFormat.PNG, 0, stream);
-                byte[] data = stream.toByteArray();
                 cv.put("name", location_name);
-                cv.put("photo", data);
+                cv.put("photo", String.valueOf(filePathArray[i+1]));
+                Log.d("filePathArray[i]", String.valueOf(filePathArray[i+1]));
                 imageDb.insert("memo_image_table", null, cv);
             }
         }

@@ -386,10 +386,9 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
                             break;
                         }
                         else {
-                          bitmap2 = BitmapFactory.decodeResource(getResources(), R.drawable.add_work_no2);
+                            bitmap2 = BitmapFactory.decodeResource(getResources(), R.drawable.add_work_no2);
                         }
                     }
-
 
                     Marker savedMarker;
                 savedMarker = new Marker();
