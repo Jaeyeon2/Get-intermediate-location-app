@@ -352,6 +352,7 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
                     Log.d("cursor.moveToNext()실행", String.valueOf(cursorCount));
                     tempName = cursor.getString(0);
                 Log.d("tempNameasd", tempName);
+                String memo_location = cursor.getString(0);
                 String tempAddress = cursor.getString(1);
                 String tempMemo = cursor.getString(2);
                 String tempX = cursor.getString(3);
@@ -408,6 +409,18 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
 
                     savedMarker.setIcon(OverlayImage.fromView(iv_marker));
                 savedMarker.setMap(naverMap);
+
+                    savedMarker.setOnClickListener(overlay -> {
+
+                        Intent memoPageIntent = new Intent(MainActivity.this, MemoPage.class);
+                        memoPageIntent.putExtra("memo_location",memo_location);
+                        memoPageIntent.putExtra("memo_content", tempMemo);
+                        startActivity(memoPageIntent);
+
+                        return true;
+                    });
+
+
         }
 
         if(intent.getStringExtra("user_location") == null)

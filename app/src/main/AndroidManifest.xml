@@ -11,8 +11,10 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:windowSoftInputMode="adjustResize">
-        <service android:name="org.eclipse.paho.android.service.MqttService" />
-        <activity android:name=".AddMemo"></activity>
+        <activity android:name=".MemoPage"></activity>
+
+        <activity android:name=".AddMemo" />
+
         <activity
             android:name=".SearchActivity"
             android:windowSoftInputMode="adjustResize" />
@@ -23,11 +25,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <meta-data
             android:name="com.naver.maps.map.CLIENT_ID"
             android:value="kafivuks0k" />
 
+        <service android:name="org.eclipse.paho.android.service.MqttService" />
     </application>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -37,6 +39,7 @@
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
 </manifest>
