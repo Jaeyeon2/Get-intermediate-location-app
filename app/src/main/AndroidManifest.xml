@@ -11,10 +11,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:windowSoftInputMode="adjustResize">
-        <activity android:name=".MemoPage"></activity>
-
+        <activity android:name=".MemoListPage"></activity>
+        <activity android:name=".MemoPage" />
         <activity android:name=".AddMemo" />
-
         <activity
             android:name=".SearchActivity"
             android:windowSoftInputMode="adjustResize" />
@@ -25,6 +24,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <meta-data
             android:name="com.naver.maps.map.CLIENT_ID"
             android:value="kafivuks0k" />

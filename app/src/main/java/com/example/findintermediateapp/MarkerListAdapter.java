@@ -28,8 +28,6 @@ public class MarkerListAdapter extends RecyclerView.Adapter<MarkerListAdapter.Vi
 
     Context context;
     private ArrayList<MarkerListItem> markerData = null;
-    MainActivity activity_main = new MainActivity();
-    NaverMap naverMap;
 
     // 생성자에서 데이터 리스트 객체를 전달받음
     MarkerListAdapter(ArrayList<MarkerListItem> list) {

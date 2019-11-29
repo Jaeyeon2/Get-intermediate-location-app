@@ -15,7 +15,7 @@ import android.widget.TextView;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-public class MemoPage extends AppCompatActivity {
+public class MemoPage extends ChangeStateBar {
 
     TextView tv_memoContent;
     TextView tv_memoLocation;
@@ -54,7 +54,7 @@ public class MemoPage extends AppCompatActivity {
                 e.printStackTrace();
             }
         }
-
+        
         ViewPagerAdapter adapter = new ViewPagerAdapter(getLayoutInflater(), bm_file);
         vp_imagePager.setAdapter(adapter);
 

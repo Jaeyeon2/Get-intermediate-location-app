@@ -337,8 +337,6 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
         });
 
         int cursorCount = 0;
-        SQLiteDatabase imageDb = imagesDbHelper.getWritableDatabase();
-        Cursor imageCursor = imageDb.rawQuery("select name, photo from memo_image_table", null);
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         Cursor cursor = db.rawQuery("select name, address, memo, photo, coordinate_x, coordinate_y from location_memo" , null);
         Log.d("cursor.getCount()", String.valueOf(cursor.getCount()));
@@ -402,6 +400,7 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
 
                     savedMarker.setOnClickListener(overlay -> {
 
+                        /*
                         Intent memoPageIntent = new Intent(MainActivity.this, MemoPage.class);
                         memoPageIntent.putExtra("memo_location",memo_location);
                         memoPageIntent.putExtra("memo_content", tempMemo);
@@ -411,6 +410,13 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
                             memoPageIntent.putExtra("memo_allImages", "noImage");
                         }
                         startActivity(memoPageIntent);
+                        return true;
+                         */
+
+                        Intent memoListIntent = new Intent(MainActivity.this, MemoListPage.class);
+                        memoListIntent.putExtra("memo_location", memo_location);
+                        memoListIntent.putExtra("memo_address", tempAddress);
+                        startActivity(memoListIntent);
                         return true;
                     });
         }
@@ -693,7 +699,6 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
 
         markerList.add(item);
     }
-
 
     @Override
     protected void onStart() {
