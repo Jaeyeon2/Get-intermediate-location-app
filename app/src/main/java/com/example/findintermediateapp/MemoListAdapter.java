@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -45,8 +47,14 @@ public class MemoListAdapter extends RecyclerView.Adapter<MemoListAdapter.ViewHo
         Bitmap bitmap = null;
         holder.tv_memoContent.setText(item.getMemoContent());
         holder.tv_memoImageCount.setText(String.valueOf(item.getMemoImageCount()));
+        holder.tv_memoTime.setText(item.getMemoDate());
+        Log.d("item.getMemoDate", item.getMemoDate());
         Uri imageUri = Uri.parse(item.getMemoFirstImage());
-        Glide.with(context).load(imageUri).into(holder.iv_memoImage);
+        Glide
+                .with(context)
+                .load(imageUri)
+                .apply(new RequestOptions().circleCrop())
+                .into(holder.iv_memoImage);
     }
 
     // getItemCount() - 전체 데이터 갯수 리턴
@@ -60,6 +68,7 @@ public class MemoListAdapter extends RecyclerView.Adapter<MemoListAdapter.ViewHo
 
         TextView tv_memoContent;
         TextView tv_memoImageCount;
+        TextView tv_memoTime;
         ImageView iv_memoImage;
 
         ViewHolder(View itemView) {
@@ -73,6 +82,7 @@ public class MemoListAdapter extends RecyclerView.Adapter<MemoListAdapter.ViewHo
                         Intent memoPageIntent = new Intent(context, MemoPage.class);
                         memoPageIntent.putExtra("memo_location",item.getMemoLocation());
                         memoPageIntent.putExtra("memo_content", item.getMemoContent());
+                        memoPageIntent.putExtra("memo_date", item.getMemoDate());
                         if(!item.getMemoAllImage().equals("")) {
                             memoPageIntent.putExtra("memo_allImages", item.getMemoAllImage());
                         }else {
@@ -85,6 +95,7 @@ public class MemoListAdapter extends RecyclerView.Adapter<MemoListAdapter.ViewHo
             tv_memoContent = itemView.findViewById(R.id.memo_item_content);
             tv_memoImageCount = itemView.findViewById(R.id.memo_item_imageCount);
             iv_memoImage = itemView.findViewById(R.id.memo_item_image);
+            tv_memoTime = itemView.findViewById(R.id.memo_item_date);
         }
     }
 

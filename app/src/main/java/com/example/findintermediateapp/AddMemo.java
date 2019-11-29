@@ -10,6 +10,7 @@ import android.database.sqlite.SQLiteStatement;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
+import android.icu.text.SimpleDateFormat;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -62,6 +63,7 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Date;
 
 import javax.annotation.Nonnull;
 
@@ -346,6 +348,10 @@ public class AddMemo extends ChangeStateBar {
     }
 
     public void addMemo() {
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd a hh:mm");
+        Date time = new Date();
+        String time1 = format.format(time);
+        Log.d("time1111", time1);
 
         location_name = tv_location.getText().toString();
         String location_address = tv_address.getText().toString();
@@ -353,7 +359,6 @@ public class AddMemo extends ChangeStateBar {
         String location_x = getIntent().getStringExtra("mapx");
         String location_y = getIntent().getStringExtra("mapy");
         String str_allRegPhoto = "";
-        SQLiteDatabase imageDb = imagesDbHelper.getWritableDatabase();
 
         for (int i = 0; i < addcount-1; i++) {
             Log.d("addedBitmap", String.valueOf(addedBitmap[i]));
@@ -369,6 +374,7 @@ public class AddMemo extends ChangeStateBar {
         Log.d("str_allRegPhoto", str_allRegPhoto);
         values.put(FeedReaderContract.FeedEntry.COORDINATE_X, location_x);
         values.put(FeedReaderContract.FeedEntry.COORDINATE_Y, location_y);
+        values.put(FeedReaderContract.FeedEntry.MEMOTIME, time1);
         db.insert(FeedReaderContract.FeedEntry.TABLE_NAME, null, values);
 
         if(getIntent().getStringExtra("request_page").equals("MainActivity")) {

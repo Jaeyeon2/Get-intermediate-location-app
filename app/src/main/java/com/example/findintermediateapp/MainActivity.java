@@ -274,8 +274,7 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
          */
 
        // db에서 데이터 삭제
-
-//       SQLiteDatabase db = dbHelper.getWritableDatabase();
+//        SQLiteDatabase db = dbHelper.getWritableDatabase();
 //       db.delete(FeedReaderContract.FeedEntry.TABLE_NAME, null, null);
     }
 
@@ -340,7 +339,7 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
 
         int cursorCount = 0;
         SQLiteDatabase db = dbHelper.getWritableDatabase();
-        Cursor cursor = db.rawQuery("select name, address, memo, photo, coordinate_x, coordinate_y from location_memo" , null);
+        Cursor cursor = db.rawQuery("select name, address, memo, photo, memotime, coordinate_x, coordinate_y from location_memo" , null);
         Log.d("cursor.getCount()", String.valueOf(cursor.getCount()));
                 while(cursor.moveToNext()){
                     cursorCount++;
@@ -351,8 +350,9 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
                 String tempAddress = cursor.getString(1);
                 String tempMemo = cursor.getString(2);
                 String tempPhoto = cursor.getString(3);
-                    String tempX = cursor.getString(4);
-                    String tempY = cursor.getString(5);
+                    String tempDate = cursor.getString(4);
+                    String tempX = cursor.getString(5);
+                    String tempY = cursor.getString(6);
                 Bitmap bitmap2 = null;
                     Uri imageUri = null;
                     if(tempPhoto.equals("")) {
@@ -465,8 +465,8 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
                 naverMap.moveCamera(cameraUpdate);
                 ImageView iv_addMemoMarker = new ImageView(this);
                 addMemoMarker.setPosition(new LatLng(user_mapX, user_mapY));
-                Bitmap smallMarker = BitmapFactory.decodeResource(getResources(), R.drawable.location_plus_marker4);
-                smallMarker = Bitmap.createScaledBitmap(smallMarker, 200, 200, true);
+                Bitmap smallMarker = BitmapFactory.decodeResource(getResources(), R.drawable.location_plus_marker7);
+                smallMarker = Bitmap.createScaledBitmap(smallMarker, 225, 225, true);
                 iv_addMemoMarker.setImageBitmap(smallMarker);
                 addMemoMarker.setIcon(OverlayImage.fromView(iv_addMemoMarker));
                 addMemoMarker.setMap(naverMap);

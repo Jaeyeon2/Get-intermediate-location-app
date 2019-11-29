@@ -12,53 +12,78 @@
         android:orientation="horizontal"
         android:weightSum="10">
 
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="2.5"
+            android:weightSum="10"
+            android:orientation="horizontal"
+            android:gravity="center">
+
+            <FrameLayout
+                android:layout_width="0dp"
+                android:layout_weight="7"
+                android:layout_height="wrap_content">
+
+                <com.example.findintermediateapp.SquareImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/image"
+                    android:id="@+id/memo_item_image"
+                    android:scaleType="fitXY"/>
+
+                <TextView
+                    android:layout_marginEnd="3dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="1"
+                    android:textSize="22sp"
+                    android:id="@+id/memo_item_imageCount"
+                    android:layout_gravity="bottom|right"
+                    android:textColor="#73000000"/>
+
+            </FrameLayout>
+        </LinearLayout>
+
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="7.3"
-        android:padding="15dp">
+        android:orientation="vertical"
+        android:weightSum="10"
+        >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="6.5"
+            android:padding="7dp">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="나의 대학교"
             android:textColor="#000000"
-            android:textSize="20sp"
+            android:textSize="18sp"
             android:id="@+id/memo_item_content"/>
-    </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="2.5"
-        android:weightSum="10"
-        android:orientation="horizontal"
-        android:gravity="center">
+        </LinearLayout>
 
-        <FrameLayout
-            android:layout_width="0dp"
-            android:layout_weight="7"
-            android:layout_height="wrap_content">
-
-        <com.example.findintermediateapp.SquareImageView
+        <LinearLayout
+            android:gravity="end"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:src="@drawable/image"
-            android:id="@+id/memo_item_image"
-            android:scaleType="fitXY"/>
-
-            <TextView
-                android:layout_marginEnd="3dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="1"
-                android:textSize="22sp"
-                android:id="@+id/memo_item_imageCount"
-                android:layout_gravity="bottom|right"
-                android:textColor="#73000000"/>
-
-        </FrameLayout>
+            android:layout_height="0dp"
+            android:layout_weight="3.5">
+        <TextView
+            android:layout_marginTop="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/memo_item_date"
+            android:text="2019-11-29 오후 10:49"/>
+        </LinearLayout>
     </LinearLayout>
+
     </LinearLayout>
 
     <View

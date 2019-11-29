@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
@@ -26,6 +27,7 @@ public class MemoListPage extends ChangeStateBar {
     public String memoAllImage;
     public String memoX;
     public String memoY;
+    public String memoTime;
     public int memoImageCount;
 
     TextView tv_memoListLocation;
@@ -50,18 +52,19 @@ public class MemoListPage extends ChangeStateBar {
         FeedReaderDbHelper dbHelper = new FeedReaderDbHelper(this);
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         Cursor cursor;
-        cursor = db.rawQuery("select name, address, memo, photo, coordinate_x, coordinate_y from location_memo", null);
+        cursor = db.rawQuery("select name, address, memo, photo, memotime,  coordinate_x, coordinate_y from location_memo", null);
         while(cursor.moveToNext()) {
            if(cursor.getString(0).equals(memoLocation) && cursor.getString(1).equals(memoAddress))
            {
                memoContent = cursor.getString(2);
                memoAllImage = cursor.getString(3);
-               memoX = cursor.getString(4);
-               memoY = cursor.getString(5);
+               memoTime = cursor.getString(4);
+               memoX = cursor.getString(5);
+               memoY = cursor.getString(6);
                memoEachImage = memoAllImage.split("\\|");
                memoImageCount = memoEachImage.length;
 
-               setMemoList(memoLocation ,memoContent, memoEachImage[0], memoEachImage, memoImageCount, memoX, memoY);
+               setMemoList(memoLocation ,memoContent, memoEachImage[0], memoEachImage, memoImageCount, memoX, memoY, memoTime);
                memoListAdapter.notifyDataSetChanged();
            }
         }
@@ -74,7 +77,7 @@ public class MemoListPage extends ChangeStateBar {
 
     }
 
-    public void setMemoList(String location, String content, String firstImage, String[] eachImage, int imageCount, String x, String y)
+    public void setMemoList(String location, String content, String firstImage, String[] eachImage, int imageCount, String x, String y, String time)
     {
         MemoListItem item = new MemoListItem();
         item.setMemoLocation(location);
@@ -84,6 +87,7 @@ public class MemoListPage extends ChangeStateBar {
         item.setMemoAllImage(eachImage);
         item.setMemoX(x);
         item.setMemoY(y);
+        item.setMemoDate(time);
         memoData.add(item);
     }
 
