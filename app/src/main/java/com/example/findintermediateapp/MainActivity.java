@@ -54,6 +54,9 @@ import com.amazonaws.mobile.config.AWSConfiguration;
 import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBMapper;
 import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBMapperConfig;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.gigamole.library.ShadowLayout;
 import com.naver.maps.geometry.LatLng;
 import com.naver.maps.map.CameraAnimation;
@@ -109,6 +112,7 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
     public static String androidId;
     private final long FINISH_INTERVAL_TIME = 2000;
     private long backPressedTime = 0;
+    Bitmap tempBitmap = null;
     View et_inputLocation;
     LinearLayout ll_input;
     LocationButtonView myLocation_btn;
@@ -269,12 +273,9 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
          */
 
        // db에서 데이터 삭제
-/*
-       SQLiteDatabase db = dbHelper.getWritableDatabase();
-       db.delete(FeedReaderContract.FeedEntry.TABLE_NAME, null, null);
-       SQLiteDatabase imageDb = imagesDbHelper.getWritableDatabase();
-       imageDb.delete(TABLE_NAME, null, null);
- */
+
+//       SQLiteDatabase db = dbHelper.getWritableDatabase();
+//       db.delete(FeedReaderContract.FeedEntry.TABLE_NAME, null, null);
     }
 
     public void myLocationOnClick(View view) {
@@ -349,56 +350,50 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
                 String tempAddress = cursor.getString(1);
                 String tempMemo = cursor.getString(2);
                 String tempPhoto = cursor.getString(3);
-                    Bitmap bitmap2 = null;
-                    if(tempPhoto.equals(""))
-                {
-                    bitmap2 = BitmapFactory.decodeResource(getResources(), R.drawable.add_work_no2);
-                }
+                    String tempX = cursor.getString(4);
+                    String tempY = cursor.getString(5);
+                Bitmap bitmap2 = null;
+                    Uri imageUri = null;
+                    if(tempPhoto.equals("")) {
+                        bitmap2 = BitmapFactory.decodeResource(getResources(), R.drawable.add_work_no2);
+                    }
                 else {
                     String[] eachPhoto = tempPhoto.split("\\|");
-                    Uri imageUri = Uri.parse(eachPhoto[0]);
-
-                    try {
-                        bitmap2 = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri);
-                    } catch (FileNotFoundException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    } catch (IOException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    }
+                    imageUri = Uri.parse(eachPhoto[0]);
                 }
 
-                    String tempX = cursor.getString(4);
-                String tempY = cursor.getString(5);
-                Double x = Double.valueOf(tempX);
-                Double y = Double.valueOf(tempY);
-                    GeoTransPoint oKA = new GeoTransPoint(x, y);
-                    GeoTransPoint oGeo = GeoTrans.convert(GeoTrans.KATEC, GeoTrans.GEO, oKA);
-                    double lat_x = oGeo.getY();
-                    double lng_y = oGeo.getX();
+                Glide.with(getApplicationContext()).asBitmap().load(imageUri).into(new SimpleTarget<Bitmap>() {
+                    @Override
+                    public void onResourceReady(Bitmap resource, Transition<? super Bitmap> transition) {
+                        Bitmap bitmap2 = resource;
+                        Double x = Double.valueOf(tempX);
+                        Double y = Double.valueOf(tempY);
+                        GeoTransPoint oKA = new GeoTransPoint(x, y);
+                        GeoTransPoint oGeo = GeoTrans.convert(GeoTrans.KATEC, GeoTrans.GEO, oKA);
+                        double lat_x = oGeo.getY();
+                        double lng_y = oGeo.getX();
 
-                    Marker savedMarker;
-                    savedMarker = new Marker();
+                        Marker savedMarker;
+                        savedMarker = new Marker();
 
-                    savedMarker.setPosition(new LatLng(lat_x, lng_y));
-                    ImageView iv_marker = new ImageView(this);
+                        savedMarker.setPosition(new LatLng(lat_x, lng_y));
+                        ImageView iv_marker = new ImageView(MainActivity.this);
 
-                    Bitmap marker_size = BitmapFactory.decodeResource(getResources(), R.drawable.location_marker);
-                    marker_size = Bitmap.createScaledBitmap(marker_size, 225, 225, true);
+                        Bitmap marker_size = BitmapFactory.decodeResource(getResources(), R.drawable.location_marker);
+                        marker_size = Bitmap.createScaledBitmap(marker_size, 225, 225, true);
 
-                    bitmap2 = Bitmap.createScaledBitmap(bitmap2, 150, 150, true);
-                    Bitmap photo = getCroppedBitmap(bitmap2);
+                        bitmap2 = Bitmap.createScaledBitmap(bitmap2, 150, 150, true);
+                        Bitmap photo = getCroppedBitmap(bitmap2);
 
-                    Canvas canvas = new Canvas(marker_size);
-                    canvas.drawBitmap(photo, 38, 18, null);
-                    iv_marker.setImageBitmap(marker_size);
+                        Canvas canvas = new Canvas(marker_size);
+                        canvas.drawBitmap(photo, 38, 18, null);
+                        iv_marker.setImageBitmap(marker_size);
 
-                    savedMarker.setIcon(OverlayImage.fromView(iv_marker));
-                    savedMarker.setMap(naverMap);
+                        savedMarker.setIcon(OverlayImage.fromView(iv_marker));
+                        savedMarker.setMap(naverMap);
 
 
-                    savedMarker.setOnClickListener(overlay -> {
+                        savedMarker.setOnClickListener(overlay -> {
 
                         /*
                         Intent memoPageIntent = new Intent(MainActivity.this, MemoPage.class);
@@ -413,12 +408,17 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
                         return true;
                          */
 
-                        Intent memoListIntent = new Intent(MainActivity.this, MemoListPage.class);
-                        memoListIntent.putExtra("memo_location", memo_location);
-                        memoListIntent.putExtra("memo_address", tempAddress);
-                        startActivity(memoListIntent);
-                        return true;
-                    });
+                            Intent memoListIntent = new Intent(MainActivity.this, MemoListPage.class);
+                            memoListIntent.putExtra("memo_location", memo_location);
+                            memoListIntent.putExtra("memo_address", tempAddress);
+                            startActivity(memoListIntent);
+                            return true;
+                        });
+
+                    }
+                });
+
+
         }
 
         if(intent.getStringExtra("user_location") == null)
@@ -501,193 +501,6 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
                 tv_markerLocation.setText(getIntent().getStringExtra("location_name"));
                 rl_clickedLocation.setVisibility(VISIBLE);
             }
-
-            /*
-            if(markerCount == 1) {
-                CameraUpdate cameraUpdate1 = CameraUpdate.scrollTo(new LatLng(lat, lng));
-                naverMap.moveCamera(cameraUpdate1);
-                // 첫번째 마커 찍기
-                firstMarker = new Marker();
-                firstMarkerImage = new Marker();
-                firstMarker.setZIndex(1);
-                firstMarkerImage.setZIndex(0);
-                addMarkerList(markerCount, intent.getStringExtra("location_name"));
-                markerListAdapter.notifyDataSetChanged();
-
-                firstMarker.setPosition(new LatLng(user_mapX, user_mapY));
-                firstMarkerImage.setPosition(new LatLng(user_mapX+0.000005, user_mapY));
-
-                editor.putString("markerName1", intent.getStringExtra("location_name"));
-                editor.putInt("markerNum1", markerCount);
-                editor.putString("firstMapX", String.valueOf(user_mapX));
-                editor.putString("firstMapY", String.valueOf(user_mapY));
-                editor.commit();
-
-                ImageView iv_marker = new ImageView(this);
-                CircleImageView iv_image = new CircleImageView(this);
-                //img = findViewById(R.id.marker_image);
-
-                Bitmap size = BitmapFactory.decodeResource(getResources(), R.drawable.location_marker);
-                size = Bitmap.createScaledBitmap(size, 225, 225, true);
-                iv_marker.setImageBitmap(size);
-
-                Bitmap image = BitmapFactory.decodeResource(getResources(), R.drawable.image);
-                image = Bitmap.createScaledBitmap(image, 150, 150, true);
-                iv_image.setImageBitmap(image);
-                Bitmap photo = getCroppedBitmap(image);
-
-                Canvas canvas = new Canvas(size);
-                canvas.drawBitmap(photo, 38, 18, null);
-
-
-
-                params.width = metrics.widthPixels / 10;
-                params.height= metrics.widthPixels / 10;
-                img.setLayoutParams(params);
-
-                img.setImageResource(R.drawable.image);
-                img.setScaleType(ImageView.ScaleType.FIT_XY);
-
-
-                firstMarker.setIcon(OverlayImage.fromView(iv_marker));
-//                firstMarkerImage.setIcon(OverlayImage.fromView(iv_image));
-                firstMarker.setMap(naverMap);
-//                firstMarkerImage.setMap(naverMap);
-              }
-              else if(markerCount == 2) {
-                  Log.d("markerCount2", String.valueOf(markerCount));
-                double firstMapX = Double.valueOf(sf.getString("firstMapX", "0"));
-                double firstMapY = Double.valueOf(sf.getString("firstMapY", "0"));
-                addMarkerList(sf.getInt("marKerNum1", 1), sf.getString("markerName1", "0"));
-                addMarkerList(markerCount, intent.getStringExtra("location_name"));
-                Log.d("sf.getInt(\"marKerNum1\", 0)", String.valueOf(sf.getInt("marKerNum1", 0)));
-                markerListAdapter.notifyDataSetChanged();
-                editor.putString("markerName2", intent.getStringExtra("location_name"));
-                editor.putInt("markerNum2", markerCount);
-                editor.putString("secondMapX", String.valueOf(user_mapX));
-                editor.putString("secondMapY", String.valueOf(user_mapY));
-                editor.commit();
-                Log.d("firstMapX", sf.getString("firstMapX", "0"));
-                firstMarker = new Marker();
-                firstMarker.setPosition(new LatLng(firstMapX, firstMapY));
-                firstMarker.setMap(naverMap);
-
-                CameraUpdate cameraUpdate2 = CameraUpdate.scrollTo(new LatLng(lat, lng));
-                naverMap.moveCamera(cameraUpdate2);
-                // 두번째 마커 찍기
-                secondMarker = new Marker();
-                secondMarker.setPosition(new LatLng(user_mapX, user_mapY));
-                secondMarker.setMap(naverMap);
-            }
-             else if(markerCount == 3) {
-                double firstMapX = Double.valueOf(sf.getString("firstMapX", "0"));
-                double firstMapY = Double.valueOf(sf.getString("firstMapY", "0"));
-                double secondMapX = Double.valueOf(sf.getString("secondMapX", "0"));
-                double secondMapY = Double.valueOf(sf.getString("secondMapY", "0"));
-                addMarkerList(sf.getInt("markerNum1",1), sf.getString("markerName1", "0"));
-                addMarkerList(sf.getInt("markerNum2", 2), sf.getString("markerName2", "0"));
-                addMarkerList(markerCount, intent.getStringExtra("location_name"));
-                markerListAdapter.notifyDataSetChanged();
-
-                editor.putString("thirdMapX", String.valueOf(user_mapX));
-                editor.putString("thirdMapY", String.valueOf(user_mapY));
-                editor.putInt("markerNum3", markerCount);
-                editor.putString("markerName3", intent.getStringExtra("location_name"));
-                editor.commit();
-
-                Log.d("firstMapX", sf.getString("firstMapX", "0"));
-                firstMarker = new Marker();
-                firstMarker.setPosition(new LatLng(firstMapX, firstMapY));
-                firstMarker.setMap(naverMap);
-                secondMarker = new Marker();
-                secondMarker.setPosition(new LatLng(secondMapX, secondMapY));
-                secondMarker.setMap(naverMap);
-
-                CameraUpdate cameraUpdate3 = CameraUpdate.scrollTo(new LatLng(lat, lng));
-                naverMap.moveCamera(cameraUpdate3);
-                // 세번째 마커 찍기
-                thirdMarker = new Marker();
-                thirdMarker.setPosition(new LatLng(user_mapX, user_mapY));
-                thirdMarker.setMap(naverMap);
-            }
-             else if(markerCount == 4) {
-                double firstMapX = Double.valueOf(sf.getString("firstMapX", "0"));
-                double firstMapY = Double.valueOf(sf.getString("firstMapY", "0"));
-                double secondMapX = Double.valueOf(sf.getString("secondMapX", "0"));
-                double secondMapY = Double.valueOf(sf.getString("secondMapY", "0"));
-                double thirdMapX = Double.valueOf(sf.getString("thirdMapX", "0"));
-                double thirdMapY = Double.valueOf(sf.getString("thirdMapY", "0"));
-                addMarkerList(sf.getInt("markerNum1",1), sf.getString("markerName1", "0"));
-                addMarkerList(sf.getInt("markerNum2", 2), sf.getString("markerName2", "0"));
-                addMarkerList(sf.getInt("markerNum3", 3), sf.getString("markerName3", "0"));
-                addMarkerList(markerCount, intent.getStringExtra("location_name"));
-                markerListAdapter.notifyDataSetChanged();
-                editor.putString("fourthMapX", String.valueOf(user_mapX));
-                editor.putString("fourthMapY", String.valueOf(user_mapY));
-                editor.putInt("markerNum4", markerCount);
-                editor.putString("markerName4", intent.getStringExtra("location_name"));
-                editor.commit();
-                Log.d("firstMapX", sf.getString("firstMapX", "0"));
-                firstMarker = new Marker();
-                firstMarker.setPosition(new LatLng(firstMapX, firstMapY));
-                firstMarker.setMap(naverMap);
-                secondMarker = new Marker();
-                secondMarker.setPosition(new LatLng(secondMapX, secondMapY));
-                secondMarker.setMap(naverMap);
-                thirdMarker = new Marker();
-                thirdMarker.setPosition(new LatLng(thirdMapX, thirdMapY));
-                thirdMarker.setMap(naverMap);
-
-                CameraUpdate cameraUpdate4 = CameraUpdate.scrollTo(new LatLng(lat, lng));
-                naverMap.moveCamera(cameraUpdate4);
-                // 네번째 마커 찍기
-                fourthMarker = new Marker();
-                fourthMarker.setPosition(new LatLng(user_mapX, user_mapY));
-                fourthMarker.setMap(naverMap);
-            }
-             else if(markerCount == 5)
-             {
-                 double firstMapX = Double.valueOf(sf.getString("firstMapX", "0"));
-                 double firstMapY = Double.valueOf(sf.getString("firstMapY", "0"));
-                 double secondMapX = Double.valueOf(sf.getString("secondMapX", "0"));
-                 double secondMapY = Double.valueOf(sf.getString("secondMapY", "0"));
-                 double thirdMapX = Double.valueOf(sf.getString("thirdMapX", "0"));
-                 double thirdMapY = Double.valueOf(sf.getString("thirdMapY", "0"));
-                 double fourthMapX = Double.valueOf(sf.getString("fourthMapX", "0"));
-                 double fourthMapY = Double.valueOf(sf.getString("fourthMapY", "0"));
-                 addMarkerList(sf.getInt("markerNum1",1), sf.getString("markerName1", "0"));
-                 addMarkerList(sf.getInt("markerNum2", 2), sf.getString("markerName2", "0"));
-                 addMarkerList(sf.getInt("markerNum3", 3), sf.getString("markerName3", "0"));
-                 addMarkerList(sf.getInt("markerNum4", 4), sf.getString("markerName4", "0"));
-                 addMarkerList(markerCount, intent.getStringExtra("location_name"));
-                 markerListAdapter.notifyDataSetChanged();
-                 editor.putString("fifthMapX", String.valueOf(user_mapX));
-                 editor.putString("fifthMapY", String.valueOf(user_mapY));
-                 editor.putInt("markerNum5", markerCount);
-                 editor.putString("markerName5", intent.getStringExtra("location_name"));
-                 editor.commit();
-                 Log.d("firstMapX", sf.getString("firstMapX", "0"));
-                 firstMarker = new Marker();
-                 firstMarker.setPosition(new LatLng(firstMapX, firstMapY));
-                 firstMarker.setMap(naverMap);
-                 secondMarker = new Marker();
-                 secondMarker.setPosition(new LatLng(secondMapX, secondMapY));
-                 secondMarker.setMap(naverMap);
-                 thirdMarker = new Marker();
-                 thirdMarker.setPosition(new LatLng(thirdMapX, thirdMapY));
-                 thirdMarker.setMap(naverMap);
-                 fourthMarker = new Marker();
-                 fourthMarker.setPosition(new LatLng(fourthMapX, fourthMapY));
-                 fourthMarker.setMap(naverMap);
-
-                 CameraUpdate cameraUpdate5 = CameraUpdate.scrollTo(new LatLng(lat, lng));
-                 naverMap.moveCamera(cameraUpdate5);
-                 // 다섯번째 마커 찍기
-                 fifthMarker = new Marker();
-                 fifthMarker.setPosition(new LatLng(user_mapX, user_mapY));
-                 fifthMarker.setMap(naverMap);
-             }
-             */
         }
     }
 
