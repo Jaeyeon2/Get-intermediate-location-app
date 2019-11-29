@@ -36,9 +36,8 @@ public class MemoPage extends ChangeStateBar {
         tv_memoLocation = findViewById(R.id.memo_location);
         tv_memoContent.setText(intent.getStringExtra("memo_content"));
         tv_memoLocation.setText(intent.getStringExtra("memo_location"));
-        str_allFilePath = intent.getStringExtra("memo_allImages");
+        str_filePath = intent.getStringArrayExtra("memo_allImages");
         vp_imagePager = findViewById(R.id.memo_pager);
-        str_filePath = str_allFilePath.split("\\|");
         uri_filePath = new Uri[str_filePath.length];
         bm_file = new Bitmap[str_filePath.length];
 

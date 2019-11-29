@@ -1,6 +1,7 @@
 package com.example.findintermediateapp;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.provider.MediaStore;
@@ -67,7 +68,17 @@ public class MemoListAdapter extends RecyclerView.Adapter<MemoListAdapter.ViewHo
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
+                    int pos = getAdapterPosition();
+                    MemoListItem item = memoData.get(pos);
+                        Intent memoPageIntent = new Intent(context, MemoPage.class);
+                        memoPageIntent.putExtra("memo_location",item.getMemoLocation());
+                        memoPageIntent.putExtra("memo_content", item.getMemoContent());
+                        if(!item.getMemoAllImage().equals("")) {
+                            memoPageIntent.putExtra("memo_allImages", item.getMemoAllImage());
+                        }else {
+                            memoPageIntent.putExtra("memo_allImages", "noImage");
+                        }
+                        context.startActivity(memoPageIntent);
                 }
             });
 

@@ -395,20 +395,6 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
 
 
                         savedMarker.setOnClickListener(overlay -> {
-
-                        /*
-                        Intent memoPageIntent = new Intent(MainActivity.this, MemoPage.class);
-                        memoPageIntent.putExtra("memo_location",memo_location);
-                        memoPageIntent.putExtra("memo_content", tempMemo);
-                        if(!tempPhoto.equals("")) {
-                            memoPageIntent.putExtra("memo_allImages", tempPhoto);
-                        }else {
-                            memoPageIntent.putExtra("memo_allImages", "noImage");
-                        }
-                        startActivity(memoPageIntent);
-                        return true;
-                         */
-
                             Intent memoListIntent = new Intent(MainActivity.this, MemoListPage.class);
                             memoListIntent.putExtra("memo_location", memo_location);
                             memoListIntent.putExtra("memo_address", tempAddress);
