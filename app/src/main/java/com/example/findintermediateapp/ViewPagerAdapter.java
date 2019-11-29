@@ -3,26 +3,29 @@ package com.example.findintermediateapp;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.support.v4.view.PagerAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.bumptech.glide.Glide;
+
 public class ViewPagerAdapter extends PagerAdapter {
 
     LayoutInflater inflater;
-    Bitmap[] bit_image;
+    Uri[] uri_image;
     Context context;
 
-    public ViewPagerAdapter(LayoutInflater inflater, Bitmap[] bitmap) {
+    public ViewPagerAdapter(LayoutInflater inflater, Uri[] uri) {
         context = inflater.getContext();
         this.inflater = inflater;
-        this.bit_image = bitmap;
+        this.uri_image = uri;
     }
     @Override
     public int getCount() {
-        return (null != bit_image) ? bit_image.length : 0;
+        return (null != uri_image) ? uri_image.length : 0;
     }
 
     @Override
@@ -40,11 +43,9 @@ public class ViewPagerAdapter extends PagerAdapter {
 
         //ImageView에 현재 position 번째에 해당하는 이미지를 보여주기 위한 작업
         //현재 position에 해당하는 이미지를 setting
-        img.setImageBitmap(bit_image[position]);
-
+        Glide.with(context).load(uri_image[position]).into(img);
         //ViewPager에 만들어 낸 View 추가
         container.addView(view);
-
         //Image가 세팅된 View를 리턴
         return view;
     }

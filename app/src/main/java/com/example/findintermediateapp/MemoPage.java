@@ -44,18 +44,9 @@ public class MemoPage extends ChangeStateBar {
 
         for(int i = 0; i < str_filePath.length; i++) {
             uri_filePath[i] = Uri.parse(str_filePath[i]);
-            try {
-                bm_file[i] = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri_filePath[i]);
-            } catch (FileNotFoundException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
         }
         
-        ViewPagerAdapter adapter = new ViewPagerAdapter(getLayoutInflater(), bm_file);
+        ViewPagerAdapter adapter = new ViewPagerAdapter(getLayoutInflater(), uri_filePath);
         vp_imagePager.setAdapter(adapter);
 
         DisplayMetrics metrics = new DisplayMetrics();

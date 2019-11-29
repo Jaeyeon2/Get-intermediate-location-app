@@ -60,6 +60,7 @@ public class MemoListPage extends ChangeStateBar {
                memoListAdapter.notifyDataSetChanged();
            }
         }
+
         Toolbar toolbar = findViewById(R.id.memo_list_toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);

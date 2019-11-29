@@ -11,6 +11,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -43,17 +45,7 @@ public class MemoListAdapter extends RecyclerView.Adapter<MemoListAdapter.ViewHo
         holder.tv_memoContent.setText(item.getMemoContent());
         holder.tv_memoImageCount.setText(String.valueOf(item.getMemoImageCount()));
         Uri imageUri = Uri.parse(item.getMemoFirstImage());
-        try {
-         bitmap = MediaStore.Images.Media.getBitmap(context.getContentResolver(), imageUri);
-        } catch (FileNotFoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        holder.iv_memoImage.setImageBitmap(bitmap);
-
+        Glide.with(context).load(imageUri).into(holder.iv_memoImage);
     }
 
     // getItemCount() - 전체 데이터 갯수 리턴
