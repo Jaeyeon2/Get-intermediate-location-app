@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    >
+
+    <group android:id="@+id/group_delete"
+        android:background="#c3c3c3">
+        <item android:id="@+id/action_deleteMemo"
+            android:title="삭제하기" />
+        <item android:id="@+id/action_editMemo"
+            android:title="수정하기" />
+    </group>
+
+</menu>

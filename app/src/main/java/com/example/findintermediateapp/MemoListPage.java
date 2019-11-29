@@ -61,7 +61,7 @@ public class MemoListPage extends ChangeStateBar {
                memoEachImage = memoAllImage.split("\\|");
                memoImageCount = memoEachImage.length;
 
-               setMemoList(memoContent, memoEachImage[0], memoEachImage, memoImageCount, memoX, memoY);
+               setMemoList(memoLocation ,memoContent, memoEachImage[0], memoEachImage, memoImageCount, memoX, memoY);
                memoListAdapter.notifyDataSetChanged();
            }
         }
@@ -74,9 +74,10 @@ public class MemoListPage extends ChangeStateBar {
 
     }
 
-    public void setMemoList(String content, String firstImage, String[] eachImage, int imageCount, String x, String y)
+    public void setMemoList(String location, String content, String firstImage, String[] eachImage, int imageCount, String x, String y)
     {
         MemoListItem item = new MemoListItem();
+        item.setMemoLocation(location);
         item.setMemoContent(content);
         item.setMemoFirstImage(firstImage);
         item.setMemoImageCount(imageCount);
