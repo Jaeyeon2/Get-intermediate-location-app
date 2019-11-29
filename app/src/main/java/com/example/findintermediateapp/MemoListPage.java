@@ -1,5 +1,6 @@
 package com.example.findintermediateapp;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.AppCompatActivity;
@@ -23,6 +24,8 @@ public class MemoListPage extends ChangeStateBar {
     public String memoFirstImage;
     public String[] memoEachImage;
     public String memoAllImage;
+    public String memoX;
+    public String memoY;
     public int memoImageCount;
 
     TextView tv_memoListLocation;
@@ -47,16 +50,18 @@ public class MemoListPage extends ChangeStateBar {
         FeedReaderDbHelper dbHelper = new FeedReaderDbHelper(this);
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         Cursor cursor;
-        cursor = db.rawQuery("select name, address, memo, photo from location_memo", null);
+        cursor = db.rawQuery("select name, address, memo, photo, coordinate_x, coordinate_y from location_memo", null);
         while(cursor.moveToNext()) {
            if(cursor.getString(0).equals(memoLocation) && cursor.getString(1).equals(memoAddress))
            {
                memoContent = cursor.getString(2);
                memoAllImage = cursor.getString(3);
+               memoX = cursor.getString(4);
+               memoY = cursor.getString(5);
                memoEachImage = memoAllImage.split("\\|");
                memoImageCount = memoEachImage.length;
 
-               setMemoList(memoContent, memoEachImage[0], memoEachImage, memoImageCount);
+               setMemoList(memoContent, memoEachImage[0], memoEachImage, memoImageCount, memoX, memoY);
                memoListAdapter.notifyDataSetChanged();
            }
         }
@@ -69,14 +74,15 @@ public class MemoListPage extends ChangeStateBar {
 
     }
 
-    public void setMemoList(String content, String firstImage, String[] eachImage, int imageCount)
+    public void setMemoList(String content, String firstImage, String[] eachImage, int imageCount, String x, String y)
     {
         MemoListItem item = new MemoListItem();
         item.setMemoContent(content);
         item.setMemoFirstImage(firstImage);
         item.setMemoImageCount(imageCount);
         item.setMemoAllImage(eachImage);
-
+        item.setMemoX(x);
+        item.setMemoY(y);
         memoData.add(item);
     }
 
@@ -90,6 +96,16 @@ public class MemoListPage extends ChangeStateBar {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()) {
             case android.R.id.home:
+                finish();
+                return true;
+            case R.id.action_addMemo:
+                Intent addMemoIntent = new Intent(MemoListPage.this, AddMemo.class);
+                addMemoIntent.putExtra("location", memoLocation);
+                addMemoIntent.putExtra("address", memoAddress);
+                addMemoIntent.putExtra("mapx", memoX);
+                addMemoIntent.putExtra("mapy", memoY);
+                addMemoIntent.putExtra("request_page","MemoListPage");
+                startActivity(addMemoIntent);
                 finish();
                 return true;
             default:

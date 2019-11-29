@@ -7,6 +7,21 @@ public class MemoListItem {
     private int memoImageCount;
     private String memoLocation;
     private String memoAddress;
+    private String memoX;
+    private String memoY;
+    private String memoDate;
+
+    public void setMemoDate(String date) {
+        this.memoDate = date;
+    }
+
+    public void setMemoX(String x) {
+        this.memoX = x;
+    }
+
+    public void setMemoY(String y) {
+        this.memoY = y;
+    }
 
     public void setMemoContent(String content) {
         this.memoContent = content;
@@ -55,4 +70,10 @@ public class MemoListItem {
     public String getMemoAddress() {
         return this.memoAddress;
     }
+
+    public String getMemoX() { return this.memoX; }
+
+    public String getMemoY() { return this.memoY; }
+
+    public String getMemoDate() { return this.memoDate; }
 }

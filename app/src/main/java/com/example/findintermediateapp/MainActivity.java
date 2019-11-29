@@ -236,6 +236,7 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
             addMemoIntent.putExtra("address", getIntent().getStringExtra("location_address"));
             addMemoIntent.putExtra("mapx", getIntent().getStringExtra("location_mapx"));
             addMemoIntent.putExtra("mapy", getIntent().getStringExtra("location_mapy"));
+            addMemoIntent.putExtra("request_page", "MainActivity");
             startActivity(addMemoIntent);
             return true;
         });
