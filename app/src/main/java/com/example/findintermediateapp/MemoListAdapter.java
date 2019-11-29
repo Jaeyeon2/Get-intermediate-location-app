@@ -1,5 +1,6 @@
 package com.example.findintermediateapp;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -22,11 +23,15 @@ import java.util.ArrayList;
 
 public class MemoListAdapter extends RecyclerView.Adapter<MemoListAdapter.ViewHolder> {
 
+    Activity memoListActivity;
     Context context;
     private ArrayList<MemoListItem> memoData = null;
 
     // 생성자에서 데이터 리스트 객체를 전달받음
-    MemoListAdapter(ArrayList<MemoListItem> list) { memoData = list; }
+    MemoListAdapter(Activity activity, ArrayList<MemoListItem> list) {
+        this.memoListActivity = activity;
+        memoData = list;
+    }
 
     // onCreateViewHolder() - 아이템 뷰를 위한 뷰홀더 객체를 생성하여 리턴
     @Override
@@ -81,14 +86,19 @@ public class MemoListAdapter extends RecyclerView.Adapter<MemoListAdapter.ViewHo
                     MemoListItem item = memoData.get(pos);
                         Intent memoPageIntent = new Intent(context, MemoPage.class);
                         memoPageIntent.putExtra("memo_location",item.getMemoLocation());
+                        memoPageIntent.putExtra("memo_address", item.getMemoAddress());
                         memoPageIntent.putExtra("memo_content", item.getMemoContent());
                         memoPageIntent.putExtra("memo_date", item.getMemoDate());
+                        memoPageIntent.putExtra("memo_id", String.valueOf(item.getMemoId()));
+                        Log.d("memo_id", String.valueOf(item.getMemoId()));
+
                         if(!item.getMemoAllImage().equals("")) {
                             memoPageIntent.putExtra("memo_allImages", item.getMemoAllImage());
                         }else {
                             memoPageIntent.putExtra("memo_allImages", "noImage");
                         }
                         context.startActivity(memoPageIntent);
+                        memoListActivity.finish();
                 }
             });
 

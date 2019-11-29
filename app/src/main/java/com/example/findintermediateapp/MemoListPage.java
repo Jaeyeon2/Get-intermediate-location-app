@@ -29,6 +29,7 @@ public class MemoListPage extends ChangeStateBar {
     public String memoY;
     public String memoTime;
     public int memoImageCount;
+    public int memoId;
 
     TextView tv_memoListLocation;
     TextView tv_memoListAddress;
@@ -45,14 +46,14 @@ public class MemoListPage extends ChangeStateBar {
         tv_memoListAddress.setText(memoAddress);
 
         memoListRecyclerView = findViewById(R.id.memo_list_recyclerview);
-        memoListAdapter = new MemoListAdapter(memoData);
+        memoListAdapter = new MemoListAdapter(this,memoData);
         memoListRecyclerView.setAdapter(memoListAdapter);
         memoListRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         FeedReaderDbHelper dbHelper = new FeedReaderDbHelper(this);
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         Cursor cursor;
-        cursor = db.rawQuery("select name, address, memo, photo, memotime,  coordinate_x, coordinate_y from location_memo", null);
+        cursor = db.rawQuery("select name, address, memo, photo, memotime,  coordinate_x, coordinate_y, _id from location_memo", null);
         while(cursor.moveToNext()) {
            if(cursor.getString(0).equals(memoLocation) && cursor.getString(1).equals(memoAddress))
            {
@@ -61,10 +62,11 @@ public class MemoListPage extends ChangeStateBar {
                memoTime = cursor.getString(4);
                memoX = cursor.getString(5);
                memoY = cursor.getString(6);
+               memoId = cursor.getInt(7);
                memoEachImage = memoAllImage.split("\\|");
                memoImageCount = memoEachImage.length;
 
-               setMemoList(memoLocation ,memoContent, memoEachImage[0], memoEachImage, memoImageCount, memoX, memoY, memoTime);
+               setMemoList(memoLocation ,memoContent, memoEachImage[0], memoEachImage, memoImageCount, memoX, memoY, memoTime, memoId);
                memoListAdapter.notifyDataSetChanged();
            }
         }
@@ -77,7 +79,7 @@ public class MemoListPage extends ChangeStateBar {
 
     }
 
-    public void setMemoList(String location, String content, String firstImage, String[] eachImage, int imageCount, String x, String y, String time)
+    public void setMemoList(String location, String content, String firstImage, String[] eachImage, int imageCount, String x, String y, String time, int id)
     {
         MemoListItem item = new MemoListItem();
         item.setMemoLocation(location);
@@ -88,6 +90,7 @@ public class MemoListPage extends ChangeStateBar {
         item.setMemoX(x);
         item.setMemoY(y);
         item.setMemoDate(time);
+        item.setMemoId(id);
         memoData.add(item);
     }
 

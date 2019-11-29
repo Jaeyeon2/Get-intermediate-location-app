@@ -10,6 +10,11 @@ public class MemoListItem {
     private String memoX;
     private String memoY;
     private String memoDate;
+    private int memoId;
+
+    public void setMemoId(int id) {
+        this.memoId = id;
+    }
 
     public void setMemoDate(String date) {
         this.memoDate = date;
@@ -76,4 +81,6 @@ public class MemoListItem {
     public String getMemoY() { return this.memoY; }
 
     public String getMemoDate() { return this.memoDate; }
+
+    public int getMemoId() { return this.memoId; }
 }

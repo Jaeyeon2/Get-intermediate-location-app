@@ -480,8 +480,8 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
                 naverMap.moveCamera(cameraUpdate);
                 ImageView iv_addMemoMarker = new ImageView(this);
                 addMemoMarker.setPosition(new LatLng(user_mapX, user_mapY));
-                Bitmap smallMarker = BitmapFactory.decodeResource(getResources(), R.drawable.location_plus_marker4);
-                smallMarker = Bitmap.createScaledBitmap(smallMarker, 200, 200, true);
+                Bitmap smallMarker = BitmapFactory.decodeResource(getResources(), R.drawable.location_plus_marker7);
+                smallMarker = Bitmap.createScaledBitmap(smallMarker, 225, 225, true);
                 iv_addMemoMarker.setImageBitmap(smallMarker);
                 addMemoMarker.setIcon(OverlayImage.fromView(iv_addMemoMarker));
                 addMemoMarker.setMap(naverMap);
