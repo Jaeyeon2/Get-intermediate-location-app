@@ -9,9 +9,12 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.provider.MediaStore;
+import android.support.media.ExifInterface;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -44,6 +47,7 @@ import com.apollographql.apollo.GraphQLCall;
 import com.apollographql.apollo.api.Response;
 import com.apollographql.apollo.exception.ApolloException;
 import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBMapper;
+import com.bumptech.glide.Glide;
 
 import org.json.JSONObject;
 
@@ -68,12 +72,15 @@ import static com.example.findintermediateapp.MainActivity.androidId;
 public class AddMemo extends ChangeStateBar {
     TextView tv_location;
     TextView tv_address;
+    ImageView iv_exImage;
     Intent x;
     static Bitmap[] addedBitmap = new Bitmap[100];
+    static Uri[] uri_addedUri = new Uri[100];
     String y;
     String addr;
     public int addcount = 1;
     Bitmap[] memo_work = new Bitmap[addcount];
+    Uri[] uri_imageArr = new Uri[addcount];
     private static Uri filePath;
     public static Uri[] filePathArray = new Uri[100];
     public  Uri[] addedfilePath = new Uri[addcount];
@@ -106,6 +113,7 @@ public class AddMemo extends ChangeStateBar {
                 .awsConfiguration(configuration)
                 .build();
 
+
         tv_location = findViewById(R.id.min);
         tv_address = findViewById(R.id.jae);
         et_memoContent = findViewById(R.id.add_memo_content);
@@ -114,7 +122,7 @@ public class AddMemo extends ChangeStateBar {
         addr = x.getStringExtra("address");
         tv_location.setText(y);
         tv_address.setText(addr);
-        imageAdapter = new ImageAdapter(AddMemo.this, this, memo_work);
+        imageAdapter = new ImageAdapter(AddMemo.this, this, uri_imageArr);
 
         Toolbar toolbar = findViewById(R.id.tools);
         setSupportActionBar(toolbar);
@@ -221,29 +229,33 @@ public class AddMemo extends ChangeStateBar {
         if (requestCode == KITKAT_VALUE) {
             if (resultCode == RESULT_OK) {
                 try {
-                    final int takeFlags = data.getFlags() &
-                    (Intent.FLAG_GRANT_READ_URI_PERMISSION|
-                    Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
                     addcount++;
                     filePath = data.getData();
+                    Uri imageUri = Uri.parse(String.valueOf(filePath));
+                    String imagePath = imageUri.getPath();
+                    Log.d("imagePath", imagePath);
                     InputStream in = getContentResolver().openInputStream(filePath);
                     Log.d("filePath", String.valueOf(filePath));
                     Bitmap img;
                     img = BitmapFactory.decodeStream(in);
                     in.close();
                     memo_work = new Bitmap[addcount];
+                    uri_imageArr = new Uri[addcount];
                     Bitmap bitmap = BitmapFactory.decodeResource(getApplicationContext().getResources(), R.drawable.add_work_no2);
-                    filePathArray[addcount -1 ] = filePath;
+                    //Uri firstUri = getImageUri(getApplicationContext(), bitmap);
+                    filePathArray[addcount -1] = filePath;
                     addedBitmap[addcount - 1] = img;
+                    uri_addedUri[addcount -1] = imageUri;
+                    Log.d("uri_addedUri[addcount-1", String.valueOf(uri_addedUri[addcount-1]));
                     for (int i = 0; i < addcount; i++) {
-                        Log.d("addedBitmap", String.valueOf(addedBitmap[i]));
+                        Log.d("uri_imageArr[i]", String.valueOf(uri_addedUri[i]));
                         if (i == addcount - 1) {
-                            memo_work[i] = bitmap;
+                           // uri_imageArr[i] = firstUri;
                         } else {
-                            memo_work[i] = addedBitmap[i + 1];
+                            uri_imageArr[i] = uri_addedUri[i + 1];
                         }
                     }
-                    imageAdapter = new ImageAdapter(this, AddMemo.this, memo_work);
+                    imageAdapter = new ImageAdapter(this, AddMemo.this, uri_imageArr);
                     gridView.setAdapter(imageAdapter);
                 } catch (Exception e) {
 
@@ -259,9 +271,9 @@ public class AddMemo extends ChangeStateBar {
         private Context context;
 
         Activity mActiviy = null;
-        Bitmap[] memo_image = null;
+        Uri[] memo_image = null;
 
-        public ImageAdapter(Activity activity, Context con, Bitmap[] work) {
+        public ImageAdapter(Activity activity, Context con, Uri[] work) {
             this.context = con;
             this.mActiviy = activity;
             this.memo_image = work;
@@ -283,6 +295,10 @@ public class AddMemo extends ChangeStateBar {
         }
 
         public View getView(int pos, View convertView, ViewGroup parent) {
+
+            for(int i = 0; i < memo_image.length; i++) {
+                Log.d("memo_imageaaa", String.valueOf(memo_image[i]));
+            }
             ImageView imageView;
 
             DisplayMetrics metrics = context.getResources().getDisplayMetrics();
@@ -292,7 +308,7 @@ public class AddMemo extends ChangeStateBar {
                 imageView = new ImageView(context);
                 imageView.setLayoutParams(new GridView.LayoutParams(screenWidth / 3 - 10, screenWidth / 3 - 10));
                 imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                imageView.setPadding(10, 10, 10, 10);
+                imageView.setPadding(3, 3, 3, 3);
             } else {
                 imageView = (ImageView) convertView;
             }
@@ -317,7 +333,7 @@ public class AddMemo extends ChangeStateBar {
                     }
                 });
             } else {
-                imageView.setImageBitmap(memo_image[pos]);
+                Glide.with(context).load(memo_image[pos]).into(imageView);
                 imageView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -484,5 +500,12 @@ public class AddMemo extends ChangeStateBar {
 
             }
         }
+    }
+
+    private Uri getImageUri(Context context, Bitmap inImage) {
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+        String path = MediaStore.Images.Media.insertImage(context.getContentResolver(), inImage, "Title", null);
+        return Uri.parse(path);
     }
 }
