@@ -87,7 +87,7 @@ public class AddMemo extends ChangeStateBar {
     public static Uri[] filePathArray = new Uri[100];
     public  Uri[] addedfilePath = new Uri[addcount];
     ImageAdapter imageAdapter;
-    GridView gridView;
+    static GridView gridView;
     EditText et_memoContent;
     private static final int REQUEST_CODE = 0;
     FeedReaderDbHelper dbHelper = new FeedReaderDbHelper(this);
@@ -115,6 +115,18 @@ public class AddMemo extends ChangeStateBar {
                 .awsConfiguration(configuration)
                 .build();
 
+        if(getIntent().getStringArrayExtra("str_deletedImageArr")== null)
+        {
+
+        } else {
+          String[] deleteArray = getIntent().getStringArrayExtra("str_deletedImageArr");
+          uri_imageArr = new Uri[deleteArray.length];
+
+          for(int i = 0; i < uri_imageArr.length; i++)
+          {
+              uri_imageArr[i] = Uri.parse(deleteArray[i]);
+          }
+        }
 
         tv_location = findViewById(R.id.min);
         tv_address = findViewById(R.id.jae);
@@ -274,6 +286,7 @@ public class AddMemo extends ChangeStateBar {
 
         Activity mActiviy = null;
         Uri[] memo_image = null;
+        ImageAdapter imageAdapter;
 
         public ImageAdapter(Activity activity, Context con, Uri[] work) {
             this.context = con;
@@ -336,10 +349,24 @@ public class AddMemo extends ChangeStateBar {
                 });
             } else {
                 Glide.with(context).load(memo_image[pos]).into(imageView);
+
                 imageView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
 
+                        Intent addedImageIntent = new Intent(context, AddedImage.class);
+                        addedImageIntent.putExtra("addedImage_uri", String.valueOf(memo_image[pos]));
+                        addedImageIntent.putExtra("addedImage_index", pos);
+                        String[] str_imageArr = new String[memo_image.length];
+                        for(int i = 0; i < str_imageArr.length; i++)
+                        {
+                            str_imageArr[i] = String.valueOf(memo_image[i]);
+                        }
+                        addedImageIntent.putExtra("addedImage_array", str_imageArr);
+                        addedImageIntent.putExtra("addedImage_location", tv_location.getText().toString());
+                        addedImageIntent.putExtra("addedImage_address", tv_address.getText().toString());
+                        startActivity(addedImageIntent);
+                        finish();
                     }
                 });
             }
