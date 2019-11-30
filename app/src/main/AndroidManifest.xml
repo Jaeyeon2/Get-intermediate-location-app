@@ -2,17 +2,17 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.example.findintermediateapp">
-
     <application
         android:allowBackup="true"
+        android:configChanges="keyboardHidden|orientation"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        android:windowSoftInputMode="adjustResize"
-        android:configChanges="keyboardHidden|orientation">
-        <activity android:name=".MemoListPage"></activity>
+        android:windowSoftInputMode="adjustResize">
+        <activity android:name=".EditMemo"></activity>
+        <activity android:name=".MemoListPage" />
         <activity android:name=".MemoPage" />
         <activity android:name=".AddMemo" />
         <activity
@@ -25,11 +25,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <meta-data
             android:name="com.naver.maps.map.CLIENT_ID"
             android:value="kafivuks0k" />
-
         <service android:name="org.eclipse.paho.android.service.MqttService" />
     </application>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -40,9 +38,7 @@
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.WRITE_OWNER_DATA"/>
-    <uses-permission android:name="android.permission.READ_OWNER_DATA"/>
-
+    <uses-permission android:name="android.permission.WRITE_OWNER_DATA" />
+    <uses-permission android:name="android.permission.READ_OWNER_DATA" />
 </manifest>

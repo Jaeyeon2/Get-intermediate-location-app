@@ -4,11 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MemoListPage"
+    tools:context=".EditMemo"
     android:orientation="vertical"
     android:weightSum="10"
-    android:background="#ffffff">
-
+    android:background="#ffffff"
+    >
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -18,64 +18,81 @@
         <android.support.v7.widget.Toolbar
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:id="@+id/memo_list_toolbar"
+            android:id="@+id/edit_memo_toolbar"
             android:background="#ffffff"
             ></android.support.v7.widget.Toolbar>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="메모 목록"
+            android:text="메모 수정하기"
             android:textSize="20sp"
             android:layout_gravity="center"
             android:textColor="#000000"
             />
+
     </FrameLayout>
-    
+
     <View
         android:layout_width="match_parent"
         android:layout_height="4dp"
-        android:background="@drawable/toolbar_dropshadow"/>
+        android:background="@drawable/toolbar_dropshadow"></View>
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="45dp"
+        android:layout_height="60dp"
         android:orientation="vertical"
-        android:padding="0dp"
-        android:gravity="center"
-        android:background="#ffffff">
+        android:paddingLeft="15dp"
+        android:paddingTop="10dp"
+        >
 
         <TextView
+            android:id="@+id/edit_memo_location"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="부경대학교"
+            android:textSize="16sp"
             android:textColor="#000000"
-            android:textSize="17sp"
-            android:id="@+id/memo_list_location"/>
+
+            ></TextView>
 
         <TextView
+            android:id="@+id/edit_memo_address"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="부산광역시 남구 용소로 45"
-            android:id="@+id/memo_list_address"/>
-
-    </LinearLayout>
+            ></TextView>
+        ></LinearLayout>
 
     <View
         android:layout_width="match_parent"
         android:layout_height="0.3dp"
-        android:background="#c3c3c3"/>
+        android:background="#C3C3C3"></View>
 
-    <LinearLayout
+    <EditText
+        android:background="@drawable/no_line_text_edit"
+        android:paddingLeft="15dp"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#ffffff">
-        
-        <android.support.v7.widget.RecyclerView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="#ffffff"
-            android:id="@+id/memo_list_recyclerview"/>
-    </LinearLayout>
+        android:layout_height="121dp"
+        android:id="@+id/edit_memo_content"
+        android:hint="내용"
+        android:textSize="16sp"
+        ></EditText>
+
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.3dp"
+        android:background="#C3C3C3"></View>
+
+    <GridView
+        android:layout_marginTop="5dp"
+        android:background="#ffffff"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/edit_memo_gridview"
+        android:gravity="center"
+        android:verticalSpacing="1dp"
+        android:numColumns="3"
+        android:paddingBottom="5dp"
+        android:overScrollMode="never"/>
 
 </LinearLayout>

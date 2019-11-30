@@ -92,6 +92,18 @@ public class MemoPage extends ChangeStateBar {
                   finish();
                 return true;
             case R.id.action_editMemo:
+                // MainActivity 새로 고침
+                Intent mainIntent2 = new Intent(MemoPage.this, MainActivity.class);
+                MainActivity mainActivity2 = new MainActivity();
+                startActivity(mainIntent2);
+                mainActivity2.finish();
+
+                Intent memoEditIntent = new Intent(MemoPage.this, EditMemo.class);
+                memoEditIntent.putExtra("edit_memo_location", tv_toolbarTitle.getText().toString());
+                memoEditIntent.putExtra("edit_memo_address", getIntent().getStringExtra("memo_address"));
+                memoEditIntent.putExtra("edit_memo_content", tv_memoContent.getText().toString());
+                memoEditIntent.putExtra("edit_memo_imageArr", str_filePath);
+                startActivity(memoEditIntent);
                 return true;
             case android.R.id.home:
                 finish();
