@@ -57,6 +57,7 @@ public class MemoListPage extends ChangeStateBar {
         while(cursor.moveToNext()) {
            if(cursor.getString(0).equals(memoLocation) && cursor.getString(1).equals(memoAddress))
            {
+               memoAddress = cursor.getString(1);
                memoContent = cursor.getString(2);
                memoAllImage = cursor.getString(3);
                memoTime = cursor.getString(4);
@@ -66,7 +67,7 @@ public class MemoListPage extends ChangeStateBar {
                memoEachImage = memoAllImage.split("\\|");
                memoImageCount = memoEachImage.length;
 
-               setMemoList(memoLocation ,memoContent, memoEachImage[0], memoEachImage, memoImageCount, memoX, memoY, memoTime, memoId);
+               setMemoList(memoLocation,memoAddress ,memoContent, memoEachImage[0], memoEachImage, memoImageCount, memoX, memoY, memoTime, memoId);
                memoListAdapter.notifyDataSetChanged();
            }
         }
@@ -79,10 +80,11 @@ public class MemoListPage extends ChangeStateBar {
 
     }
 
-    public void setMemoList(String location, String content, String firstImage, String[] eachImage, int imageCount, String x, String y, String time, int id)
+    public void setMemoList(String location, String address, String content, String firstImage, String[] eachImage, int imageCount, String x, String y, String time, int id)
     {
         MemoListItem item = new MemoListItem();
         item.setMemoLocation(location);
+        item.setMemoAddress(address);
         item.setMemoContent(content);
         item.setMemoFirstImage(firstImage);
         item.setMemoImageCount(imageCount);

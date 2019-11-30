@@ -64,6 +64,7 @@ public class EditMemo extends ChangeStateBar {
 
         tv_editMemoLocation.setText(getIntent().getStringExtra("edit_memo_location"));
         tv_editMemoAddress.setText(getIntent().getStringExtra("edit_memo_address"));
+
         et_editMemoContent.setText(getIntent().getStringExtra("edit_memo_content"));
         str_imageArr = getIntent().getStringArrayExtra("edit_memo_imageArr");
         memoId = Integer.valueOf(getIntent().getStringExtra("edit_memo_id"));

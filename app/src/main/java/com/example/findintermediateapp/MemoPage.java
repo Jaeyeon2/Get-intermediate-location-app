@@ -11,6 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.WindowManager;
@@ -99,6 +100,7 @@ public class MemoPage extends ChangeStateBar {
                 Intent memoEditIntent = new Intent(MemoPage.this, EditMemo.class);
                 memoEditIntent.putExtra("edit_memo_location", tv_toolbarTitle.getText().toString());
                 memoEditIntent.putExtra("edit_memo_address", getIntent().getStringExtra("memo_address"));
+                Log.d("memo_address", getIntent().getStringExtra("memo_address"));
                 memoEditIntent.putExtra("edit_memo_content", tv_memoContent.getText().toString());
                 memoEditIntent.putExtra("edit_memo_imageArr", str_filePath);
                 memoEditIntent.putExtra("edit_memo_id", intent.getStringExtra("memo_id"));

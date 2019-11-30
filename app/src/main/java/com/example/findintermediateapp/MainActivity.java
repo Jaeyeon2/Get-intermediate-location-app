@@ -274,8 +274,8 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
          */
 
        // db에서 데이터 삭제
-//        SQLiteDatabase db = dbHelper.getWritableDatabase();
-//       db.delete(FeedReaderContract.FeedEntry.TABLE_NAME, null, null);
+      //  SQLiteDatabase db = dbHelper.getWritableDatabase();
+     //   db.delete(FeedReaderContract.FeedEntry.TABLE_NAME, null, null);
     }
 
     public void myLocationOnClick(View view) {
