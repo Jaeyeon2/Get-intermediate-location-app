@@ -28,6 +28,8 @@ public class MemoPage extends ChangeStateBar {
     ViewPager vp_imagePager;
     Intent intent;
     String str_allFilePath;
+    String memoX;
+    String memoY;
     String[] str_filePath;
     Uri[] uri_filePath;
     Bitmap[] bm_file;
@@ -55,6 +57,8 @@ public class MemoPage extends ChangeStateBar {
         for(int i = 0; i < str_filePath.length; i++) {
             uri_filePath[i] = Uri.parse(str_filePath[i]);
         }
+        memoX = intent.getStringExtra("memo_x");
+        memoY = intent.getStringExtra("memo_y");
         
         ViewPagerAdapter adapter = new ViewPagerAdapter(getLayoutInflater(), uri_filePath);
         vp_imagePager.setAdapter(adapter);
@@ -92,18 +96,24 @@ public class MemoPage extends ChangeStateBar {
                   finish();
                 return true;
             case R.id.action_editMemo:
-                // MainActivity 새로 고침
-                Intent mainIntent2 = new Intent(MemoPage.this, MainActivity.class);
-                MainActivity mainActivity2 = new MainActivity();
-                startActivity(mainIntent2);
-                mainActivity2.finish();
-
                 Intent memoEditIntent = new Intent(MemoPage.this, EditMemo.class);
                 memoEditIntent.putExtra("edit_memo_location", tv_toolbarTitle.getText().toString());
                 memoEditIntent.putExtra("edit_memo_address", getIntent().getStringExtra("memo_address"));
                 memoEditIntent.putExtra("edit_memo_content", tv_memoContent.getText().toString());
                 memoEditIntent.putExtra("edit_memo_imageArr", str_filePath);
+                memoEditIntent.putExtra("edit_memo_id", intent.getStringExtra("memo_id"));
+                String[] strArr_allImage = getIntent().getStringArrayExtra("memo_allImages");
+                String str_allImage = "";
+                for(int i = 0; i < strArr_allImage.length; i++)
+                {
+                    str_allImage = str_allImage + strArr_allImage[i] + "|";
+                }
+                memoEditIntent.putExtra("edit_memo_allImages", str_allImage);
+                memoEditIntent.putExtra("edit_memo_date", tv_memoDate.getText().toString());
+                memoEditIntent.putExtra("edit_memo_x", memoX);
+                memoEditIntent.putExtra("edit_memo_y", memoY);
                 startActivity(memoEditIntent);
+
                 return true;
             case android.R.id.home:
                 finish();
@@ -118,5 +128,4 @@ public class MemoPage extends ChangeStateBar {
         mDB = dbHelper.getWritableDatabase();
         return mDB.delete(FeedReaderContract.FeedEntry.TABLE_NAME, "_id="+id, null) > 0;
     }
-
 }

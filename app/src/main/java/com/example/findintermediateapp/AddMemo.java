@@ -358,6 +358,7 @@ public class AddMemo extends ChangeStateBar {
         String memo_content = et_memoContent.getText().toString();
         String location_x = getIntent().getStringExtra("mapx");
         String location_y = getIntent().getStringExtra("mapy");
+        Log.d("location_x1", location_x);
         String str_allRegPhoto = "";
 
         for (int i = 0; i < addcount-1; i++) {

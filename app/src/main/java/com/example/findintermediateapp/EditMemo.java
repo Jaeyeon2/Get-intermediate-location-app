@@ -1,8 +1,10 @@
 package com.example.findintermediateapp;
 
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -41,6 +43,9 @@ public class EditMemo extends ChangeStateBar {
     public static final int KITKAT_VALUE = 1002;
     private static Uri filePath;
     static Uri[] uri_addedUri = new Uri[100];
+    String str_allImage;
+    int addcount;
+    String[] str_newImageArr;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,16 +66,25 @@ public class EditMemo extends ChangeStateBar {
         tv_editMemoAddress.setText(getIntent().getStringExtra("edit_memo_address"));
         et_editMemoContent.setText(getIntent().getStringExtra("edit_memo_content"));
         str_imageArr = getIntent().getStringArrayExtra("edit_memo_imageArr");
+        memoId = Integer.valueOf(getIntent().getStringExtra("edit_memo_id"));
+        str_allImage = getIntent().getStringExtra("edit_memo_allImages");
+
+
         uri_imageArr = new Uri[str_imageArr.length];
         for(int i = 0; i < str_imageArr.length; i++)
         {
             uri_imageArr[i] = Uri.parse(str_imageArr[i]);
         }
-
+        addcount = uri_imageArr.length;
         editImageAdapter = new EditImageAdapter(EditMemo.this, this, uri_imageArr);
         gv_editMemoImage = findViewById(R.id.edit_memo_gridview);
         gv_editMemoImage.setAdapter(editImageAdapter);
         editImageAdapter.notifyDataSetChanged();
+
+        for(int i = 0; i < uri_imageArr.length; i++)
+        {
+            uri_addedUri[i] = uri_imageArr[i];
+        }
     }
 
     @Override
@@ -85,15 +99,51 @@ public class EditMemo extends ChangeStateBar {
             case android.R.id.home:
                 finish();
                 return true;
-            case R.id.action_addMemo:
+            case R.id.tool_menu:
+                updateMemo(memoId);
+                // MainActivity 새로 고침
+                Intent mainIntent2 = new Intent(EditMemo.this, MainActivity.class);
+                MainActivity mainActivity2 = new MainActivity();
+                startActivity(mainIntent2);
+                mainActivity2.finish();
 
+                String[] images = str_allImage.split("\\|");
+
+                Intent memoPageIntent = new Intent(EditMemo.this, MemoPage.class);
+                memoPageIntent.putExtra("memo_location", tv_editMemoLocation.getText().toString());
+                memoPageIntent.putExtra("memo_address", tv_editMemoAddress.getText().toString());
+                memoPageIntent.putExtra("memo_content", et_editMemoContent.getText().toString());
+                memoPageIntent.putExtra("memo_date", getIntent().getStringExtra("edit_memo_date"));
+                memoPageIntent.putExtra("memo_id", String.valueOf(memoId));
+
+                if(str_allImage.equals(""))
+                {
+                    memoPageIntent.putExtra("memo_allImages", images);
+                } else {
+                    memoPageIntent.putExtra("memo_allImages", images);
+                }
+                startActivity(memoPageIntent);
+                finish();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
 
-    public void updateMemo(long id) {
+    public boolean updateMemo(long id) {
+        SQLiteDatabase mDB;
+        FeedReaderDbHelper dbHelper = new FeedReaderDbHelper(this);
+        mDB = dbHelper.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(FeedReaderContract.FeedEntry.NAME, tv_editMemoLocation.getText().toString());
+        values.put(FeedReaderContract.FeedEntry.ADDRESS, tv_editMemoAddress.getText().toString());
+        values.put(FeedReaderContract.FeedEntry.MEMO, et_editMemoContent.getText().toString());
+        values.put(FeedReaderContract.FeedEntry.PHOTO, str_allImage);
+        values.put(FeedReaderContract.FeedEntry.COORDINATE_X, getIntent().getStringExtra("edit_memo_x"));
+        Log.d("edit_memo_x", getIntent().getStringExtra("edit_memo_x"));
+        values.put(FeedReaderContract.FeedEntry.COORDINATE_Y, getIntent().getStringExtra("edit_memo_y"));
+        return mDB.update(FeedReaderContract.FeedEntry.TABLE_NAME, values, "_id=" + id, null) > 0;
+
 
     }
 
@@ -184,32 +234,32 @@ public class EditMemo extends ChangeStateBar {
         if (requestCode == KITKAT_VALUE) {
             if (resultCode == RESULT_OK) {
                 try {
-                    int addcount = uri_imageArr.length;
                     addcount++;
                     filePath = data.getData();
+                    str_allImage = str_allImage + filePath + "|";
                     Uri imageUri = Uri.parse(String.valueOf(filePath));
-                    uri_newImageArr = new Uri[addcount+2];
-                    uri_addedUri[addcount -1] = imageUri;
-                    Log.d("uri_addedUri[addcount-1", String.valueOf(uri_addedUri[addcount-1]));
+                    uri_addedUri[addcount-1] = imageUri;
+                    uri_newImageArr = new Uri[addcount];
+                    str_newImageArr = new String[addcount];
+//                    Log.d("uri_addedUr", String.valueOf(uri_addedUri[addcount-1]));
                     for(int i = 0; i < uri_newImageArr.length; i++)
                     {
-                        if(i == uri_newImageArr.length-2)
-                        {
-                            uri_newImageArr[i] = imageUri;
-                        } else {
-                            uri_newImageArr[i] = uri_imageArr[i];
-                        }
+                            uri_newImageArr[i] = uri_addedUri[i];
+                            str_newImageArr[i] = String.valueOf(uri_addedUri[i]);
                     }
-
+                    for(int i = 0; i < uri_newImageArr.length; i++)
+                    {
+                        Log.d("uri_newImageArrggg11", String.valueOf(uri_newImageArr[i]));
+                    }
                     editImageAdapter = new EditImageAdapter(this, EditMemo.this, uri_newImageArr);
                     gv_editMemoImage.setAdapter(editImageAdapter);
 
                 } catch (Exception e) {
-
                 }
             } else if (resultCode == RESULT_CANCELED) {
                 Toast.makeText(this, "사진 선택 취소", Toast.LENGTH_LONG).show();
             }
         }
     }
+
 }
