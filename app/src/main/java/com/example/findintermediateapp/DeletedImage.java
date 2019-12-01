@@ -273,7 +273,10 @@ public class DeletedImage extends ChangeStateBar {
                         addedImageIntent.putExtra("addedImage_array", str_imageArr);
                         addedImageIntent.putExtra("addedImage_location", tv_location.getText().toString());
                         addedImageIntent.putExtra("addedImage_address", tv_address.getText().toString());
+                        addedImageIntent.putExtra("addedImage_content", et_memoContent.getText().toString());
                         addedImageIntent.putExtra("addedImage_requestPage", getIntent().getStringExtra("request_page"));
+                        addedImageIntent.putExtra("addedImage_mapx", getIntent().getStringExtra("mapx"));
+                        addedImageIntent.putExtra("addedImage_mapy", getIntent().getStringExtra("mapy"));
                         startActivity(addedImageIntent);
                         finish();
                     }
