@@ -71,11 +71,11 @@ import type.CreateTodoInput;
 
 import static com.example.findintermediateapp.MainActivity.androidId;
 
-public class AddMemo extends ChangeStateBar {
+public class DeletedImage extends ChangeStateBar {
     TextView tv_location;
     TextView tv_address;
     ImageView iv_exImage;
-    Intent x;
+    Intent intent;
     static Bitmap[] addedBitmap = new Bitmap[100];
     static Uri[] uri_addedUri = new Uri[100];
     String y;
@@ -89,12 +89,7 @@ public class AddMemo extends ChangeStateBar {
     ImageAdapter imageAdapter;
     static GridView gridView;
     EditText et_memoContent;
-    private static final int REQUEST_CODE = 0;
     FeedReaderDbHelper dbHelper = new FeedReaderDbHelper(this);
-    MemoImagesDbHelper imagesDbHelper = new MemoImagesDbHelper(this);
-    private AWSAppSyncClient mAWSAppSyncClient;
-    private AppSyncSubscriptionCall subscriptionWatcher;
-    DynamoDBMapper dynamoDBMapper;
     String convertedBitmap;
     String location_name;
     public static final int KITKAT_VALUE = 1002;
@@ -102,106 +97,45 @@ public class AddMemo extends ChangeStateBar {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_memo);
+        setContentView(R.layout.activity_deleted_image);
 
-        AWSMobileClient.getInstance().initialize(this).execute();
-        AWSCredentialsProvider credentialsProvider = AWSMobileClient.getInstance().getCredentialsProvider();
-        AWSConfiguration configuration = AWSMobileClient.getInstance().getConfiguration();
-
-        AmazonDynamoDBClient dynamoDBClient = new AmazonDynamoDBClient(credentialsProvider);
-
-        this.dynamoDBMapper = DynamoDBMapper.builder()
-                .dynamoDBClient(dynamoDBClient)
-                .awsConfiguration(configuration)
-                .build();
-
-        tv_location = findViewById(R.id.min);
-        tv_address = findViewById(R.id.jae);
-        et_memoContent = findViewById(R.id.add_memo_content);
-        x = getIntent();
-        y = x.getStringExtra("location");
-        addr = x.getStringExtra("address");
+        tv_location = findViewById(R.id.deleted_image_location);
+        tv_address = findViewById(R.id.deleted_image_address);
+        et_memoContent = findViewById(R.id.deleted_image_content);
+        intent = getIntent();
+        y = intent.getStringExtra("location");
+        addr = intent.getStringExtra("address");
         tv_location.setText(y);
         tv_address.setText(addr);
-        imageAdapter = new ImageAdapter(AddMemo.this, this, uri_imageArr);
 
-        Toolbar toolbar = findViewById(R.id.tools);
+        String[] strArr_deletedImage = intent.getStringArrayExtra("str_deletedImageArr");
+        uri_imageArr = new Uri[strArr_deletedImage.length];
+        for(int i = 0; i < strArr_deletedImage.length; i++)
+        {
+            uri_imageArr[i] = Uri.parse(strArr_deletedImage[i]);
+            Log.d("strArr_deletedImage[i]", strArr_deletedImage[i]);
+            uri_addedUri[i] = Uri.parse(strArr_deletedImage[i]);
+
+            if(i == strArr_deletedImage.length -1) {
+                imageAdapter = new ImageAdapter(DeletedImage.this, this, uri_imageArr);
+                imageAdapter.notifyDataSetChanged();
+            }
+        }
+        addcount = strArr_deletedImage.length;
+
+
+        Log.d("strArr_deletedImage.length", String.valueOf(strArr_deletedImage.length));
+        uri_imageArr = new Uri[strArr_deletedImage.length];
+
+        Toolbar toolbar = findViewById(R.id.deleted_image_toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_left_arrow);
 
-        gridView = (GridView) findViewById(R.id.gridview);
+        gridView = (GridView) findViewById(R.id.deleted_image_gridview);
         gridView.setAdapter(imageAdapter);
-
-        /*
-        mAWSAppSyncClient = AWSAppSyncClient.builder()
-                .context(getApplicationContext())
-                .awsConfiguration(new AWSConfiguration(getApplicationContext()))
-                .build();
     }
-    public void runMutation(){
-        CreateTodoInput createTodoInput = CreateTodoInput.builder().
-                name("Use AppSync").
-                description("Realtime and Offline").
-                build();
-        mAWSAppSyncClient.mutate(CreateTodoMutation.builder().input(createTodoInput).build())
-                .enqueue(mutationCallback);
-         */
-    }
-
-    private GraphQLCall.Callback<CreateTodoMutation.Data> mutationCallback = new GraphQLCall.Callback<CreateTodoMutation.Data>() {
-        @Override
-        public void onResponse(@Nonnull Response<CreateTodoMutation.Data> response) {
-            Log.i("Results", "Added Todo");
-        }
-
-        @Override
-        public void onFailure(@Nonnull ApolloException e) {
-            Log.e("Error", e.toString());
-        }
-    };
-
-    public void runQuery() {
-        mAWSAppSyncClient.query(ListTodosQuery.builder().build())
-                .responseFetcher(AppSyncResponseFetchers.CACHE_AND_NETWORK)
-                .enqueue(todosCallback);
-    }
-
-    private GraphQLCall.Callback<ListTodosQuery.Data> todosCallback = new GraphQLCall.Callback<ListTodosQuery.Data>() {
-        @Override
-        public void onResponse(@Nonnull Response<ListTodosQuery.Data> response) {
-            Log.i("Results", response.data().listTodos().items().toString());
-        }
-
-        @Override
-        public void onFailure(@Nonnull ApolloException e) {
-            Log.e("ERROR", e.toString());
-        }
-    };
-
-    private void subscribe() {
-        OnCreateTodoSubscription subscription = OnCreateTodoSubscription.builder().build();
-        subscriptionWatcher = mAWSAppSyncClient.subscribe(subscription);
-        subscriptionWatcher.execute(subCallback);
-    }
-
-    private AppSyncSubscriptionCall.Callback subCallback = new AppSyncSubscriptionCall.Callback() {
-        @Override
-        public void onResponse(@Nonnull Response response) {
-            Log.i("Response", response.data().toString());
-        }
-
-        @Override
-        public void onFailure(@Nonnull ApolloException e) {
-            Log.e("Error", e.toString());
-        }
-
-        @Override
-        public void onCompleted() {
-            Log.i("Completed", "Subscription completed");
-        }
-    };
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -233,28 +167,20 @@ public class AddMemo extends ChangeStateBar {
                     Uri imageUri = Uri.parse(String.valueOf(filePath));
                     String imagePath = imageUri.getPath();
                     Log.d("imagePath", imagePath);
-                    InputStream in = getContentResolver().openInputStream(filePath);
-                    Log.d("filePath", String.valueOf(filePath));
-                    Bitmap img;
-                    img = BitmapFactory.decodeStream(in);
-                    in.close();
                     memo_work = new Bitmap[addcount];
                     uri_imageArr = new Uri[addcount];
-                    Bitmap bitmap = BitmapFactory.decodeResource(getApplicationContext().getResources(), R.drawable.add_work_no2);
-                    //Uri firstUri = getImageUri(getApplicationContext(), bitmap);
+                    uri_addedUri[addcount-2] = imageUri;
                     filePathArray[addcount -1] = filePath;
-                    addedBitmap[addcount - 1] = img;
-                    uri_addedUri[addcount -1] = imageUri;
                     Log.d("uri_addedUri[addcount-1", String.valueOf(uri_addedUri[addcount-1]));
                     for (int i = 0; i < addcount; i++) {
                         Log.d("uri_imageArr[i]", String.valueOf(uri_addedUri[i]));
                         if (i == addcount - 1) {
                             // uri_imageArr[i] = firstUri;
                         } else {
-                            uri_imageArr[i] = uri_addedUri[i + 1];
+                            uri_imageArr[i] = uri_addedUri[i];
                         }
                     }
-                    imageAdapter = new ImageAdapter(this, AddMemo.this, uri_imageArr);
+                    imageAdapter = new ImageAdapter(this, DeletedImage.this, uri_imageArr);
                     gridView.setAdapter(imageAdapter);
                 } catch (Exception e) {
 
@@ -391,11 +317,11 @@ public class AddMemo extends ChangeStateBar {
         db.insert(FeedReaderContract.FeedEntry.TABLE_NAME, null, values);
 
         if(getIntent().getStringExtra("request_page").equals("MainActivity")) {
-            Intent mainIntent = new Intent(AddMemo.this, MainActivity.class);
+            Intent mainIntent = new Intent(DeletedImage.this, MainActivity.class);
             startActivity(mainIntent);
             finish();
         } else if(getIntent().getStringExtra("request_page").equals("MemoListPage")){
-            Intent memoListIntent = new Intent(AddMemo.this, MemoListPage.class);
+            Intent memoListIntent = new Intent(DeletedImage.this, MemoListPage.class);
             memoListIntent.putExtra("memo_location", location_name);
             memoListIntent.putExtra("memo_address", location_address);
             startActivity(memoListIntent);
@@ -410,19 +336,6 @@ public class AddMemo extends ChangeStateBar {
         return Base64.encodeToString(imageBytes, Base64.NO_WRAP);
     }
 
-    public void createMemoImage() {
-        final MemoDO memoItem = new MemoDO();
-        memoItem.setAndroidId(androidId);
-        memoItem.setImage(convertedBitmap);
-        memoItem.setLocation(location_name);
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                dynamoDBMapper.save(memoItem);
-            }
-        }).start();
-    }
     private Uri getImageUri(Context context, Bitmap inImage) {
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
         inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);

@@ -5,6 +5,8 @@ import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
@@ -20,24 +22,23 @@ public class AddedImage extends ChangeStateBar {
     Uri[] uri_updatedArr;
     String[] str_updatedArr;
     AddMemo.ImageAdapter imageAdapter;
+    private Animation fab_close;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_added_image);
-
+        fab_close = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_close);
         iv_addedImage = findViewById(R.id.added_image);
         ll_addedImageDelete = findViewById(R.id.added_image_delete);
-
+        str_updatedArr = getIntent().getStringArrayExtra("addedImage_array");
         String strImage = getIntent().getStringExtra("addedImage_uri");
         uri_addedImage = Uri.parse(strImage);
         Glide.with(this).load(uri_addedImage).into(iv_addedImage);
-
         ll_addedImageDelete.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View view) {
-                str_updatedArr = getIntent().getStringArrayExtra("addedImage_array");
                 uri_updatedArr = new Uri[str_updatedArr.length];
                 for(int i = 0; i < str_updatedArr.length; i++)
                 {
@@ -63,21 +64,28 @@ public class AddedImage extends ChangeStateBar {
                   str_deletedArr[i] = String.valueOf(uri_deletedArr[i]);
                 }
 
-                Intent addMemoIntent = new Intent(AddedImage.this, AddMemo.class);
-                addMemoIntent.putExtra("str_deletedImageArr", str_deletedArr);
-                addMemoIntent.putExtra("location", getIntent().getStringExtra("addedImage_location"));
-                addMemoIntent.putExtra("address", getIntent().getStringExtra("addedImage_address"));
-                startActivity(addMemoIntent);
+                Intent deletedImageIntent = new Intent(AddedImage.this, DeletedImage.class);
+                deletedImageIntent.putExtra("str_deletedImageArr", str_deletedArr);
+                deletedImageIntent.putExtra("image_delete", "yes");
+                deletedImageIntent.putExtra("location", getIntent().getStringExtra("addedImage_location"));
+                deletedImageIntent.putExtra("address", getIntent().getStringExtra("addedImage_address"));
+                startActivity(deletedImageIntent);
                 finish();
-/*
-                AddMemo addMemo = new AddMemo();
-                imageAdapter = new AddMemo().new ImageAdapter(AddedImage.this, AddedImage.this, uri_deletedArr);
-                imageAdapter.notifyDataSetChanged();
-                gridView.setAdapter(imageAdapter);
-
-                finish();
- */
             }
         });
+    }
+
+    @Override
+    public void onBackPressed() {
+
+        Intent deletedImageIntent = new Intent(AddedImage.this, DeletedImage.class);
+        deletedImageIntent.putExtra("image_delete", "no");
+        deletedImageIntent.putExtra("str_deletedImageArr", str_updatedArr);
+        deletedImageIntent.putExtra("location", getIntent().getStringExtra("addedImage_location"));
+        deletedImageIntent.putExtra("address", getIntent().getStringExtra("addedImage_address"));
+        startActivity(deletedImageIntent);
+        overridePendingTransition(0, 0);
+        finish();
+
     }
 }

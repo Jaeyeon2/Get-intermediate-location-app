@@ -175,11 +175,9 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
 //        savedMarker = new Marker();
         img = findViewById(R.id.marker_image);
         params = (FrameLayout.LayoutParams)img.getLayoutParams();
-
         Bitmap bitmap_ex = BitmapFactory.decodeResource(getResources(), R.drawable.image);
         String bitmap_ste = getBase64String(bitmap_ex);
         Log.d("bitmap_str", bitmap_ste);
-
         ll_markerDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -188,7 +186,6 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
                 rl_clickedLocation.setVisibility(INVISIBLE);
             }
         });
-
         int colorValue = Color.parseColor("#a3a3a3");
         Toolbar toolbar = findViewById(R.id.home_toolbar);
         setSupportActionBar(toolbar);

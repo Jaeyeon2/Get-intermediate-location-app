@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".AddMemo"
+    android:orientation="vertical"
+    android:weightSum="10"
+    android:background="#ffffff"
+    >
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="45dp">
+        <!--  툴바 설정하기ㅣ
+        -->
+        <android.support.v7.widget.Toolbar
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/deleted_image_toolbar"
+            android:background="#ffffff"
+            ></android.support.v7.widget.Toolbar>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="메모 저장하기"
+            android:textSize="20sp"
+            android:layout_gravity="center"
+            android:textColor="#000000"
+            />
+
+    </FrameLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="4dp"
+        android:background="@drawable/toolbar_dropshadow"></View>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:orientation="vertical"
+        android:paddingLeft="15dp"
+        android:paddingTop="10dp"
+        >
+
+        <TextView
+            android:id="@+id/deleted_image_location"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:textColor="#000000"
+
+            ></TextView>
+
+        <TextView
+            android:id="@+id/deleted_image_address"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            ></TextView>
+        ></LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.3dp"
+        android:background="#C3C3C3"></View>
+
+    <EditText
+        android:background="@drawable/no_line_text_edit"
+        android:paddingLeft="15dp"
+        android:layout_width="match_parent"
+        android:layout_height="121dp"
+        android:id="@+id/deleted_image_content"
+        android:hint="내용"
+        android:textSize="16sp"
+        ></EditText>
+
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.3dp"
+        android:background="#C3C3C3"></View>
+
+    <GridView
+        android:layout_marginTop="5dp"
+        android:background="#ffffff"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/deleted_image_gridview"
+        android:gravity="center"
+        android:verticalSpacing="1dp"
+        android:numColumns="3"
+        android:paddingBottom="5dp"
+        android:overScrollMode="never"/>
+
+</LinearLayout>

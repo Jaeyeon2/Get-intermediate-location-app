@@ -9,10 +9,9 @@
     android:orientation="vertical"
     android:weightSum="10">
 
-    <LinearLayout
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="9">
+        android:layout_height="match_parent">
     <ImageView
         android:layout_gravity="center"
         android:layout_width="match_parent"
@@ -20,22 +19,23 @@
         android:id="@+id/added_image"
         />
 
-    </LinearLayout>
 
-<LinearLayout
-    android:id="@+id/added_image_delete"
-    android:layout_width="match_parent"
-    android:layout_height="0dp"
-    android:layout_weight="1"
-    android:gravity="center"
-    android:background="#50ffffff">
+        <LinearLayout
+            android:layout_gravity="bottom"
+            android:id="@+id/added_image_delete"
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:gravity="center"
+            android:background="#50ffffff">
 
-    <ImageView
-        android:layout_width="35dp"
-        android:layout_height="50dp"
-        android:src="@drawable/image_delete"
-        android:id="@+id/ss"/>
+            <ImageView
+                android:layout_width="35dp"
+                android:layout_height="50dp"
+                android:src="@drawable/image_delete"
+                android:id="@+id/ss"/>
 
-</LinearLayout>
+        </LinearLayout>
 
+
+    </FrameLayout>
 </LinearLayout>
