@@ -150,9 +150,41 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
     String tempName;
     public Bitmap decodedBitmap;
     String allMemoImages = "";
+    String[] memoName;
+    String[] memoAdress;
+    String[] memoMemo;
+    String[] memoPhoto;
+    String[] memoMemotime;
+    String[] memoX;
+    String[] memoY;
+    int memoCount = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        Cursor cursor = db.rawQuery("select name, address, memo, photo, memotime, coordinate_x, coordinate_y from location_memo" , null);
+        memoCount = cursor.getCount();
+        memoName = new String[memoCount];
+        memoAdress = new String[memoCount];
+        memoMemo = new String[memoCount];
+        memoPhoto = new String[memoCount];
+        memoMemotime = new String[memoCount];
+        memoX = new String[memoCount];
+        memoY = new String[memoCount];
+
+        int index = 0;
+        while(cursor.moveToNext())
+        {
+         memoName[index] = cursor.getString(0);
+         memoAdress[index] = cursor.getString(1);
+         memoMemo[index] = cursor.getString(2);
+         memoMemotime[index] = cursor.getString(4);
+         memoPhoto[index] = cursor.getString(3);
+         memoX[index] = cursor.getString(5);
+         memoY[index] = cursor.getString(6);
+         index++;
+        }
+
         androidId = Settings.Secure.getString(getContentResolver(),
                 Settings.Secure.ANDROID_ID);
         Log.d("device androidId", androidId);
@@ -303,7 +335,20 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
             case R.id.action_search:
                 return true;
             case android.R.id.home:
+                Intent myMemoIntent = new Intent(MainActivity.this, MyMemo.class);
+
+                myMemoIntent.putExtra("memoName",memoName);
+                myMemoIntent.putExtra("memoAdress",memoAdress);
+                myMemoIntent.putExtra("memoPhoto",memoPhoto);
+                myMemoIntent.putExtra("memoMemotime",memoMemotime);
+                myMemoIntent.putExtra("memoX",memoX);
+                myMemoIntent.putExtra("memoY",memoY);
+
+                myMemoIntent.putExtra("memoCount",memoCount);
+
+                startActivity(myMemoIntent);
                 return true;
+
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -354,7 +399,7 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
                 Bitmap bitmap2 = null;
                     Uri imageUri = null;
                     if(tempPhoto.equals("")) {
-                        bitmap2 = BitmapFactory.decodeResource(getResources(), R.drawable.add_work_no2);
+                 //       bitmap2 = BitmapFactory.decodeResource(getResources(), R.drawable.add_work_no2);
                     }
                 else {
                     String[] eachPhoto = tempPhoto.split("\\|");
