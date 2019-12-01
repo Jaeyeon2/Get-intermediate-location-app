@@ -98,13 +98,13 @@ public class DeletedImage extends ChangeStateBar {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_deleted_image);
-
         tv_location = findViewById(R.id.deleted_image_location);
         tv_address = findViewById(R.id.deleted_image_address);
         et_memoContent = findViewById(R.id.deleted_image_content);
         intent = getIntent();
         y = intent.getStringExtra("location");
         addr = intent.getStringExtra("address");
+        et_memoContent.setText(intent.getStringExtra("content"));
         tv_location.setText(y);
         tv_address.setText(addr);
 
@@ -114,6 +114,7 @@ public class DeletedImage extends ChangeStateBar {
         {
             uri_imageArr[i] = Uri.parse(strArr_deletedImage[i]);
             Log.d("strArr_deletedImage[i]", strArr_deletedImage[i]);
+            Log.d("uri_imageArr[i]zzzz", String.valueOf(uri_imageArr[i]));
             uri_addedUri[i] = Uri.parse(strArr_deletedImage[i]);
 
             if(i == strArr_deletedImage.length -1) {
@@ -122,10 +123,6 @@ public class DeletedImage extends ChangeStateBar {
             }
         }
         addcount = strArr_deletedImage.length;
-
-
-        Log.d("strArr_deletedImage.length", String.valueOf(strArr_deletedImage.length));
-        uri_imageArr = new Uri[strArr_deletedImage.length];
 
         Toolbar toolbar = findViewById(R.id.deleted_image_toolbar);
         setSupportActionBar(toolbar);
@@ -276,6 +273,7 @@ public class DeletedImage extends ChangeStateBar {
                         addedImageIntent.putExtra("addedImage_array", str_imageArr);
                         addedImageIntent.putExtra("addedImage_location", tv_location.getText().toString());
                         addedImageIntent.putExtra("addedImage_address", tv_address.getText().toString());
+                        addedImageIntent.putExtra("addedImage_requestPage", getIntent().getStringExtra("request_page"));
                         startActivity(addedImageIntent);
                         finish();
                     }
@@ -300,9 +298,10 @@ public class DeletedImage extends ChangeStateBar {
         String str_allRegPhoto = "";
 
         for (int i = 0; i < addcount-1; i++) {
-            Log.d("addedBitmap", String.valueOf(addedBitmap[i]));
-            str_allRegPhoto = str_allRegPhoto + String.valueOf(filePathArray[i+1]) + "|";
+            str_allRegPhoto = str_allRegPhoto + String.valueOf(uri_imageArr[i]) + "|";
+            Log.d("uri_imageArrgg", String.valueOf(uri_imageArr[i]));
         }
+
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
 

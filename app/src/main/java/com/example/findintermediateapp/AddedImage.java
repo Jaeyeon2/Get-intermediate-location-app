@@ -69,6 +69,10 @@ public class AddedImage extends ChangeStateBar {
                 deletedImageIntent.putExtra("image_delete", "yes");
                 deletedImageIntent.putExtra("location", getIntent().getStringExtra("addedImage_location"));
                 deletedImageIntent.putExtra("address", getIntent().getStringExtra("addedImage_address"));
+                deletedImageIntent.putExtra("content", getIntent().getStringExtra("addedImage_content"));
+                deletedImageIntent.putExtra("mapx", getIntent().getStringExtra("addedImage_mapx"));
+                deletedImageIntent.putExtra("mapy", getIntent().getStringExtra("addedImage_mapy"));
+                deletedImageIntent.putExtra("request_page", getIntent().getStringExtra("addedImage_requestPage"));
                 startActivity(deletedImageIntent);
                 finish();
             }
@@ -83,6 +87,10 @@ public class AddedImage extends ChangeStateBar {
         deletedImageIntent.putExtra("str_deletedImageArr", str_updatedArr);
         deletedImageIntent.putExtra("location", getIntent().getStringExtra("addedImage_location"));
         deletedImageIntent.putExtra("address", getIntent().getStringExtra("addedImage_address"));
+        deletedImageIntent.putExtra("content", getIntent().getStringExtra("addedImage_content"));
+        deletedImageIntent.putExtra("mapx", getIntent().getStringExtra("addedImage_mapx"));
+        deletedImageIntent.putExtra("mapy", getIntent().getStringExtra("addedImage_mapy"));
+        deletedImageIntent.putExtra("request_page", getIntent().getStringExtra("addedImage_requestPage"));
         startActivity(deletedImageIntent);
         overridePendingTransition(0, 0);
         finish();

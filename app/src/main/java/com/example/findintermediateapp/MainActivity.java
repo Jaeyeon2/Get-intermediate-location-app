@@ -359,6 +359,8 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
                 else {
                     String[] eachPhoto = tempPhoto.split("\\|");
                     imageUri = Uri.parse(eachPhoto[0]);
+                    Log.d("imageUrizzz", String.valueOf(imageUri));
+                    Log.d("eachPhoto[0]zzz", eachPhoto[0]);
                 }
 
                 Glide.with(getApplicationContext()).asBitmap().load(imageUri).into(new SimpleTarget<Bitmap>() {
