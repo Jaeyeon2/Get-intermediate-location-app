@@ -5,8 +5,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.widget.Adapter;
-import android.widget.GridView;
+import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 
 import java.util.ArrayList;
 
@@ -32,6 +32,12 @@ public class MyMemo extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_memo);
+
+        Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle(null);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         layoutManager = new GridLayoutManager(getApplicationContext(), 3);
        mCount = getIntent().getIntExtra("memoCount", 0);
 
@@ -69,6 +75,16 @@ public class MyMemo extends AppCompatActivity {
        recyclerView.setLayoutManager(layoutManager);
        recyclerView.setAdapter(adapter);
 
+    }
 
+    @Override
+    public boolean onOptionsItemSelected (MenuItem item){
+        switch(item.getItemId()) {
+            case android.R.id.home: {
+                finish();
+                return true;
+            }
+        }
+        return super.onOptionsItemSelected(item);
     }
 }
