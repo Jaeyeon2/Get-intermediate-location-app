@@ -461,11 +461,16 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
             }
             if(existingLocation == false && data_count == cursorCount){
                 Log.d("해당위치에 존재하는 메모가 업습니다.", "1");
-                CameraUpdate cameraUpdate = CameraUpdate.scrollTo(new LatLng(user_mapX, user_mapY));
-                naverMap.moveCamera(cameraUpdate);
+//                CameraUpdate cameraUpdate = CameraUpdate.scrollTo(new LatLng(user_mapX, user_mapY), 5);
+//                naverMap.moveCamera(cameraUpdate);
+
+                CameraPosition addCameraPosition = new CameraPosition(new LatLng(user_mapX, user_mapY), 9);
+                CameraUpdate addCamemraUpdate = CameraUpdate.toCameraPosition(addCameraPosition);
+                naverMap.moveCamera(addCamemraUpdate);
+
                 ImageView iv_addMemoMarker = new ImageView(this);
                 addMemoMarker.setPosition(new LatLng(user_mapX, user_mapY));
-                Bitmap smallMarker = BitmapFactory.decodeResource(getResources(), R.drawable.location_plus_marker7);
+                Bitmap smallMarker = BitmapFactory.decodeResource(getResources(), R.drawable.location_plus_marker8);
                 smallMarker = Bitmap.createScaledBitmap(smallMarker, 225, 225, true);
                 iv_addMemoMarker.setImageBitmap(smallMarker);
                 addMemoMarker.setIcon(OverlayImage.fromView(iv_addMemoMarker));
@@ -480,7 +485,7 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
                 naverMap.moveCamera(cameraUpdate);
                 ImageView iv_addMemoMarker = new ImageView(this);
                 addMemoMarker.setPosition(new LatLng(user_mapX, user_mapY));
-                Bitmap smallMarker = BitmapFactory.decodeResource(getResources(), R.drawable.location_plus_marker7);
+                Bitmap smallMarker = BitmapFactory.decodeResource(getResources(), R.drawable.location_plus_marker8);
                 smallMarker = Bitmap.createScaledBitmap(smallMarker, 225, 225, true);
                 iv_addMemoMarker.setImageBitmap(smallMarker);
                 addMemoMarker.setIcon(OverlayImage.fromView(iv_addMemoMarker));
