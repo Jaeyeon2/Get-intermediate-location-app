@@ -19,6 +19,7 @@
         <activity android:name=".MemoPage" />
         <activity android:name=".AddMemo" />
         <activity android:name=".MyMemo"/>
+        <activity android:name=".ImageActivity"/>
         <activity
             android:name=".SearchActivity"
             android:windowSoftInputMode="adjustResize" />
@@ -46,7 +47,7 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.WRITE_OWNER_DATA" />
-
     <uses-permission android:name="android.permission.READ_OWNER_DATA" />
-
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
 </manifest>

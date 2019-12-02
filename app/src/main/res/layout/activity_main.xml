@@ -269,15 +269,42 @@
             app:fabSize="auto"
             />
 -->
-        <com.naver.maps.map.widget.LocationButtonView
-            android:id="@+id/myLocation_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="start|bottom"
-            android:layout_marginBottom="40dp"
-            android:layout_marginLeft="10dp"
-            android:onClick="myLocationOnClick"
-            />
+
+        --><FrameLayout
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_gravity="start|bottom"
+        android:layout_marginBottom="30dp"
+        android:layout_marginLeft="0dp">
+
+        <com.gigamole.library.ShadowLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/myLocation_shadow"
+            android:padding="10dp"
+            android:clipToPadding="false"
+            app:sl_shadowed="true"
+            android:layout_gravity="center"
+            app:sl_shadow_color="#000000">
+
+            <Button
+                android:id="@+id/myLocation_btn"
+                android:background="@drawable/selector_view"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:stateListAnimator="@null"
+                android:layout_gravity="center"
+                android:onClick="myLocationOnClick"
+                />
+        </com.gigamole.library.ShadowLayout>
+
+        <ImageView
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="center"
+            android:src="@drawable/pin"/>
+
+    </FrameLayout>
 
         <ImageView
             android:layout_width="20dp"

@@ -34,20 +34,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.amazonaws.amplify.generated.graphql.CreateTodoMutation;
-import com.amazonaws.amplify.generated.graphql.ListTodosQuery;
-import com.amazonaws.amplify.generated.graphql.OnCreateTodoSubscription;
-import com.amazonaws.auth.AWSCredentialsProvider;
-import com.amazonaws.mobile.client.AWSMobileClient;
-import com.amazonaws.mobile.config.AWSConfiguration;
-import com.amazonaws.mobileconnectors.appsync.AWSAppSyncClient;
-import com.amazonaws.mobileconnectors.appsync.AppSyncSubscriptionCall;
-import com.amazonaws.mobileconnectors.appsync.fetcher.AppSyncResponseFetchers;
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
-import com.apollographql.apollo.GraphQLCall;
-import com.apollographql.apollo.api.Response;
-import com.apollographql.apollo.exception.ApolloException;
-import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBMapper;
 import com.bumptech.glide.Glide;
 
 import org.json.JSONObject;

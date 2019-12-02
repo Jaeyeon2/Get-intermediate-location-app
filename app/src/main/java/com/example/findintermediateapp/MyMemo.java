@@ -10,7 +10,7 @@ import android.view.MenuItem;
 
 import java.util.ArrayList;
 
-public class MyMemo extends AppCompatActivity {
+public class MyMemo extends ChangeStateBar {
 
     RecyclerView recyclerView;
     MyMemoAdapter adapter;
@@ -37,6 +37,8 @@ public class MyMemo extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle(null);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_left_arrow);
+
 
         layoutManager = new GridLayoutManager(getApplicationContext(), 3);
        mCount = getIntent().getIntExtra("memoCount", 0);

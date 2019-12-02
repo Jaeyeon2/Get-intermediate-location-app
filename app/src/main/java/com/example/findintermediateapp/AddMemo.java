@@ -34,20 +34,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.amazonaws.amplify.generated.graphql.CreateTodoMutation;
-import com.amazonaws.amplify.generated.graphql.ListTodosQuery;
-import com.amazonaws.amplify.generated.graphql.OnCreateTodoSubscription;
-import com.amazonaws.auth.AWSCredentialsProvider;
-import com.amazonaws.mobile.client.AWSMobileClient;
-import com.amazonaws.mobile.config.AWSConfiguration;
-import com.amazonaws.mobileconnectors.appsync.AWSAppSyncClient;
-import com.amazonaws.mobileconnectors.appsync.AppSyncSubscriptionCall;
-import com.amazonaws.mobileconnectors.appsync.fetcher.AppSyncResponseFetchers;
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
-import com.apollographql.apollo.GraphQLCall;
-import com.apollographql.apollo.api.Response;
-import com.apollographql.apollo.exception.ApolloException;
-import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBMapper;
 import com.bumptech.glide.Glide;
 
 import org.json.JSONObject;
@@ -92,9 +78,6 @@ public class AddMemo extends ChangeStateBar {
     private static final int REQUEST_CODE = 0;
     FeedReaderDbHelper dbHelper = new FeedReaderDbHelper(this);
     MemoImagesDbHelper imagesDbHelper = new MemoImagesDbHelper(this);
-    private AWSAppSyncClient mAWSAppSyncClient;
-    private AppSyncSubscriptionCall subscriptionWatcher;
-    DynamoDBMapper dynamoDBMapper;
     String convertedBitmap;
     String location_name;
     public static final int KITKAT_VALUE = 1002;
@@ -104,16 +87,6 @@ public class AddMemo extends ChangeStateBar {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_memo);
 
-        AWSMobileClient.getInstance().initialize(this).execute();
-        AWSCredentialsProvider credentialsProvider = AWSMobileClient.getInstance().getCredentialsProvider();
-        AWSConfiguration configuration = AWSMobileClient.getInstance().getConfiguration();
-
-        AmazonDynamoDBClient dynamoDBClient = new AmazonDynamoDBClient(credentialsProvider);
-
-        this.dynamoDBMapper = DynamoDBMapper.builder()
-                .dynamoDBClient(dynamoDBClient)
-                .awsConfiguration(configuration)
-                .build();
 
         tv_location = findViewById(R.id.min);
         tv_address = findViewById(R.id.jae);
@@ -149,59 +122,6 @@ public class AddMemo extends ChangeStateBar {
                 .enqueue(mutationCallback);
          */
     }
-
-    private GraphQLCall.Callback<CreateTodoMutation.Data> mutationCallback = new GraphQLCall.Callback<CreateTodoMutation.Data>() {
-        @Override
-        public void onResponse(@Nonnull Response<CreateTodoMutation.Data> response) {
-            Log.i("Results", "Added Todo");
-        }
-
-        @Override
-        public void onFailure(@Nonnull ApolloException e) {
-            Log.e("Error", e.toString());
-        }
-    };
-
-    public void runQuery() {
-        mAWSAppSyncClient.query(ListTodosQuery.builder().build())
-                .responseFetcher(AppSyncResponseFetchers.CACHE_AND_NETWORK)
-                .enqueue(todosCallback);
-    }
-
-    private GraphQLCall.Callback<ListTodosQuery.Data> todosCallback = new GraphQLCall.Callback<ListTodosQuery.Data>() {
-        @Override
-        public void onResponse(@Nonnull Response<ListTodosQuery.Data> response) {
-            Log.i("Results", response.data().listTodos().items().toString());
-        }
-
-        @Override
-        public void onFailure(@Nonnull ApolloException e) {
-            Log.e("ERROR", e.toString());
-        }
-    };
-
-    private void subscribe() {
-        OnCreateTodoSubscription subscription = OnCreateTodoSubscription.builder().build();
-        subscriptionWatcher = mAWSAppSyncClient.subscribe(subscription);
-        subscriptionWatcher.execute(subCallback);
-    }
-
-    private AppSyncSubscriptionCall.Callback subCallback = new AppSyncSubscriptionCall.Callback() {
-        @Override
-        public void onResponse(@Nonnull Response response) {
-            Log.i("Response", response.data().toString());
-        }
-
-        @Override
-        public void onFailure(@Nonnull ApolloException e) {
-            Log.e("Error", e.toString());
-        }
-
-        @Override
-        public void onCompleted() {
-            Log.i("Completed", "Subscription completed");
-        }
-    };
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -420,19 +340,6 @@ public class AddMemo extends ChangeStateBar {
         return Base64.encodeToString(imageBytes, Base64.NO_WRAP);
     }
 
-    public void createMemoImage() {
-        final MemoDO memoItem = new MemoDO();
-        memoItem.setAndroidId(androidId);
-        memoItem.setImage(convertedBitmap);
-        memoItem.setLocation(location_name);
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                dynamoDBMapper.save(memoItem);
-            }
-        }).start();
-    }
     private Uri getImageUri(Context context, Bitmap inImage) {
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
         inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
