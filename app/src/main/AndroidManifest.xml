@@ -18,6 +18,7 @@
         <activity android:name=".MemoListPage" />
         <activity android:name=".MemoPage" />
         <activity android:name=".AddMemo" />
+        <activity android:name=".MyMemo"/>
         <activity
             android:name=".SearchActivity"
             android:windowSoftInputMode="adjustResize" />

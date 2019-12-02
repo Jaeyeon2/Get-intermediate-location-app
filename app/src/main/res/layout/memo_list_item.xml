@@ -39,10 +39,10 @@
                     android:layout_height="wrap_content"
                     android:text="1"
                     android:textSize="22sp"
+                    android:visibility="invisible"
                     android:id="@+id/memo_item_imageCount"
                     android:layout_gravity="bottom|right"
                     android:textColor="#73000000"/>
-
             </FrameLayout>
         </LinearLayout>
 
