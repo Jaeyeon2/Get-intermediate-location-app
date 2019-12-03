@@ -101,6 +101,7 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
     private MapView mapView;
     private Cursor mCursor;
     NaverMap naverMap;
+    Marker myLocationMarker;
     public static Marker firstMarker;
     public static Marker secondMarker;
     public static Marker thirdMarker;
@@ -178,6 +179,8 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
         memoY = new String[memoCount];
         memoId = new String[memoCount];
 
+        myLocationMarker = new Marker();
+
         int index = 0;
         while(cursor.moveToNext())
         {
@@ -222,6 +225,7 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
             public void onClick(View view) {
                 addMemoMarker.setPosition(new LatLng(0, 0));
                 addMemoMarker.setMap(null);
+                myLocationMarker.setMap(null);
                 rl_clickedLocation.setVisibility(INVISIBLE);
             }
         });
@@ -323,6 +327,12 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
         double latitude = gpsTracker.getLatitude();
         double longitude = gpsTracker.getLongitude();
         address = getCurrentAddress(latitude, longitude);
+        String[] str_address = address.split(" ");
+        address = "";
+        for(int i = 1; i < str_address.length; i++)
+        {
+            address = address + str_address[i] + " " ;
+        }
 
         showAlertDialog(latitude, longitude);
     }
@@ -684,27 +694,44 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
                 CameraPosition addMemoCameraPosition = new CameraPosition(new LatLng(latitude, longitude), 9);
                 CameraUpdate addMemoCameraUpdate = CameraUpdate.toCameraPosition(addMemoCameraPosition);
                 naverMap.moveCamera(addMemoCameraUpdate);
+                boolean existingLocation = false;
 
-                ImageView iv_myLocation = new ImageView(MainActivity.this);
-                Bitmap myLocationBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.location_plus_marker8);
-                myLocationBitmap = Bitmap.createScaledBitmap(myLocationBitmap, 225, 225, true);
-                iv_myLocation.setImageBitmap(myLocationBitmap);
-                Marker myLocationMarker;
-                myLocationMarker = new Marker();
-                myLocationMarker.setPosition(new LatLng(latitude, longitude));
-                myLocationMarker.setIcon(OverlayImage.fromView(iv_myLocation));
-                myLocationMarker.setMap(naverMap);
+                for(int i = 0; i < memoX.length; i++) {
+                    Log.d("memoXsss", memoX[i]);
+                    if(latitude.equals(memoX[i]))
+                    {
+                     existingLocation = true;
+                    }
+                    if(i == memoX.length-1)
+                    {
+                        if(existingLocation==true)
+                        {
 
-                myLocationMarker.setOnClickListener(overlay -> {
-                    Intent addMemoIntent = new Intent(MainActivity.this, AddMemo.class);
-                    addMemoIntent.putExtra("location", "MyLocation");
-                    addMemoIntent.putExtra("address", address);
-                    addMemoIntent.putExtra("mapx", String.valueOf(latitude));
-                    addMemoIntent.putExtra("mapy", String.valueOf(longitude));
-                    addMemoIntent.putExtra("request_page", "MainActivity");
-                    startActivity(addMemoIntent);
-                    return true;
-                });
+                        } else {
+                            ImageView iv_myLocation = new ImageView(MainActivity.this);
+                            Bitmap myLocationBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.location_plus_marker8);
+                            myLocationBitmap = Bitmap.createScaledBitmap(myLocationBitmap, 225, 225, true);
+                            iv_myLocation.setImageBitmap(myLocationBitmap);
+                            myLocationMarker.setPosition(new LatLng(latitude, longitude));
+                            myLocationMarker.setIcon(OverlayImage.fromView(iv_myLocation));
+                            myLocationMarker.setMap(naverMap);
+
+                            myLocationMarker.setOnClickListener(overlay -> {
+                                Intent addMemoIntent = new Intent(MainActivity.this, AddMemo.class);
+                                addMemoIntent.putExtra("location", "MyLocation");
+                                addMemoIntent.putExtra("address", address);
+                                addMemoIntent.putExtra("mapx", String.valueOf(latitude));
+                                addMemoIntent.putExtra("mapy", String.valueOf(longitude));
+                                addMemoIntent.putExtra("request_page", "MainActivity");
+                                startActivity(addMemoIntent);
+                                return true;
+                            });
+
+                            rl_clickedLocation.setVisibility(VISIBLE);
+                            tv_markerLocation.setText(address);
+                        }
+                    }
+                }
             }
         });
         builder.setNegativeButton("아니요",
