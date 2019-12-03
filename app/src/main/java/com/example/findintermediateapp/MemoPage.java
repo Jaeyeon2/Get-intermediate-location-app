@@ -20,6 +20,8 @@ import android.widget.TextView;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+import me.relex.circleindicator.CircleIndicator;
+
 public class MemoPage extends ChangeStateBar {
 
     TextView tv_memoContent;
@@ -63,6 +65,9 @@ public class MemoPage extends ChangeStateBar {
         
         ViewPagerAdapter adapter = new ViewPagerAdapter(getLayoutInflater(), uri_filePath);
         vp_imagePager.setAdapter(adapter);
+
+        CircleIndicator indicator = (CircleIndicator)findViewById(R.id.indicator);
+        indicator.setViewPager(vp_imagePager);
 
         DisplayMetrics metrics = new DisplayMetrics();
         WindowManager windowManager = (WindowManager)this.getSystemService(Context.WINDOW_SERVICE);

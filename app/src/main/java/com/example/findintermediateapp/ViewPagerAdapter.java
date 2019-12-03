@@ -67,4 +67,9 @@ public class ViewPagerAdapter extends PagerAdapter {
         // TODO Auto-generated method stub
         return v==obj;
     }
+
+    @Override
+    public CharSequence getPageTitle(int position) {
+        return "Page " + position;
+    }
 }
