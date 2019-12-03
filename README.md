@@ -1,1 +1,3 @@
-# Get-intermediate-location-app
+#MapMemo
+
+지도상 특정위치에대해서 메모를 남길수 있는 안드로이드 어플리케이션 입니다
