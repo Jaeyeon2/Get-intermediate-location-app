@@ -156,6 +156,7 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
     String[] memoMemotime;
     String[] memoX;
     String[] memoY;
+    String[] memoId;
     int memoCount = 0;
 
     private GpsTracker gpsTracker;
@@ -166,7 +167,7 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
-        Cursor cursor = db.rawQuery("select name, address, memo, photo, memotime, coordinate_x, coordinate_y from location_memo" , null);
+        Cursor cursor = db.rawQuery("select name, address, memo, photo, memotime, coordinate_x, coordinate_y, _id from location_memo" , null);
         memoCount = cursor.getCount();
         memoName = new String[memoCount];
         memoAdress = new String[memoCount];
@@ -175,6 +176,7 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
         memoMemotime = new String[memoCount];
         memoX = new String[memoCount];
         memoY = new String[memoCount];
+        memoId = new String[memoCount];
 
         int index = 0;
         while(cursor.moveToNext())
@@ -186,6 +188,7 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
          memoPhoto[index] = cursor.getString(3);
          memoX[index] = cursor.getString(5);
          memoY[index] = cursor.getString(6);
+         memoId[index] = cursor.getString(7);
          index++;
         }
 
@@ -343,12 +346,12 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
                 myMemoIntent.putExtra("memoName",memoName);
                 myMemoIntent.putExtra("memoAdress",memoAdress);
                 myMemoIntent.putExtra("memoPhoto",memoPhoto);
+                myMemoIntent.putExtra("memoContent", memoMemo);
                 myMemoIntent.putExtra("memoMemotime",memoMemotime);
                 myMemoIntent.putExtra("memoX",memoX);
                 myMemoIntent.putExtra("memoY",memoY);
-
+                myMemoIntent.putExtra("memoId", memoId);
                 myMemoIntent.putExtra("memoCount",memoCount);
-
                 startActivity(myMemoIntent);
                 return true;
 

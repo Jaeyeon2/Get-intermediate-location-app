@@ -2,9 +2,11 @@ package com.example.findintermediateapp;
 
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,8 +41,30 @@ public class MyMemoAdapter extends RecyclerView.Adapter<MyMemoAdapter.MyViewHold
                 .apply(new RequestOptions().centerCrop())
                 .into(holder.image);
 
-        ImageClickListener imageClickListener = new ImageClickListener(context, uri);
-        holder.image.setOnClickListener(imageClickListener);
+        //ImageClickListener imageClickListener = new ImageClickListener(context, uri, list.get(position).allImage);
+        //holder.image.setOnClickListener(imageClickListener);
+        holder.image.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String[] allImage = list.get(position).allImage.split("\\|");
+                Intent memoPageIntent = new Intent(context, MemoPage.class);
+                memoPageIntent.putExtra("memo_location",list.get(position).location);
+                memoPageIntent.putExtra("memo_address", list.get(position).address);
+                memoPageIntent.putExtra("memo_content", list.get(position).content);
+                memoPageIntent.putExtra("memo_date", list.get(position).date);
+                memoPageIntent.putExtra("memo_id", list.get(position).id);
+                memoPageIntent.putExtra("memo_x", list.get(position).x);
+                memoPageIntent.putExtra("memo_y", list.get(position).y);
+
+                if(list.get(position).allImage.equals("")) {
+                    memoPageIntent.putExtra("memo_allImages", "noImage");
+                }else {
+                    memoPageIntent.putExtra("memo_allImages", allImage);
+                }
+                context.startActivity(memoPageIntent);
+
+            }
+        });
     }
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {

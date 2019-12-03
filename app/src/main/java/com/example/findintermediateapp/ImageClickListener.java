@@ -9,16 +9,16 @@ import android.view.View;
 public class ImageClickListener implements OnClickListener{
     Context context;
     Uri imageID;
+    String allImage;
 
-    public ImageClickListener(Context context, Uri imageID){
+    public ImageClickListener(Context context, Uri imageID, String images){
         this.context = context;
         this.imageID = imageID;
+        this.allImage = images;
 
     }
+    String[] all_image = allImage.split("\\|");
 
     public void onClick(View v){
-        Intent intent= new Intent(context,ImageActivity.class);
-        intent.putExtra("imageID", imageID.toString());
-        context.startActivity(intent);
     }
 }

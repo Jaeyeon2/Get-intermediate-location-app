@@ -25,7 +25,9 @@ public class MyMemo extends ChangeStateBar {
     String[] mMemoTime;
     String[] mMemox;
     String[] mMemoy;
+    String[] mContent;
     int mCount;
+    String[] mMemoId;
 
 
     @Override
@@ -49,16 +51,22 @@ public class MyMemo extends ChangeStateBar {
        mMemoTime = new String[mCount];
        mMemox = new String[mCount];
        mMemoy = new String[mCount];
+       mContent = new String[mCount];
+       mMemoId = new String[mCount];
 
 
         mName = getIntent().getStringArrayExtra("memoName");
         mAdress = getIntent().getStringArrayExtra("memoAdress");
         mPhoto = getIntent().getStringArrayExtra("memoPhoto");
-        mMemoTime = getIntent().getStringArrayExtra("memoMemoTime");
+        mContent = getIntent().getStringArrayExtra("memoContent");
+        mMemoTime = getIntent().getStringArrayExtra("memoMemotime");
         mMemox = getIntent().getStringArrayExtra("memoX");
         mMemoy = getIntent().getStringArrayExtra("memoY");
+        mMemoId = getIntent().getStringArrayExtra("memoId");
 
         String[] first_img=new String[mCount];
+        String[] all_img = new String[mCount];
+
 
 
         for(int i =0; mPhoto.length>i; i++){
@@ -67,7 +75,7 @@ public class MyMemo extends ChangeStateBar {
         }
 
         for(int i = 0; mPhoto.length>i; i++){
-            Item item = new Item(first_img[i]);
+            Item item = new Item(first_img[i], mPhoto[i], mName[i], mAdress[i], mContent[i], mMemoTime[i], mMemoId[i], mMemox[i], mMemoy[i]);
             list.add(item);
         }
 

@@ -50,7 +50,6 @@
             android:paddingLeft="10dp"
             android:paddingTop="0dp"
             >
-
             <EditText
                 android:id="@+id/add_memo_myLocation"
                 android:layout_width="wrap_content"
