@@ -2,12 +2,14 @@ package com.example.findintermediateapp;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
@@ -315,10 +317,11 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
         values.put(FeedReaderContract.FeedEntry.COORDINATE_Y, "129.256328");
         long newRowId = db.insert(FeedReaderContract.FeedEntry.TABLE_NAME, null, values);
          */
-
        // db에서 데이터 삭제
-      //  SQLiteDatabase db = dbHelper.getWritableDatabase();
-     //   db.delete(FeedReaderContract.FeedEntry.TABLE_NAME, null, null);
+        /*
+       SQLiteDatabase db1 = dbHelper.getWritableDatabase();
+       db1.delete(FeedReaderContract.FeedEntry.TABLE_NAME, null, null);
+   */
     }
 
     public void myLocationOnClick(View view) {
@@ -390,7 +393,6 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
         CameraUpdate earlyCameraUpdate = CameraUpdate.toCameraPosition(earlyCameraPosition);
         naverMap.moveCamera(earlyCameraUpdate);
 
-
         int cursorCount = 0;
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         Cursor cursor = db.rawQuery("select name, address, memo, photo, memotime, coordinate_x, coordinate_y from location_memo" , null);
@@ -410,8 +412,10 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
                     String tempY = cursor.getString(6);
                 Bitmap bitmap2 = null;
                     Uri imageUri = null;
-                    if(tempPhoto.equals("")) {
+                    if(tempPhoto.equals("noImage")) {
                  //       bitmap2 = BitmapFactory.decodeResource(getResources(), R.drawable.add_work_no2);
+                        Resources resources = getApplicationContext().getResources();
+                        imageUri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + resources.getResourcePackageName(R.drawable.memo4) + '/' + resources.getResourceTypeName(R.drawable.memo4) + '/' + resources.getResourceEntryName(R.drawable.memo4));
                     }
                 else {
                     String[] eachPhoto = tempPhoto.split("\\|");
@@ -662,27 +666,6 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
         return Base64.encodeToString(imageBytes, Base64.NO_WRAP);
     }
 
-    /*
-    public void readMemoImage() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-
-                MemoDO memoItem = dynamoDBMapper.load(
-                        MemoDO.class,
-                        androidId,
-                        tempName
-                        );
-
-                Log.d("Memo Item : ", memoItem.toString());
-                regPhoto = memoItem.getImage();
-                byte[] decodedByteArray = Base64.decode(regPhoto, Base64.NO_WRAP);
-                decodedBitmap = BitmapFactory.decodeByteArray(decodedByteArray, 0, decodedByteArray.length);
-            }
-        }).start();
-    }
-
-     */
     void showAlertDialog(Double latitude, Double longitude)
     {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);

@@ -1,8 +1,10 @@
 package com.example.findintermediateapp;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -37,6 +39,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.naver.maps.geometry.LatLng;
+import com.naver.maps.map.CameraPosition;
+import com.naver.maps.map.CameraUpdate;
+import com.naver.maps.map.overlay.OverlayImage;
 
 import org.json.JSONObject;
 
@@ -324,57 +330,73 @@ public class AddMemo extends ChangeStateBar {
     }
 
     public void addMemo() {
+
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd a hh:mm");
         Date time = new Date();
         String time1 = format.format(time);
         Log.d("time1111", time1);
 
-
-        if(x.getStringExtra("location").equals("MyLocation"))
-        {
+        if (x.getStringExtra("location").equals("MyLocation")) {
             location = et_myLocation.getText().toString();
         } else {
             location = tv_location.getText().toString();
         }
         String location_address = tv_address.getText().toString();
-        String memo_content = et_memoContent.getText().toString();
-        String location_x = getIntent().getStringExtra("mapx");
-        String location_y = getIntent().getStringExtra("mapy");
-        Log.d("location_x1", location_x);
+        String memo_content;
         String str_allRegPhoto = "";
 
-        for (int i = 0; i < addcount-1; i++) {
-            Log.d("addedBitmap", String.valueOf(addedBitmap[i]));
-            str_allRegPhoto = str_allRegPhoto + String.valueOf(filePathArray[i+1]) + "|";
+        if(et_memoContent.getText().toString().equals(""))
+        {
+            memo_content = "noContent";
+        } else {
+            memo_content = et_memoContent.getText().toString();
         }
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put(FeedReaderContract.FeedEntry.NAME, location);
-        values.put(FeedReaderContract.FeedEntry.ADDRESS, location_address);
-        values.put(FeedReaderContract.FeedEntry.MEMO, memo_content);
-        values.put(FeedReaderContract.FeedEntry.PHOTO, str_allRegPhoto);
-        Log.d("str_allRegPhoto", str_allRegPhoto);
-        values.put(FeedReaderContract.FeedEntry.COORDINATE_X, location_x);
-        values.put(FeedReaderContract.FeedEntry.COORDINATE_Y, location_y);
-        values.put(FeedReaderContract.FeedEntry.MEMOTIME, time1);
-        db.insert(FeedReaderContract.FeedEntry.TABLE_NAME, null, values);
+        if(filePathArray[1] == null)
+        {
+            str_allRegPhoto = "noImage";
+        } else {
+            for (int i = 0; i < addcount - 1; i++) {
+                Log.d("addedBitmap", String.valueOf(addedBitmap[i]));
+                str_allRegPhoto = str_allRegPhoto + String.valueOf(filePathArray[i + 1]) + "|";
+            }
+        }
+        if(!et_memoContent.getText().toString().equals("") || filePathArray[1] != null)
+        {
+            String location_x = getIntent().getStringExtra("mapx");
+            String location_y = getIntent().getStringExtra("mapy");
+            Log.d("location_x1", location_x);
 
-        if(getIntent().getStringExtra("request_page").equals("MainActivity")) {
-            Intent mainIntent = new Intent(AddMemo.this, MainActivity.class);
-            startActivity(mainIntent);
-            finish();
-        } else if(getIntent().getStringExtra("request_page").equals("MemoListPage")){
-            // MainActivity 새로 고침
-            Intent mainIntent2 = new Intent(AddMemo.this, MainActivity.class);
-            MainActivity mainActivity2 = new MainActivity();
-            startActivity(mainIntent2);
-            mainActivity2.finish();
+            SQLiteDatabase db = dbHelper.getWritableDatabase();
+            ContentValues values = new ContentValues();
+            values.put(FeedReaderContract.FeedEntry.NAME, location);
+            values.put(FeedReaderContract.FeedEntry.ADDRESS, location_address);
+            values.put(FeedReaderContract.FeedEntry.MEMO, memo_content);
+            values.put(FeedReaderContract.FeedEntry.PHOTO, str_allRegPhoto);
+            Log.d("str_allRegPhoto", str_allRegPhoto);
+            values.put(FeedReaderContract.FeedEntry.COORDINATE_X, location_x);
+            values.put(FeedReaderContract.FeedEntry.COORDINATE_Y, location_y);
+            values.put(FeedReaderContract.FeedEntry.MEMOTIME, time1);
+            db.insert(FeedReaderContract.FeedEntry.TABLE_NAME, null, values);
 
-            Intent memoListIntent = new Intent(AddMemo.this, MemoListPage.class);
-            memoListIntent.putExtra("memo_location", location);
-            memoListIntent.putExtra("memo_address", location_address);
-            startActivity(memoListIntent);
-            finish();
+            if (getIntent().getStringExtra("request_page").equals("MainActivity")) {
+                Intent mainIntent = new Intent(AddMemo.this, MainActivity.class);
+                startActivity(mainIntent);
+                finish();
+            } else if (getIntent().getStringExtra("request_page").equals("MemoListPage")) {
+                // MainActivity 새로 고침
+                Intent mainIntent2 = new Intent(AddMemo.this, MainActivity.class);
+                MainActivity mainActivity2 = new MainActivity();
+                startActivity(mainIntent2);
+                mainActivity2.finish();
+
+                Intent memoListIntent = new Intent(AddMemo.this, MemoListPage.class);
+                memoListIntent.putExtra("memo_location", location);
+                memoListIntent.putExtra("memo_address", location_address);
+                startActivity(memoListIntent);
+                finish();
+        }
+        } else {
+            showAlertDialog();
         }
     }
 
@@ -390,5 +412,19 @@ public class AddMemo extends ChangeStateBar {
         inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
         String path = MediaStore.Images.Media.insertImage(context.getContentResolver(), inImage, "Title", null);
         return Uri.parse(path);
+    }
+
+    void showAlertDialog()
+    {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("메모 저장 실패");
+        builder.setMessage("내용 또는 사진을 등록해주세요!");
+        builder.setPositiveButton("확인",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                });
+        builder.show();
     }
 }

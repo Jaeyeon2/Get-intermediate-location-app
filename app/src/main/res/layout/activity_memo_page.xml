@@ -60,10 +60,9 @@
                 app:ci_height="5dp"
                 app:ci_width="5dp"
                 app:ci_margin="3dp"
+                android:layout_gravity="bottom"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"/>
-
-
         </FrameLayout>
     </LinearLayout>
 
