@@ -434,7 +434,6 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
                             lat_x = Double.valueOf(tempX);
                             lng_y = Double.valueOf(tempY);
                         } else {
-
                         Double x = Double.valueOf(tempX);
                         Double y = Double.valueOf(tempY);
                         GeoTransPoint oKA = new GeoTransPoint(x, y);

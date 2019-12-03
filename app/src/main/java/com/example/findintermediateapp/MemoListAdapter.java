@@ -1,8 +1,10 @@
 package com.example.findintermediateapp;
 
 import android.app.Activity;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.provider.MediaStore;
@@ -54,12 +56,24 @@ public class MemoListAdapter extends RecyclerView.Adapter<MemoListAdapter.ViewHo
         holder.tv_memoImageCount.setText(String.valueOf(item.getMemoImageCount()));
         holder.tv_memoTime.setText(item.getMemoDate());
         Log.d("item.getMemoDate", item.getMemoDate());
-        Uri imageUri = Uri.parse(item.getMemoFirstImage());
-        Glide
-                .with(context)
-                .load(imageUri)
-                .apply(new RequestOptions().circleCrop())
-                .into(holder.iv_memoImage);
+        Uri imageUri;
+        if (item.getMemoFirstImage().equals("noImage")) {
+            Resources resources = context.getResources();
+            imageUri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + resources.getResourcePackageName(R.drawable.no_image) + '/' + resources.getResourceTypeName(R.drawable.no_image) + '/' + resources.getResourceEntryName(R.drawable.no_image));
+            Glide
+                    .with(context)
+                    .load(imageUri)
+                    .apply(new RequestOptions().circleCrop())
+                    .into(holder.iv_memoImage);
+
+        } else {
+            imageUri = Uri.parse(item.getMemoFirstImage());
+            Glide
+                    .with(context)
+                    .load(imageUri)
+                    .apply(new RequestOptions().circleCrop())
+                    .into(holder.iv_memoImage);
+        }
     }
 
     // getItemCount() - 전체 데이터 갯수 리턴
@@ -95,10 +109,11 @@ public class MemoListAdapter extends RecyclerView.Adapter<MemoListAdapter.ViewHo
                         memoPageIntent.putExtra("request_page", "MemoListPage");
                         Log.d("memo_id", String.valueOf(item.getMemoId()));
 
-                        if(!item.getMemoAllImage().equals("")) {
+                        if(!item.getMemoFirstImage().equals("noImage")) {
                             memoPageIntent.putExtra("memo_allImages", item.getMemoAllImage());
                         }else {
                             memoPageIntent.putExtra("memo_allImages", "noImage");
+                            memoPageIntent.putExtra("memo_image", "no");
                         }
                         context.startActivity(memoPageIntent);
                         memoListActivity.finish();

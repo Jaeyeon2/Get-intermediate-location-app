@@ -14,7 +14,10 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.WindowManager;
+import android.widget.GridView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.io.FileNotFoundException;
@@ -38,6 +41,8 @@ public class MemoPage extends ChangeStateBar {
     Uri[] uri_filePath;
     Bitmap[] bm_file;
     int memoId;
+    LinearLayout ll_yesImage;
+    LinearLayout ll_memo;
 
 
     @Override
@@ -57,13 +62,20 @@ public class MemoPage extends ChangeStateBar {
         String id = intent.getStringExtra("memo_id");
         requestPage = intent.getStringExtra("request_page");
         memoId = Integer.valueOf(id);
-        uri_filePath = new Uri[str_filePath.length];
-        bm_file = new Bitmap[str_filePath.length];
-        for(int i = 0; i < str_filePath.length; i++) {
-            uri_filePath[i] = Uri.parse(str_filePath[i]);
+
+        if(str_filePath != null) {
+            uri_filePath = new Uri[str_filePath.length];
+            bm_file = new Bitmap[str_filePath.length];
+            for (int i = 0; i < str_filePath.length; i++) {
+                uri_filePath[i] = Uri.parse(str_filePath[i]);
+            }
         }
         memoX = intent.getStringExtra("memo_x");
         memoY = intent.getStringExtra("memo_y");
+        ll_yesImage = findViewById(R.id.yes_image_layout);
+        ll_memo = findViewById(R.id.memo_layout);
+
+
         
         ViewPagerAdapter adapter = new ViewPagerAdapter(getLayoutInflater(), uri_filePath);
         vp_imagePager.setAdapter(adapter);
@@ -80,6 +92,16 @@ public class MemoPage extends ChangeStateBar {
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_left_arrow);
+
+        if(getIntent().getStringExtra("memo_allImages").equals("noImage"))
+        {
+            ll_yesImage.setVisibility(View.INVISIBLE);
+
+            DisplayMetrics metrics1 = getApplicationContext().getResources().getDisplayMetrics();
+            int screenWidth = metrics1.widthPixels;
+            int screemHeight = metrics1.heightPixels;
+            ll_memo.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, screemHeight));
+        }
     }
 
     @Override

@@ -38,11 +38,23 @@
             android:background="#c3c3c3"/>
 
     <LinearLayout
+        android:id="@+id/yes_image_layout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="7.6"
         android:orientation="vertical">
 
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:id="@+id/no_image_layout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+            </LinearLayout>
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
@@ -64,34 +76,39 @@
                 android:layout_width="match_parent"
                 android:layout_height="48dp"/>
         </FrameLayout>
+        </FrameLayout>
     </LinearLayout>
 
 
     <LinearLayout
+        android:id="@+id/memo_layout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="2.4"
         android:orientation="vertical"
+        android:weightSum="10"
         android:padding="15dp">
-
-
-    <TextView
-        android:layout_gravity="end"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/memo_date"
-        android:text="2019-11-29 오후 09:31"
-        android:textColor="#c3c3c3"
-        android:textSize="17sp"/>
 
         <TextView
             android:layout_marginTop="10dp"
             android:layout_gravity="start"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="8.5"
             android:id="@+id/memo_content"
             android:text="내 대학교"
             android:textColor="#000000"
             android:textSize="19sp"/>
+
+
+        <TextView
+            android:layout_gravity="bottom|end"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="1.5"
+            android:id="@+id/memo_date"
+            android:text="2019-11-29 오후 09:31"
+            android:textColor="#c3c3c3"
+            android:textSize="17sp"/>
     </LinearLayout>
 </LinearLayout>
