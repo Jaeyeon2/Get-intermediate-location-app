@@ -29,8 +29,10 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -55,6 +57,8 @@ import javax.annotation.Nonnull;
 
 import type.CreateTodoInput;
 
+import static android.view.View.INVISIBLE;
+import static android.view.View.VISIBLE;
 import static com.example.findintermediateapp.MainActivity.androidId;
 
 public class AddMemo extends ChangeStateBar {
@@ -75,12 +79,16 @@ public class AddMemo extends ChangeStateBar {
     ImageAdapter imageAdapter;
     static GridView gridView;
     EditText et_memoContent;
+    EditText et_myLocation;
+    TextView tv_myLocationAddress;
     private static final int REQUEST_CODE = 0;
     FeedReaderDbHelper dbHelper = new FeedReaderDbHelper(this);
     MemoImagesDbHelper imagesDbHelper = new MemoImagesDbHelper(this);
     String convertedBitmap;
     String location_name;
     public static final int KITKAT_VALUE = 1002;
+    String location;
+    FrameLayout frameLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,13 +98,38 @@ public class AddMemo extends ChangeStateBar {
 
         tv_location = findViewById(R.id.min);
         tv_address = findViewById(R.id.jae);
+        et_myLocation = findViewById(R.id.add_memo_myLocation);
         et_memoContent = findViewById(R.id.add_memo_content);
+        tv_myLocationAddress = findViewById(R.id.add_memo_address);
         x = getIntent();
-        y = x.getStringExtra("location");
+        LinearLayout searchView = findViewById(R.id.add_memo_ll);
+        LinearLayout locationView = findViewById(R.id.add_memo_my);
+
+        if(x.getStringExtra("location").equals("MyLocation"))
+        {
+            searchView.setVisibility(INVISIBLE);
+            locationView.setVisibility(VISIBLE);
+            tv_location.setVisibility(INVISIBLE);
+            et_myLocation.setVisibility(VISIBLE);
+        } else {
+            //LinearLayout.LayoutParams wp = (LinearLayout.LayoutParams)view.getLayoutParams();
+            //wp.width = 1000;
+            //wp.height = 200;
+            //view.setLayoutParams(wp);
+            searchView.setVisibility(VISIBLE);
+            locationView.setVisibility(INVISIBLE);
+            y = x.getStringExtra("location");
+            et_myLocation.setVisibility(INVISIBLE);
+            tv_location.setVisibility(VISIBLE);
+            et_myLocation.setHeight(0);
+            tv_location.setText(y);
+        }
         addr = x.getStringExtra("address");
-        tv_location.setText(y);
+        tv_myLocationAddress.setText(addr);
         tv_address.setText(addr);
+
         imageAdapter = new ImageAdapter(AddMemo.this, this, uri_imageArr);
+
 
         Toolbar toolbar = findViewById(R.id.tools);
         setSupportActionBar(toolbar);
@@ -259,6 +292,13 @@ public class AddMemo extends ChangeStateBar {
                     @Override
                     public void onClick(View view) {
 
+                        if(x.getStringExtra("location").equals("MyLocation"))
+                        {
+                            location = et_myLocation.getText().toString();
+                        } else {
+                            location = tv_location.getText().toString();
+                        }
+
                         Intent addedImageIntent = new Intent(context, AddedImage.class);
                         addedImageIntent.putExtra("addedImage_uri", String.valueOf(memo_image[pos]));
                         addedImageIntent.putExtra("addedImage_index", pos);
@@ -268,7 +308,7 @@ public class AddMemo extends ChangeStateBar {
                             str_imageArr[i] = String.valueOf(memo_image[i]);
                         }
                         addedImageIntent.putExtra("addedImage_array", str_imageArr);
-                        addedImageIntent.putExtra("addedImage_location", tv_location.getText().toString());
+                        addedImageIntent.putExtra("addedImage_location", location);
                         addedImageIntent.putExtra("addedImage_address", tv_address.getText().toString());
                         addedImageIntent.putExtra("addedImage_content", et_memoContent.getText().toString());
                         addedImageIntent.putExtra("addedImage_requestPage", getIntent().getStringExtra("request_page"));
@@ -289,7 +329,13 @@ public class AddMemo extends ChangeStateBar {
         String time1 = format.format(time);
         Log.d("time1111", time1);
 
-        location_name = tv_location.getText().toString();
+
+        if(x.getStringExtra("location").equals("MyLocation"))
+        {
+            location = et_myLocation.getText().toString();
+        } else {
+            location = tv_location.getText().toString();
+        }
         String location_address = tv_address.getText().toString();
         String memo_content = et_memoContent.getText().toString();
         String location_x = getIntent().getStringExtra("mapx");
@@ -303,8 +349,7 @@ public class AddMemo extends ChangeStateBar {
         }
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
-
-        values.put(FeedReaderContract.FeedEntry.NAME, location_name);
+        values.put(FeedReaderContract.FeedEntry.NAME, location);
         values.put(FeedReaderContract.FeedEntry.ADDRESS, location_address);
         values.put(FeedReaderContract.FeedEntry.MEMO, memo_content);
         values.put(FeedReaderContract.FeedEntry.PHOTO, str_allRegPhoto);
@@ -326,7 +371,7 @@ public class AddMemo extends ChangeStateBar {
             mainActivity2.finish();
 
             Intent memoListIntent = new Intent(AddMemo.this, MemoListPage.class);
-            memoListIntent.putExtra("memo_location", location_name);
+            memoListIntent.putExtra("memo_location", location);
             memoListIntent.putExtra("memo_address", location_address);
             startActivity(memoListIntent);
             finish();

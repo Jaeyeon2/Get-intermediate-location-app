@@ -411,13 +411,20 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
                     @Override
                     public void onResourceReady(Bitmap resource, Transition<? super Bitmap> transition) {
                         Bitmap bitmap2 = resource;
+                        double lat_x;
+                        double lng_y;
+                        if (tempX.contains(".")) {
+                            lat_x = Double.valueOf(tempX);
+                            lng_y = Double.valueOf(tempY);
+                        } else {
+
                         Double x = Double.valueOf(tempX);
                         Double y = Double.valueOf(tempY);
                         GeoTransPoint oKA = new GeoTransPoint(x, y);
                         GeoTransPoint oGeo = GeoTrans.convert(GeoTrans.KATEC, GeoTrans.GEO, oKA);
-                        double lat_x = oGeo.getY();
-                        double lng_y = oGeo.getX();
-
+                        lat_x = oGeo.getY();
+                        lng_y = oGeo.getX();
+                    }
                         Marker savedMarker;
                         savedMarker = new Marker();
 
@@ -730,27 +737,18 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
 
 
             if ( check_result ) {
-
                 //위치 값을 가져올 수 있음
-                ;
             }
             else {
                 // 거부한 퍼미션이 있다면 앱을 사용할 수 없는 이유를 설명해주고 앱을 종료합니다.2 가지 경우가 있습니다.
-
                 if (ActivityCompat.shouldShowRequestPermissionRationale(this, REQUIRED_PERMISSIONS[0])
                         || ActivityCompat.shouldShowRequestPermissionRationale(this, REQUIRED_PERMISSIONS[1])) {
-
                     Toast.makeText(MainActivity.this, "퍼미션이 거부되었습니다. 앱을 다시 실행하여 퍼미션을 허용해주세요.", Toast.LENGTH_LONG).show();
                     finish();
-
-
                 }else {
-
                     Toast.makeText(MainActivity.this, "퍼미션이 거부되었습니다. 설정(앱 정보)에서 퍼미션을 허용해야 합니다. ", Toast.LENGTH_LONG).show();
-
                 }
             }
-
         }
     }
 

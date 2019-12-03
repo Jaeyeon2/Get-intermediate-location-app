@@ -38,7 +38,40 @@
         android:layout_height="4dp"
         android:background="@drawable/toolbar_dropshadow"></View>
 
-    <LinearLayout
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:id="@+id/add_memo_my"
+            android:layout_width="match_parent"
+            android:layout_height="67dp"
+            android:orientation="vertical"
+            android:paddingLeft="10dp"
+            android:paddingTop="0dp"
+            >
+
+            <EditText
+                android:id="@+id/add_memo_myLocation"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:textColor="#000000"
+                android:hint="현재위치를 입력하세요!"
+                ></EditText>
+
+            <TextView
+                android:layout_marginStart="6dp"
+                android:id="@+id/add_memo_address"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                ></TextView>
+            ></LinearLayout>
+
+
+
+        <LinearLayout
+        android:id="@+id/add_memo_ll"
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:orientation="vertical"
@@ -52,8 +85,8 @@
             android:layout_height="wrap_content"
             android:textSize="16sp"
             android:textColor="#000000"
-
             ></TextView>
+
 
         <TextView
             android:id="@+id/jae"
@@ -61,6 +94,8 @@
             android:layout_height="wrap_content"
             ></TextView>
         ></LinearLayout>
+
+    </FrameLayout>
 
     <View
         android:layout_width="match_parent"
