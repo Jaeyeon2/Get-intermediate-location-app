@@ -33,6 +33,7 @@ public class MemoPage extends ChangeStateBar {
     String str_allFilePath;
     String memoX;
     String memoY;
+    String requestPage;
     String[] str_filePath;
     Uri[] uri_filePath;
     Bitmap[] bm_file;
@@ -54,6 +55,7 @@ public class MemoPage extends ChangeStateBar {
         tv_memoDate = findViewById(R.id.memo_date);
         tv_memoDate.setText(intent.getStringExtra("memo_date"));
         String id = intent.getStringExtra("memo_id");
+        requestPage = intent.getStringExtra("request_page");
         memoId = Integer.valueOf(id);
         uri_filePath = new Uri[str_filePath.length];
         bm_file = new Bitmap[str_filePath.length];
@@ -91,14 +93,21 @@ public class MemoPage extends ChangeStateBar {
         switch(item.getItemId()) {
             case R.id.action_deleteMemo:
                   deleteColumn(memoId);
-                  Intent memoListIntent = new Intent(MemoPage.this, MemoListPage.class);
                   Intent mainIntent = new Intent(MemoPage.this, MainActivity.class);
                   MainActivity mainActivity = new MainActivity();
                   startActivity(mainIntent);
                   mainActivity.finish();
-                memoListIntent.putExtra("memo_location", tv_toolbarTitle.getText().toString());
-                memoListIntent.putExtra("memo_address", getIntent().getStringExtra("memo_address"));
-                  startActivity(memoListIntent);
+                  if(requestPage.equals("MemoListPage"))
+                  {
+                      Intent memoListIntent = new Intent(MemoPage.this, MemoListPage.class);
+                      memoListIntent.putExtra("memo_location", tv_toolbarTitle.getText().toString());
+                      memoListIntent.putExtra("memo_address", getIntent().getStringExtra("memo_address"));
+                      startActivity(memoListIntent);
+                  } else if(requestPage.equals("MyMemoPage"))
+                  {
+
+
+                  }
                   finish();
                 return true;
             case R.id.action_editMemo:

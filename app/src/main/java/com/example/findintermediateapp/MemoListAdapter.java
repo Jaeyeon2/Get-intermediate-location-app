@@ -92,6 +92,7 @@ public class MemoListAdapter extends RecyclerView.Adapter<MemoListAdapter.ViewHo
                         memoPageIntent.putExtra("memo_id", String.valueOf(item.getMemoId()));
                         memoPageIntent.putExtra("memo_x", item.getMemoX());
                         memoPageIntent.putExtra("memo_y", item.getMemoY());
+                        memoPageIntent.putExtra("request_page", "MemoListPage");
                         Log.d("memo_id", String.valueOf(item.getMemoId()));
 
                         if(!item.getMemoAllImage().equals("")) {
