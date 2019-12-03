@@ -281,10 +281,10 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
         });
         et_inputLocation.setOnClickListener(clickListener);
         intent = getIntent();
-
         if(intent.getStringExtra("location_mapx") != null)
         {
             Log.d("location_mapx111", intent.getStringExtra("location_mapx"));
+
         }
 
         /*
@@ -507,8 +507,10 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
                 Double tempY = Double.valueOf(cursor2.getString(cursor2.getColumnIndex("coordinate_y")));
                 if(tempName.equals(intent.getStringExtra("location_name")))
                 {
-                    CameraUpdate cameraUpdate = CameraUpdate.scrollTo(new LatLng(tempX, tempY));
-                    naverMap.moveCamera(cameraUpdate);
+
+                    CameraPosition existingCameraPosition = new CameraPosition(new LatLng(user_mapX, user_mapY), 9);
+                    CameraUpdate existingCamemraUpdate = CameraUpdate.toCameraPosition(existingCameraPosition);
+                    naverMap.moveCamera(existingCamemraUpdate);
                     existingLocation = true;
                     break;
                 }
