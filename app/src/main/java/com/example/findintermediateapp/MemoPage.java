@@ -25,6 +25,8 @@ import java.io.IOException;
 
 import me.relex.circleindicator.CircleIndicator;
 
+import static android.view.View.INVISIBLE;
+
 public class MemoPage extends ChangeStateBar {
 
     TextView tv_memoContent;
@@ -53,6 +55,9 @@ public class MemoPage extends ChangeStateBar {
 
         tv_memoContent = findViewById(R.id.memo_content);
         tv_memoContent.setText(intent.getStringExtra("memo_content"));
+        if(intent.getStringExtra("memo_content").equals("noContent")) {
+            tv_memoContent.setVisibility(INVISIBLE);
+        }
         tv_toolbarTitle = findViewById(R.id.memo_page_title);
         tv_toolbarTitle.setText(intent.getStringExtra("memo_location"));
         str_filePath = intent.getStringArrayExtra("memo_allImages");
@@ -93,9 +98,9 @@ public class MemoPage extends ChangeStateBar {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_left_arrow);
 
-        if(getIntent().getStringExtra("memo_allImages").equals("noImage"))
+        if(getIntent().getStringExtra("memo_image").equals("no"))
         {
-            ll_yesImage.setVisibility(View.INVISIBLE);
+            ll_yesImage.setVisibility(INVISIBLE);
 
             DisplayMetrics metrics1 = getApplicationContext().getResources().getDisplayMetrics();
             int screenWidth = metrics1.widthPixels;

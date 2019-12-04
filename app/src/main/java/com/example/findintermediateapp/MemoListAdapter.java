@@ -23,6 +23,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import static android.view.View.INVISIBLE;
+
 public class MemoListAdapter extends RecyclerView.Adapter<MemoListAdapter.ViewHolder> {
 
     Activity memoListActivity;
@@ -52,7 +54,12 @@ public class MemoListAdapter extends RecyclerView.Adapter<MemoListAdapter.ViewHo
     public void onBindViewHolder(MemoListAdapter.ViewHolder holder, int position) {
         MemoListItem item = memoData.get(position);
         Bitmap bitmap = null;
-        holder.tv_memoContent.setText(item.getMemoContent());
+        if(item.getMemoContent().equals("noContent"))
+        {
+            holder.tv_memoContent.setVisibility(INVISIBLE);
+        } else {
+            holder.tv_memoContent.setText(item.getMemoContent());
+        }
         holder.tv_memoImageCount.setText(String.valueOf(item.getMemoImageCount()));
         holder.tv_memoTime.setText(item.getMemoDate());
         Log.d("item.getMemoDate", item.getMemoDate());
@@ -111,6 +118,7 @@ public class MemoListAdapter extends RecyclerView.Adapter<MemoListAdapter.ViewHo
 
                         if(!item.getMemoFirstImage().equals("noImage")) {
                             memoPageIntent.putExtra("memo_allImages", item.getMemoAllImage());
+                            memoPageIntent.putExtra("memo_image","yes");
                         }else {
                             memoPageIntent.putExtra("memo_allImages", "noImage");
                             memoPageIntent.putExtra("memo_image", "no");

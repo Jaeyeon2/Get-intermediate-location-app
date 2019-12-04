@@ -59,8 +59,10 @@ public class MyMemoAdapter extends RecyclerView.Adapter<MyMemoAdapter.MyViewHold
 
                 if(list.get(position).allImage.equals("")) {
                     memoPageIntent.putExtra("memo_allImages", "noImage");
+                    memoPageIntent.putExtra("memo_image", "no");
                 }else {
                     memoPageIntent.putExtra("memo_allImages", allImage);
+                    memoPageIntent.putExtra("memo_image", "yes");
                 }
                 context.startActivity(memoPageIntent);
 
