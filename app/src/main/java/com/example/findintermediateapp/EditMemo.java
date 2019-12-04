@@ -66,18 +66,23 @@ public class EditMemo extends ChangeStateBar {
         tv_editMemoAddress.setText(getIntent().getStringExtra("edit_memo_address"));
 
         et_editMemoContent.setText(getIntent().getStringExtra("edit_memo_content"));
-        str_imageArr = getIntent().getStringArrayExtra("edit_memo_imageArr");
         memoId = Integer.valueOf(getIntent().getStringExtra("edit_memo_id"));
         str_allImage = getIntent().getStringExtra("edit_memo_allImages");
-
-
-        uri_imageArr = new Uri[str_imageArr.length];
-        for(int i = 0; i < str_imageArr.length; i++)
+        if(getIntent().getStringExtra("memo_image").equals("noImage"))
         {
-            uri_imageArr[i] = Uri.parse(str_imageArr[i]);
+            uri_imageArr = new Uri[0];
+            addcount = uri_imageArr.length;;
+            editImageAdapter = new EditImageAdapter(EditMemo.this, this, uri_imageArr);
+        } else {
+            str_imageArr = getIntent().getStringArrayExtra("edit_memo_imageArr");
+            uri_imageArr = new Uri[str_imageArr.length];
+            for(int i = 0; i < str_imageArr.length; i++)
+            {
+                uri_imageArr[i] = Uri.parse(str_imageArr[i]);
+            }
+            addcount = uri_imageArr.length;
+            editImageAdapter = new EditImageAdapter(EditMemo.this, this, uri_imageArr);
         }
-        addcount = uri_imageArr.length;
-        editImageAdapter = new EditImageAdapter(EditMemo.this, this, uri_imageArr);
         gv_editMemoImage = findViewById(R.id.edit_memo_gridview);
         gv_editMemoImage.setAdapter(editImageAdapter);
         editImageAdapter.notifyDataSetChanged();
@@ -116,12 +121,14 @@ public class EditMemo extends ChangeStateBar {
                 memoPageIntent.putExtra("memo_content", et_editMemoContent.getText().toString());
                 memoPageIntent.putExtra("memo_date", getIntent().getStringExtra("edit_memo_date"));
                 memoPageIntent.putExtra("memo_id", String.valueOf(memoId));
-
+                memoPageIntent.putExtra("request_page",getIntent().getStringExtra("edit_memo_request"));
                 if(str_allImage.equals(""))
                 {
                     memoPageIntent.putExtra("memo_allImages", images);
+                    memoPageIntent.putExtra("memo_image", "no");
                 } else {
                     memoPageIntent.putExtra("memo_allImages", images);
+                    memoPageIntent.putExtra("memo_image", "yes");
                 }
                 startActivity(memoPageIntent);
                 finish();
@@ -237,7 +244,13 @@ public class EditMemo extends ChangeStateBar {
                 try {
                     addcount++;
                     filePath = data.getData();
-                    str_allImage = str_allImage + filePath + "|";
+                    if(str_allImage.equals("noImage"))
+                    {
+                        str_allImage = filePath + "|";
+                    } else {
+                        str_allImage = str_allImage + filePath + "|";
+                    }
+                    Log.d("str_allImage123", str_allImage);
                     Uri imageUri = Uri.parse(String.valueOf(filePath));
                     uri_addedUri[addcount-1] = imageUri;
                     uri_newImageArr = new Uri[addcount];

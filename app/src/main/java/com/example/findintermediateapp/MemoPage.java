@@ -46,7 +46,6 @@ public class MemoPage extends ChangeStateBar {
     LinearLayout ll_yesImage;
     LinearLayout ll_memo;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -81,7 +80,6 @@ public class MemoPage extends ChangeStateBar {
         ll_memo = findViewById(R.id.memo_layout);
 
 
-        
         ViewPagerAdapter adapter = new ViewPagerAdapter(getLayoutInflater(), uri_filePath);
         vp_imagePager.setAdapter(adapter);
 
@@ -98,10 +96,24 @@ public class MemoPage extends ChangeStateBar {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_left_arrow);
 
+//        Log.d("memo_image", getIntent().getStringExtra("memo_image"));
+//        Log.d("request_page", getIntent().getStringExtra("request_page"));
+
+
         if(getIntent().getStringExtra("memo_image").equals("no"))
         {
+            Log.d("aaaaaaa111", "s");
             ll_yesImage.setVisibility(INVISIBLE);
+            DisplayMetrics metrics1 = getApplicationContext().getResources().getDisplayMetrics();
+            int screenWidth = metrics1.widthPixels;
+            int screemHeight = metrics1.heightPixels;
+            ll_memo.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, screemHeight));
+        }
+        if(getIntent().getStringExtra("request_page").equals("MyMemoPage_noimage"))
+        {
 
+            Log.d("aaaaaaa111", "s");
+            ll_yesImage.setVisibility(INVISIBLE);
             DisplayMetrics metrics1 = getApplicationContext().getResources().getDisplayMetrics();
             int screenWidth = metrics1.widthPixels;
             int screemHeight = metrics1.heightPixels;
@@ -133,7 +145,6 @@ public class MemoPage extends ChangeStateBar {
                   } else if(requestPage.equals("MyMemoPage"))
                   {
 
-
                   }
                   finish();
                 return true;
@@ -142,21 +153,40 @@ public class MemoPage extends ChangeStateBar {
                 memoEditIntent.putExtra("edit_memo_location", tv_toolbarTitle.getText().toString());
                 memoEditIntent.putExtra("edit_memo_address", getIntent().getStringExtra("memo_address"));
                 Log.d("memo_address", getIntent().getStringExtra("memo_address"));
+                String image_exis = getIntent().getStringExtra("memo_image");
                 memoEditIntent.putExtra("edit_memo_content", tv_memoContent.getText().toString());
-                memoEditIntent.putExtra("edit_memo_imageArr", str_filePath);
-                memoEditIntent.putExtra("edit_memo_id", intent.getStringExtra("memo_id"));
-                String[] strArr_allImage = getIntent().getStringArrayExtra("memo_allImages");
+                memoEditIntent.putExtra("edit_memo_request", requestPage);
+                String[] strArr_allImage;
                 String str_allImage = "";
-                for(int i = 0; i < strArr_allImage.length; i++)
+
+                if(image_exis.equals("no"))
                 {
-                    str_allImage = str_allImage + strArr_allImage[i] + "|";
+                    memoEditIntent.putExtra("edit_memo_id", intent.getStringExtra("memo_id"));
+                   memoEditIntent.putExtra("memo_image", "noImage");
+                    memoEditIntent.putExtra("edit_memo_allImages", "noImage");
+                } else if(image_exis.equals("yes"))
+                {
+                    memoEditIntent.putExtra("memo_image", "yesImage");
+                    memoEditIntent.putExtra("edit_memo_imageArr", str_filePath);
+                    memoEditIntent.putExtra("edit_memo_id", intent.getStringExtra("memo_id"));
+                    strArr_allImage = getIntent().getStringArrayExtra("memo_allImages");
+
+
+                    if(!str_allImage.equals("no"))
+                    {
+                        for (int i = 0; i < strArr_allImage.length; i++) {
+                            str_allImage = str_allImage + strArr_allImage[i] + "|";
+                        }
+                    }
+
+
+                    memoEditIntent.putExtra("edit_memo_allImages", str_allImage);
                 }
-                memoEditIntent.putExtra("edit_memo_allImages", str_allImage);
+
                 memoEditIntent.putExtra("edit_memo_date", tv_memoDate.getText().toString());
                 memoEditIntent.putExtra("edit_memo_x", memoX);
                 memoEditIntent.putExtra("edit_memo_y", memoY);
                 startActivity(memoEditIntent);
-
                 return true;
             case android.R.id.home:
                 finish();

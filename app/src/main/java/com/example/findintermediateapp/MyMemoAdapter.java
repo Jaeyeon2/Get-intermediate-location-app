@@ -19,6 +19,8 @@ import com.bumptech.glide.request.RequestOptions;
 
 import java.util.ArrayList;
 
+import static android.view.View.INVISIBLE;
+
 public class MyMemoAdapter extends RecyclerView.Adapter<MyMemoAdapter.MyViewHolder>{
 
     Context context;
@@ -35,6 +37,12 @@ public class MyMemoAdapter extends RecyclerView.Adapter<MyMemoAdapter.MyViewHold
     public void onBindViewHolder(MyViewHolder holder, int position) {
      //   holder.image.setImageResource(list.get(position).image);
         Uri uri = Uri.parse(list.get(position).image);
+        Log.d("list.get(position).image", list.get(position).image);
+        if(list.get(position).image.equals("noImage"))
+        {
+            holder.image.setVisibility(INVISIBLE);
+            holder.content.setText(list.get(position).content);
+        }
         holder.image.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
         Glide.with(context)
                 .load(uri)
@@ -57,7 +65,37 @@ public class MyMemoAdapter extends RecyclerView.Adapter<MyMemoAdapter.MyViewHold
                 memoPageIntent.putExtra("memo_y", list.get(position).y);
                 memoPageIntent.putExtra("request_page", "MyMemoPage");
 
-                if(list.get(position).allImage.equals("")) {
+                Log.d("list.get(position).allImage", list.get(position).allImage);
+
+                if(list.get(position).image.equals("noImage")) {
+                    memoPageIntent.putExtra("memo_allImages", "noImage");
+                    memoPageIntent.putExtra("memo_image", "no");
+                }else {
+                    memoPageIntent.putExtra("memo_allImages", allImage);
+                    memoPageIntent.putExtra("memo_image", "yes");
+                }
+
+                context.startActivity(memoPageIntent);
+
+            }
+        });
+
+        holder.content.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View view) {
+                String[] allImage = list.get(position).allImage.split("\\|");
+                Intent memoPageIntent = new Intent(context, MemoPage.class);
+                memoPageIntent.putExtra("memo_location",list.get(position).location);
+                memoPageIntent.putExtra("memo_address", list.get(position).address);
+                memoPageIntent.putExtra("memo_content", list.get(position).content);
+                memoPageIntent.putExtra("memo_date", list.get(position).date);
+                memoPageIntent.putExtra("memo_id", list.get(position).id);
+                memoPageIntent.putExtra("memo_x", list.get(position).x);
+                memoPageIntent.putExtra("memo_y", list.get(position).y);
+                memoPageIntent.putExtra("request_page", "MyMemoPage");
+
+                if(list.get(position).image.equals("noImage")) {
                     memoPageIntent.putExtra("memo_allImages", "noImage");
                     memoPageIntent.putExtra("memo_image", "no");
                 }else {
@@ -88,12 +126,12 @@ public class MyMemoAdapter extends RecyclerView.Adapter<MyMemoAdapter.MyViewHold
     public class MyViewHolder extends RecyclerView.ViewHolder{
 
         ImageView image;
-        TextView name;
+        TextView content;
 
         public MyViewHolder(View itemView) {
             super(itemView);
             image = itemView.findViewById(R.id.recylcerview_row_image);
-
+            content = itemView.findViewById(R.id.recylcerview_row_text);
         }
     }
 
