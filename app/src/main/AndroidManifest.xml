@@ -12,23 +12,29 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:windowSoftInputMode="adjustResize">
-        <activity android:name=".DeletedImage"></activity>
+        <activity android:name=".DeletedImage" />
         <activity android:name=".AddedImage" />
         <activity android:name=".EditMemo" />
         <activity android:name=".MemoListPage" />
         <activity android:name=".MemoPage" />
         <activity android:name=".AddMemo" />
-        <activity android:name=".MyMemo"/>
-        <activity android:name=".ImageActivity"/>
+        <activity android:name=".MyMemo" />
+        <activity android:name=".ImageActivity" />
         <activity
             android:name=".SearchActivity"
             android:windowSoftInputMode="adjustResize" />
-        <activity android:name=".MainActivity">
+        <activity
+            android:name=".LoadingActivity"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
+            android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity android:name=".MainActivity">
+
         </activity>
 
         <meta-data
@@ -49,5 +55,7 @@
     <uses-permission android:name="android.permission.WRITE_OWNER_DATA" />
     <uses-permission android:name="android.permission.READ_OWNER_DATA" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
 </manifest>
