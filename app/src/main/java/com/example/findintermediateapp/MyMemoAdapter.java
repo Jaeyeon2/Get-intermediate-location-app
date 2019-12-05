@@ -38,10 +38,19 @@ public class MyMemoAdapter extends RecyclerView.Adapter<MyMemoAdapter.MyViewHold
      //   holder.image.setImageResource(list.get(position).image);
         Uri uri = Uri.parse(list.get(position).image);
         Log.d("list.get(position).image", list.get(position).image);
+        String str_cuttingContent;
         if(list.get(position).image.equals("noImage"))
         {
             holder.image.setVisibility(INVISIBLE);
-            holder.content.setText(list.get(position).content);
+            if(list.get(position).content.length() > 28)
+            {
+                str_cuttingContent = list.get(position).content.substring(0,26);
+                str_cuttingContent = str_cuttingContent + " ···";
+                holder.content.setText(str_cuttingContent);
+            } else {
+                holder.content.setText(list.get(position).content);
+            }
+
         }
         holder.image.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
         Glide.with(context)
