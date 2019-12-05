@@ -169,6 +169,12 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        // db에서 데이터 삭제
+        /*
+        SQLiteDatabase db1 = dbHelper.getWritableDatabase();
+        db1.delete(FeedReaderContract.FeedEntry.TABLE_NAME, null, null);
+*/
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         Cursor cursor = db.rawQuery("select name, address, memo, photo, memotime, coordinate_x, coordinate_y, _id from location_memo" , null);
         memoCount = cursor.getCount();
@@ -317,11 +323,6 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
         values.put(FeedReaderContract.FeedEntry.COORDINATE_Y, "129.256328");
         long newRowId = db.insert(FeedReaderContract.FeedEntry.TABLE_NAME, null, values);
          */
-       // db에서 데이터 삭제
-        /*
-       SQLiteDatabase db1 = dbHelper.getWritableDatabase();
-       db1.delete(FeedReaderContract.FeedEntry.TABLE_NAME, null, null);
-   */
     }
 
     public void myLocationOnClick(View view) {
@@ -415,7 +416,7 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
                     if(tempPhoto.equals("noImage")) {
                  //       bitmap2 = BitmapFactory.decodeResource(getResources(), R.drawable.add_work_no2);
                         Resources resources = getApplicationContext().getResources();
-                        imageUri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + resources.getResourcePackageName(R.drawable.memo4) + '/' + resources.getResourceTypeName(R.drawable.memo4) + '/' + resources.getResourceEntryName(R.drawable.memo4));
+                        imageUri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + resources.getResourcePackageName(R.drawable.memo5) + '/' + resources.getResourceTypeName(R.drawable.memo5) + '/' + resources.getResourceEntryName(R.drawable.memo5));
                     }
                 else {
                     String[] eachPhoto = tempPhoto.split("\\|");
