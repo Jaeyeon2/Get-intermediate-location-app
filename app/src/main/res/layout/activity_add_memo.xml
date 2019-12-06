@@ -104,10 +104,12 @@
     <EditText
         android:background="@drawable/no_line_text_edit"
         android:paddingLeft="15dp"
+        android:paddingTop="15dp"
         android:layout_width="match_parent"
         android:layout_height="121dp"
         android:id="@+id/add_memo_content"
         android:hint="내용"
+        android:gravity="top"
         android:textSize="16sp"
         ></EditText>
 
