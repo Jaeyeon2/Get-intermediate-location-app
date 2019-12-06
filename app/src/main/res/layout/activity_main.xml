@@ -39,7 +39,7 @@
             <LinearLayout
                 android:layout_marginTop="3dp"                                                       android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_weight="1.15"
+                android:layout_weight="0.9"
                 android:weightSum="10"
                 android:gravity="center">
 
@@ -65,13 +65,13 @@
 
                             <android.support.v7.widget.Toolbar
                                 android:layout_width="match_parent"
-                                android:layout_height="45dp"
+                                android:layout_height="43dp"
                                 android:background="@drawable/rounded"
                                 android:id="@+id/home_toolbar"/>
 
                             <LinearLayout
                                 android:layout_width="match_parent"
-                                android:layout_height="42dp"
+                                android:layout_height="40dp"
                                 android:weightSum="10"
                                 android:gravity="center"
                                 android:layout_gravity="center">
@@ -126,14 +126,13 @@
             </LinearLayout>
 
             <LinearLayout
-                android:layout_marginTop="-17dp"
+                android:layout_marginTop="-10dp"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="4"
                 android:weightSum="10"
                 android:gravity="center"
                 >
-
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
