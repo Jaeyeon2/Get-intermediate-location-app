@@ -1,7 +1,9 @@
 package com.example.findintermediateapp;
 
+import com.facebook.ads.*;
 import android.Manifest;
 import android.app.AlertDialog;
+import android.app.NativeActivity;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
@@ -18,6 +20,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.Point;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
@@ -41,11 +44,14 @@ import android.support.v7.widget.Toolbar;
 import android.util.Base64;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Display;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -57,6 +63,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
+import com.facebook.ads.AudienceNetworkAds;
 import com.gigamole.library.ShadowLayout;
 import com.naver.maps.geometry.LatLng;
 import com.naver.maps.map.CameraAnimation;
@@ -100,6 +107,11 @@ import static android.view.View.VISIBLE;
 import static com.example.findintermediateapp.MemoImagesDatabase.MemoImages.TABLE_NAME;
 
 public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
+    private String TAG = NativeActivity.class.getSimpleName();
+    private NativeAd nativeAd;
+    private NativeAdLayout nativeAdLayout;
+    private LinearLayout adView;
+
     private MapView mapView;
     private Cursor mCursor;
     NaverMap naverMap;
@@ -136,6 +148,8 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
     Cursor cursor;
     SQLiteDatabase db;
     public String regPhoto;
+    public int display_x;
+    public int display_y;
 
 
     LinearLayout ll_markerDelete;
@@ -167,8 +181,25 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
     private static final int PERMISSIONS_REQUEST_CODE = 100;
     String[] REQUIRED_PERMISSIONS = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
 
+    int display_width;
+    int display_height;
+    DisplayMetrics displayMetrics;
+    double screenInches;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        AudienceNetworkAds.initialize(this);
+
+        displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        int screenHeight = displayMetrics.heightPixels;
+        int screenWidth = displayMetrics.widthPixels;
+        double y = Math.pow(screenHeight /displayMetrics.xdpi, 2);
+        double x = Math.pow(screenWidth /displayMetrics.xdpi, 2);
+        screenInches = Math.sqrt(x + y);
+        screenInches = (double) Math.round(screenInches *10)/10;
+        Log.d(TAG, "screenWidth : " + screenWidth + ", screenHeight : " + screenHeight + ", screenInches" + screenInches);
+
 
         // db에서 데이터 삭제
         /*
@@ -186,7 +217,6 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
         memoX = new String[memoCount];
         memoY = new String[memoCount];
         memoId = new String[memoCount];
-
         myLocationMarker = new Marker();
 
         int index = 0;
@@ -299,30 +329,6 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
 
         }
 
-        /*
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put(FeedReaderContract.FeedEntry.NAME, "부경대");
-        values.put(FeedReaderContract.FeedEntry.ADDRESS, "부산광역시 남구 대연동");
-        values.put(FeedReaderContract.FeedEntry.MEMO, "내 대학교");
-        values.put(FeedReaderContract.FeedEntry.PHOTO, "ss");
-        values.put(FeedReaderContract.FeedEntry.COORDINATE_X, "35.134067");
-        values.put(FeedReaderContract.FeedEntry.COORDINATE_Y, "129.103179");
-
-        long newRowId = db.insert(FeedReaderContract.FeedEntry.TABLE_NAME, null, values);
-    */
-        /*
-
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put(FeedReaderContract.FeedEntry.NAME, "울산대학교");
-        values.put(FeedReaderContract.FeedEntry.ADDRESS, "93 대학로 무거동 남구 울산광역시");
-        values.put(FeedReaderContract.FeedEntry.MEMO, "울산대울산대");
-        values.put(FeedReaderContract.FeedEntry.PHOTO, "");
-        values.put(FeedReaderContract.FeedEntry.COORDINATE_X, "35.543895");
-        values.put(FeedReaderContract.FeedEntry.COORDINATE_Y, "129.256328");
-        long newRowId = db.insert(FeedReaderContract.FeedEntry.TABLE_NAME, null, values);
-         */
     }
 
     public void myLocationOnClick(View view) {
@@ -424,7 +430,6 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
                     Log.d("imageUrizzz", String.valueOf(imageUri));
                     Log.d("eachPhoto[0]zzz", eachPhoto[0]);
                 }
-
                 Glide.with(getApplicationContext()).asBitmap().load(imageUri).into(new SimpleTarget<Bitmap>() {
                     @Override
                     public void onResourceReady(Bitmap resource, Transition<? super Bitmap> transition) {
@@ -448,16 +453,29 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
                         savedMarker.setPosition(new LatLng(lat_x, lng_y));
                         ImageView iv_marker = new ImageView(MainActivity.this);
 
-                        Bitmap marker_size = BitmapFactory.decodeResource(getResources(), R.drawable.location_marker);
-                        marker_size = Bitmap.createScaledBitmap(marker_size, 225, 225, true);
+                        Bitmap marker_size;
+                        Bitmap photo;
+                        Canvas canvas;
 
-                        bitmap2 = Bitmap.createScaledBitmap(bitmap2, 150, 150, true);
-                        Bitmap photo = getCroppedBitmap(bitmap2);
+                        if(screenInches < 5.8) {
+                            marker_size = BitmapFactory.decodeResource(getResources(), R.drawable.location_marker);
+                            marker_size = Bitmap.createScaledBitmap(marker_size, 225, 225, true);
+                            bitmap2 = Bitmap.createScaledBitmap(bitmap2, 150, 150, true);
+                            photo = getCroppedBitmap(bitmap2);
+                            canvas = new Canvas(marker_size);
+                            canvas.drawBitmap(photo, 38, 18, null);
 
-                        Canvas canvas = new Canvas(marker_size);
-                        canvas.drawBitmap(photo, 38, 18, null);
+                        } else {
+                            marker_size = BitmapFactory.decodeResource(getResources(), R.drawable.location_marker);
+                            marker_size = Bitmap.createScaledBitmap(marker_size, 165, 165, true);
+                            bitmap2 = Bitmap.createScaledBitmap(bitmap2, 113, 113, true);
+                            photo = getCroppedBitmap(bitmap2);
+                            canvas = new Canvas(marker_size);
+                            canvas.drawBitmap(photo, 27, 11, null);
+
+                        }
+
                         iv_marker.setImageBitmap(marker_size);
-
                         savedMarker.setIcon(OverlayImage.fromView(iv_marker));
                         savedMarker.setMap(naverMap);
 
@@ -541,7 +559,12 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
                 ImageView iv_addMemoMarker = new ImageView(this);
                 addMemoMarker.setPosition(new LatLng(user_mapX, user_mapY));
                 Bitmap smallMarker = BitmapFactory.decodeResource(getResources(), R.drawable.location_plus_marker8);
-                smallMarker = Bitmap.createScaledBitmap(smallMarker, 225, 225, true);
+                if(screenInches < 5.8)
+                {
+                    smallMarker = Bitmap.createScaledBitmap(smallMarker, 225, 225, true);
+                } else {
+                    smallMarker = Bitmap.createScaledBitmap(smallMarker, 165, 165, true);
+                }
                 iv_addMemoMarker.setImageBitmap(smallMarker);
                 addMemoMarker.setIcon(OverlayImage.fromView(iv_addMemoMarker));
                 addMemoMarker.setMap(naverMap);
@@ -556,7 +579,12 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
                 ImageView iv_addMemoMarker = new ImageView(this);
                 addMemoMarker.setPosition(new LatLng(user_mapX, user_mapY));
                 Bitmap smallMarker = BitmapFactory.decodeResource(getResources(), R.drawable.location_plus_marker8);
-                smallMarker = Bitmap.createScaledBitmap(smallMarker, 225, 225, true);
+                if(screenInches < 5.8)
+                {
+                    smallMarker = Bitmap.createScaledBitmap(smallMarker, 225, 225, true);
+                } else {
+                    smallMarker = Bitmap.createScaledBitmap(smallMarker, 165, 165, true);
+                }
                 iv_addMemoMarker.setImageBitmap(smallMarker);
                 addMemoMarker.setIcon(OverlayImage.fromView(iv_addMemoMarker));
                 addMemoMarker.setMap(naverMap);
@@ -631,9 +659,12 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
         }
         else
         {
+            loadNativeAd();
             backPressedTime = tempTime;
             Toast.makeText(getApplicationContext(), "뒤로 가기 버튼을 한번 더 누르면 종료됩니다.", Toast.LENGTH_SHORT).show();
         }
+
+
     }
 
     public Bitmap getCroppedBitmap(Bitmap bitmap) {
@@ -693,7 +724,12 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
                         } else {
                             ImageView iv_myLocation = new ImageView(MainActivity.this);
                             Bitmap myLocationBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.location_plus_marker8);
-                            myLocationBitmap = Bitmap.createScaledBitmap(myLocationBitmap, 225, 225, true);
+                            if(screenInches < 5.8)
+                            {
+                                myLocationBitmap = Bitmap.createScaledBitmap(myLocationBitmap, 225, 225, true);
+                            } else {
+                                myLocationBitmap = Bitmap.createScaledBitmap(myLocationBitmap, 165, 165, true);
+                            }
                             iv_myLocation.setImageBitmap(myLocationBitmap);
                             myLocationMarker.setPosition(new LatLng(latitude, longitude));
                             myLocationMarker.setIcon(OverlayImage.fromView(iv_myLocation));
@@ -902,6 +938,112 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
 
         return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
                 || locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+    }
+
+    private void loadNativeAd() {
+        // Instantiate a NativeAd object.
+        // NOTE: the placement ID will eventually identify this as your App, you can ignore it for
+        // now, while you are testing and replace it later when you have signed up.
+        // While you are using this temporary code you will only get test ads and if you release
+        // your code like this to the Google Play your users will not receive ads (you will get a no fill error).
+        nativeAd = new NativeAd(this, "577938649687815");
+
+        nativeAd.setAdListener(new NativeAdListener() {
+            @Override
+            public void onMediaDownloaded(Ad ad) {
+                // Native ad finished downloading all assets
+                Log.e(TAG, "Native ad finished downloading all assets.");
+                if (nativeAd == null || nativeAd != ad) {
+                    return;
+                }
+
+                inflateAd(nativeAd);
+            }
+
+            @Override
+            public void onError(Ad ad, AdError adError) {
+                // Native ad failed to load
+                Log.e(TAG, "Native ad failed to load: " + adError.getErrorMessage());
+            }
+
+            @Override
+            public void onAdLoaded(Ad ad) {
+                // Native ad is loaded and ready to be displayed
+                Log.d(TAG, "Native ad is loaded and ready to be displayed!");
+                if (nativeAd == null || nativeAd != ad) {
+                    return;
+                }
+                nativeAd.downloadMedia();
+                // Inflate Native Ad into Container
+                inflateAd(nativeAd);
+            }
+
+            @Override
+            public void onAdClicked(Ad ad) {
+                // Native ad clicked
+                Log.d(TAG, "Native ad clicked!");
+            }
+
+            @Override
+            public void onLoggingImpression(Ad ad) {
+                // Native ad impression
+                Log.d(TAG, "Native ad impression logged!");
+            }
+        });
+
+        // Request an ad
+        //nativeAd.loadAd();
+        nativeAd.loadAd(NativeAdBase.MediaCacheFlag.NONE);
+    }
+
+    private void inflateAd(NativeAd nativeAd) {
+
+        nativeAd.unregisterView();
+
+        // Add the Ad view into the ad container.
+        nativeAdLayout = findViewById(R.id.native_ad_container);
+        LayoutInflater inflater = LayoutInflater.from(MainActivity.this);
+        // Inflate the Ad view.  The layout referenced should be the one you created in the last step.
+        adView = (LinearLayout) inflater.inflate(R.layout.native_ad_layout, nativeAdLayout, false);
+        nativeAdLayout.addView(adView);
+
+        // Add the AdOptionsView
+        LinearLayout adChoicesContainer = findViewById(R.id.ad_choices_container);
+        AdOptionsView adOptionsView = new AdOptionsView(MainActivity.this, nativeAd, nativeAdLayout);
+        adChoicesContainer.removeAllViews();
+        adChoicesContainer.addView(adOptionsView, 0);
+
+        // Create native UI using the ad metadata.
+        AdIconView nativeAdIcon = adView.findViewById(R.id.native_ad_icon);
+        TextView nativeAdTitle = adView.findViewById(R.id.native_ad_title);
+        MediaView nativeAdMedia = adView.findViewById(R.id.native_ad_media);
+        TextView nativeAdSocialContext = adView.findViewById(R.id.native_ad_social_context);
+        TextView nativeAdBody = adView.findViewById(R.id.native_ad_body);
+        TextView sponsoredLabel = adView.findViewById(R.id.native_ad_sponsored_label);
+        Button nativeAdCallToAction = adView.findViewById(R.id.native_ad_call_to_action);
+
+        // Set the Text.
+        nativeAdTitle.setText(nativeAd.getAdvertiserName());
+        nativeAdBody.setText(nativeAd.getAdBodyText());
+        nativeAdSocialContext.setText(nativeAd.getAdSocialContext());
+        nativeAdCallToAction.setVisibility(nativeAd.hasCallToAction() ? View.VISIBLE : View.INVISIBLE);
+        nativeAdCallToAction.setText(nativeAd.getAdCallToAction());
+        sponsoredLabel.setText(nativeAd.getSponsoredTranslation());
+
+        // Create a list of clickable views
+        /*
+        List<View> clickableViews = new ArrayList<>();
+        clickableViews.add(nativeAdTitle);
+        clickableViews.add(nativeAdCallToAction);
+
+        // Register the Title and CTA button to listen for clicks.
+        nativeAd.registerViewForInteraction(
+                adView,
+                nativeAdMedia,
+                nativeAdIcon,
+                clickableViews);
+
+         */
     }
 
 

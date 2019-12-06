@@ -31,6 +31,7 @@ public class MemoListPage extends ChangeStateBar {
     public int memoImageCount;
     public int memoId;
 
+
     TextView tv_memoListLocation;
     TextView tv_memoListAddress;
     ArrayList<MemoListItem> memoData = new ArrayList<MemoListItem>();
@@ -122,4 +123,5 @@ public class MemoListPage extends ChangeStateBar {
                 return super.onOptionsItemSelected(item);
         }
     }
+
 }
