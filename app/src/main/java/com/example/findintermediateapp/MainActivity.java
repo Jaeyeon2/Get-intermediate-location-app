@@ -28,8 +28,11 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.location.Address;
 import android.location.Geocoder;
+import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
+import android.os.Build;
 import android.provider.MediaStore;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
@@ -185,8 +188,39 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
     int display_height;
     DisplayMetrics displayMetrics;
     double screenInches;
+
+//    LocationManager mLM = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+    private final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION=1001;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        if (!checkLocationServicesStatus()) {
+
+            showDialogForLocationServiceSetting();
+        }else {
+
+            checkRunTimePermission();
+        }
+
+        int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
+
+        if (permissionCheck!= PackageManager.PERMISSION_GRANTED) {
+            Toast.makeText(this,"권한 승인이 필요합니다",Toast.LENGTH_LONG).show();
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.ACCESS_FINE_LOCATION)) {
+                Toast.makeText(this,"현재위 치 메모기능을 사용하기 위해 위치 권한이 필요합니다.",Toast.LENGTH_LONG).show();
+            } else {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                        MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+                Toast.makeText(this,"현재 위치 메모기능을 사용하기 위해 위치 권한이 필요합니다.",Toast.LENGTH_LONG).show();
+
+            }
+        }
+
+
+
 
         AudienceNetworkAds.initialize(this);
 
@@ -336,6 +370,7 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
 
         double latitude = gpsTracker.getLatitude();
         double longitude = gpsTracker.getLongitude();
+        Log.d("latitudezzz", String.valueOf(latitude));
         address = getCurrentAddress(latitude, longitude);
         String[] str_address = address.split(" ");
         address = "";
@@ -751,6 +786,36 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
                         }
                     }
                 }
+
+                if(memoCount == 0)
+                {
+                    ImageView iv_myLocation = new ImageView(MainActivity.this);
+                    Bitmap myLocationBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.location_plus_marker8);
+                    if(screenInches < 5.8)
+                    {
+                        myLocationBitmap = Bitmap.createScaledBitmap(myLocationBitmap, 225, 225, true);
+                    } else {
+                        myLocationBitmap = Bitmap.createScaledBitmap(myLocationBitmap, 165, 165, true);
+                    }
+                    iv_myLocation.setImageBitmap(myLocationBitmap);
+                    myLocationMarker.setPosition(new LatLng(latitude, longitude));
+                    myLocationMarker.setIcon(OverlayImage.fromView(iv_myLocation));
+                    myLocationMarker.setMap(naverMap);
+
+                    myLocationMarker.setOnClickListener(overlay -> {
+                        Intent addMemoIntent = new Intent(MainActivity.this, AddMemo.class);
+                        addMemoIntent.putExtra("location", "MyLocation");
+                        addMemoIntent.putExtra("address", address);
+                        addMemoIntent.putExtra("mapx", String.valueOf(latitude));
+                        addMemoIntent.putExtra("mapy", String.valueOf(longitude));
+                        addMemoIntent.putExtra("request_page", "MainActivity");
+                        startActivity(addMemoIntent);
+                        return true;
+                    });
+
+                    rl_clickedLocation.setVisibility(VISIBLE);
+                    tv_markerLocation.setText(address);
+                }
             }
         });
         builder.setNegativeButton("아니요",
@@ -775,8 +840,6 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
             // 요청 코드가 PERMISSIONS_REQUEST_CODE 이고, 요청한 퍼미션 개수만큼 수신되었다면
 
             boolean check_result = true;
-
-
             // 모든 퍼미션을 허용했는지 체크합니다.
 
             for (int result : grandResults) {
@@ -804,7 +867,6 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
     }
 
     void checkRunTimePermission(){
-
         //런타임 퍼미션 처리
         // 1. 위치 퍼미션을 가지고 있는지 체크합니다.
         int hasFineLocationPermission = ContextCompat.checkSelfPermission(MainActivity.this,
@@ -914,15 +976,11 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
         switch (requestCode) {
-
             case GPS_ENABLE_REQUEST_CODE:
-
                 //사용자가 GPS 활성 시켰는지 검사
                 if (checkLocationServicesStatus()) {
                     if (checkLocationServicesStatus()) {
-
                         Log.d("@@@", "onActivityResult : GPS 활성화 되있음");
                         checkRunTimePermission();
                         return;

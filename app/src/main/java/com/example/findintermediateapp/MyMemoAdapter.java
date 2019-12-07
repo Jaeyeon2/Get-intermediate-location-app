@@ -83,9 +83,7 @@ public class MyMemoAdapter extends RecyclerView.Adapter<MyMemoAdapter.MyViewHold
                     memoPageIntent.putExtra("memo_allImages", allImage);
                     memoPageIntent.putExtra("memo_image", "yes");
                 }
-
-                context.startActivity(memoPageIntent);
-
+                context.startActivity(memoPageIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
             }
         });
 

@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 
 public class ViewPagerAdapter extends PagerAdapter {
 
@@ -43,7 +44,11 @@ public class ViewPagerAdapter extends PagerAdapter {
 
         //ImageView에 현재 position 번째에 해당하는 이미지를 보여주기 위한 작업
         //현재 position에 해당하는 이미지를 setting
-        Glide.with(context).load(uri_image[position]).into(img);
+        Glide.with(context)
+                .load(uri_image[position])
+                .apply(new RequestOptions().centerCrop())
+                .apply(new RequestOptions().fitCenter())
+                .into(img);
         //ViewPager에 만들어 낸 View 추가
         container.addView(view);
         //Image가 세팅된 View를 리턴
