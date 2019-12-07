@@ -377,10 +377,55 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
         for(int i = 1; i < str_address.length; i++)
         {
             address = address + str_address[i] + " " ;
+
+            if(i == str_address.length-1)
+            {
+                if(address.equals("미발견 "))
+                {
+                    if (!checkLocationServicesStatus()) {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                        builder.setTitle("위치 서비스 비활성화");
+                        builder.setMessage("현재위치에 메모를 추가하기 위해서는 위치 권한 설정이 필요합니다.\n"
+                                + "위치 설정을 수정하실래요?");
+                        builder.setCancelable(true);
+                        builder.setPositiveButton("설정", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int id) {
+                                Intent callGPSSettingIntent
+                                        = new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                                startActivityForResult(callGPSSettingIntent, GPS_ENABLE_REQUEST_CODE);
+                            }
+                        });
+                        builder.setNegativeButton("취소", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.cancel();
+                            }
+                        });
+                        builder.create().show();
+                    }else {
+                        Log.d("address111", address);
+                        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                        builder.setTitle("주소 미발견");
+                        builder.setMessage("현재 위치를 불러오는데 실패하였습니다. ");
+                        builder.setPositiveButton("확인",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+
+                                    }
+                                });
+                        builder.show();
+
+                        checkRunTimePermission();
+                    }
+                } else {
+                    Log.d("address11", address);
+                    showAlertDialog(latitude, longitude);
+                }
+            }
         }
 
-        showAlertDialog(latitude, longitude);
-    }
+     }
 
 
 
