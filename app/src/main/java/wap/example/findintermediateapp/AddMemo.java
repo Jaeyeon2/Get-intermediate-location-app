@@ -54,7 +54,7 @@ public class AddMemo extends ChangeStateBar {
     Bitmap[] memo_work = new Bitmap[addcount];
     Uri[] uri_imageArr = new Uri[addcount];
     private static Uri filePath;
-    public static Uri[] filePathArray = new Uri[100];
+    public Uri[] filePathArray = new Uri[100];
     public  Uri[] addedfilePath = new Uri[addcount];
     ImageAdapter imageAdapter;
     static GridView gridView;
@@ -194,6 +194,7 @@ public class AddMemo extends ChangeStateBar {
                 }
             } else if (resultCode == RESULT_CANCELED) {
                 Toast.makeText(this, "사진 선택 취소", Toast.LENGTH_LONG).show();
+
             }
         }
     }
@@ -328,6 +329,12 @@ public class AddMemo extends ChangeStateBar {
         } else {
             memo_content = et_memoContent.getText().toString();
         }
+
+        for(int i = 0; i < filePathArray.length; i++)
+        {
+            Log.d("filePathArray[i]", String.valueOf(filePathArray[i]));
+        }
+
         if(filePathArray[1] == null)
         {
             str_allRegPhoto = "noImage";

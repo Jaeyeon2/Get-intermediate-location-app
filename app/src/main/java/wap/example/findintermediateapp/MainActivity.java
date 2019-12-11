@@ -230,6 +230,11 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
          index++;
         }
 
+        for(int i = 0; i < memoCount; i++)
+        {
+            Log.d("memoName[index]", memoName[i]);
+        }
+
         androidId = Settings.Secure.getString(getContentResolver(),
                 Settings.Secure.ANDROID_ID);
         Log.d("device androidId", androidId);
@@ -462,10 +467,28 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
                     String tempY = cursor.getString(6);
                 Bitmap bitmap2 = null;
                     Uri imageUri = null;
+                    boolean existingPhoto = false;
                     if(tempPhoto.equals("noImage")) {
+                        for(int i = 0; i < memoName.length; i++)
+                        {
+                            if(memoName[i].equals(tempName))
+                            {
+                                if(!memoPhoto[i].equals("noImage"))
+                                {
+                                    existingPhoto = true;
+                                }
+                            }
+
+                            if(i == memoName.length-1)
+                            {
+                                if(existingPhoto == false)
+                                {
+                                    Resources resources = getApplicationContext().getResources();
+                                    imageUri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + resources.getResourcePackageName(R.drawable.memo5) + '/' + resources.getResourceTypeName(R.drawable.memo5) + '/' + resources.getResourceEntryName(R.drawable.memo5));
+                                }
+                            }
+                        }
                  //       bitmap2 = BitmapFactory.decodeResource(getResources(), R.drawable.add_work_no2);
-                        Resources resources = getApplicationContext().getResources();
-                        imageUri = Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + resources.getResourcePackageName(R.drawable.memo5) + '/' + resources.getResourceTypeName(R.drawable.memo5) + '/' + resources.getResourceEntryName(R.drawable.memo5));
                     }
                 else {
                     String[] eachPhoto = tempPhoto.split("\\|");
