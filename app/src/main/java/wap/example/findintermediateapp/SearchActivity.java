@@ -7,11 +7,17 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import org.w3c.dom.Text;
 
 import wap.example.findintermediateapp.R;
 
@@ -22,7 +28,9 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 
-public class SearchActivity extends ChangeStateBar {
+import static android.view.View.VISIBLE;
+
+public class SearchActivity extends ChangeStateBar implements TextView.OnEditorActionListener {
 
     TextView tv_searchResult;
     TextView tv_searchResult2;
@@ -38,17 +46,23 @@ public class SearchActivity extends ChangeStateBar {
     LocationResultAdapter locationAdapter = null;
     ArrayList<LocationResultItem> resultList = new ArrayList<LocationResultItem>();
     Handler handler = new Handler();
+    LinearLayout ll_noResult;
+    LinearLayout ll_yesResult;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
         et_searchInput = findViewById(R.id.searchInput);
+        et_searchInput.setOnEditorActionListener(this);
         Toolbar toolbar = findViewById(R.id.search_toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_left_arrow);
+
+        ll_noResult = findViewById(R.id.no_search_result);
+        ll_yesResult = findViewById(R.id.yes_search_result);
 
         locationRecyclerView = findViewById(R.id.result_list);
         locationAdapter = new LocationResultAdapter(resultList);
@@ -58,6 +72,7 @@ public class SearchActivity extends ChangeStateBar {
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(getApplicationContext(), LinearLayoutManager.VERTICAL);
         dividerItemDecoration.setDrawable(getApplicationContext().getResources().getDrawable(R.drawable.custom_divider));
         locationRecyclerView.addItemDecoration(dividerItemDecoration);
+
     }
     public void addLocation(String name, String location, String mapx, String mapy) {
 
@@ -81,8 +96,8 @@ public class SearchActivity extends ChangeStateBar {
     public boolean onOptionsItemSelected(MenuItem item){
         switch(item.getItemId()){
             case R.id.action_search:
-                resultList.clear();
                 searchNaver(et_searchInput.getText().toString());
+                resultList.clear();
                 return true;
             case android.R.id.home:
                 finish();
@@ -90,6 +105,20 @@ public class SearchActivity extends ChangeStateBar {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    @Override
+    public boolean onEditorAction(TextView v, int actionId, KeyEvent event)
+    {
+        // TODO Auto-generated method stub
+
+        //오버라이드한 onEditorAction() 메소드
+
+        if(v.getId()==R.id.searchInput && actionId== EditorInfo.IME_ACTION_DONE){ // 뷰의 id를 식별, 키보드의 완료 키 입력 검출
+            searchNaver(et_searchInput.getText().toString());
+            resultList.clear();
+        }
+        return false;
     }
 
 
@@ -144,6 +173,7 @@ public class SearchActivity extends ChangeStateBar {
                     int k = 0;
 
                     for (int i = 0; i < array.length; i++) {
+                        Log.d("array.lengthQQ", String.valueOf(array.length));
                         if (array[i].equals("title")) {
                             title[k] = array[i + 2];
                             title[k] = title[k].replace("<b>", "");
@@ -172,20 +202,30 @@ public class SearchActivity extends ChangeStateBar {
                     Log.d("k잘나오니: ", String.valueOf(k));
                     Log.d("address잘나오니:",address[0] + address[1] + address[2]);
                     Log.d("roadAddress잘나오니:",roadAddress[0] + roadAddress[1] + roadAddress[2]);
-                    for(int i = 0; i < k; i++)
-                    {
-                        addLocation(title[i], roadAddress[i], mapx[i], mapy[i]);
-                        if(i == (k-1))
-                        {
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    locationAdapter.notifyDataSetChanged();
-                                }
-                            });
+                    if (title[0] == null) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                ll_noResult.setVisibility(VISIBLE);
+                           //     ll_yesResult.setVisibility(View.INVISIBLE);
+                            }
+                        });
+                    } else {
+                        for (int i = 0; i < k; i++) {
+                            Log.d("kkkk", String.valueOf(k));
+                            ll_noResult.setVisibility(View.INVISIBLE);
+                            //ll_yesResult.setVisibility(VISIBLE);
+                            addLocation(title[i], roadAddress[i], mapx[i], mapy[i]);
+                            if (i == (k - 1)) {
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        locationAdapter.notifyDataSetChanged();
+                                    }
+                                });
+                            }
                         }
                     }
-
                     // title[0], link[0], bloggername[0] 등 인덱스 값에 맞게 검색결과를 변수화하였다.
                 } catch (Exception e) {
                     System.out.println(e);
