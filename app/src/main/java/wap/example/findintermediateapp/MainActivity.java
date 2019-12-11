@@ -175,21 +175,6 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
 
         int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
 
-        if (permissionCheck!= PackageManager.PERMISSION_GRANTED) {
-            Toast.makeText(this,"권한 승인이 필요합니다",Toast.LENGTH_LONG).show();
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                    Manifest.permission.ACCESS_FINE_LOCATION)) {
-                Toast.makeText(this,"현재위 치 메모기능을 사용하기 위해 위치 권한이 필요합니다.",Toast.LENGTH_LONG).show();
-            } else {
-                ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                        MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
-                Toast.makeText(this,"현재 위치 메모기능을 사용하기 위해 위치 권한이 필요합니다.",Toast.LENGTH_LONG).show();
-
-            }
-        }
-
-
 
 
         AudienceNetworkAds.initialize(this);
@@ -334,6 +319,22 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
     }
 
     public void myLocationOnClick(View view) {
+        
+        int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
+
+        if (permissionCheck!= PackageManager.PERMISSION_GRANTED) {
+            Toast.makeText(this,"권한 승인이 필요합니다",Toast.LENGTH_LONG).show();
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.ACCESS_FINE_LOCATION)) {
+                Toast.makeText(this,"현재위 치 메모기능을 사용하기 위해 위치 권한이 필요합니다.",Toast.LENGTH_LONG).show();
+            } else {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                        MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+                Toast.makeText(this,"현재 위치 메모기능을 사용하기 위해 위치 권한이 필요합니다.",Toast.LENGTH_LONG).show();
+
+            }
+        }
         gpsTracker = new GpsTracker(MainActivity.this);
 
         double latitude = gpsTracker.getLatitude();
@@ -606,7 +607,7 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
                 if(tempName.equals(intent.getStringExtra("location_name")))
                 {
 
-                    CameraPosition existingCameraPosition = new CameraPosition(new LatLng(user_mapX, user_mapY), 9);
+                    CameraPosition existingCameraPosition = new CameraPosition(new LatLng(user_mapX, user_mapY), 11);
                     CameraUpdate existingCamemraUpdate = CameraUpdate.toCameraPosition(existingCameraPosition);
                     naverMap.moveCamera(existingCamemraUpdate);
                     existingLocation = true;
@@ -618,7 +619,7 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
 //                CameraUpdate cameraUpdate = CameraUpdate.scrollTo(new LatLng(user_mapX, user_mapY), 5);
 //                naverMap.moveCamera(cameraUpdate);
 
-                CameraPosition addCameraPosition = new CameraPosition(new LatLng(user_mapX, user_mapY), 9);
+                CameraPosition addCameraPosition = new CameraPosition(new LatLng(user_mapX, user_mapY), 11);
                 CameraUpdate addCamemraUpdate = CameraUpdate.toCameraPosition(addCameraPosition);
                 naverMap.moveCamera(addCamemraUpdate);
 
@@ -640,8 +641,10 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
 
             if(cursor.getCount() == 0)
             {
-                CameraUpdate cameraUpdate = CameraUpdate.scrollTo(new LatLng(user_mapX, user_mapY));
-                naverMap.moveCamera(cameraUpdate);
+                CameraPosition addCameraPosition = new CameraPosition(new LatLng(user_mapX, user_mapY), 11);
+                CameraUpdate addCamemraUpdate = CameraUpdate.toCameraPosition(addCameraPosition);
+                naverMap.moveCamera(addCamemraUpdate);
+
                 ImageView iv_addMemoMarker = new ImageView(this);
                 addMemoMarker.setPosition(new LatLng(user_mapX, user_mapY));
                 Bitmap smallMarker = BitmapFactory.decodeResource(getResources(), R.drawable.location_plus_marker8);
@@ -771,7 +774,10 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
         builder.setPositiveButton("예",
         new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
-                CameraPosition addMemoCameraPosition = new CameraPosition(new LatLng(latitude, longitude), 9);
+                addMemoMarker.setMap(null);
+                myLocationMarker.setMap(null);
+
+                CameraPosition addMemoCameraPosition = new CameraPosition(new LatLng(latitude, longitude), 11);
                 CameraUpdate addMemoCameraUpdate = CameraUpdate.toCameraPosition(addMemoCameraPosition);
                 naverMap.moveCamera(addMemoCameraUpdate);
                 boolean existingLocation = false;
