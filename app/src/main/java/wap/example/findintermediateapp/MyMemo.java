@@ -6,6 +6,8 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.LinearLayout;
 
 import wap.example.findintermediateapp.R;
 
@@ -16,6 +18,7 @@ public class MyMemo extends ChangeStateBar {
     RecyclerView recyclerView;
     MyMemoAdapter adapter;
     GridLayoutManager layoutManager;
+    LinearLayout ll_noMemo;
 
     ArrayList<Item> list = new ArrayList<Item>();
 
@@ -41,10 +44,16 @@ public class MyMemo extends ChangeStateBar {
         getSupportActionBar().setTitle(null);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_left_arrow);
+        ll_noMemo = findViewById(R.id.myMemo_no_memo);
 
 
         layoutManager = new GridLayoutManager(getApplicationContext(), 3);
        mCount = getIntent().getIntExtra("memoCount", 0);
+
+       if(mCount == 0)
+       {
+         ll_noMemo.setVisibility(View.VISIBLE);
+       }
 
        mName = new String[mCount];
        mAdress = new String[mCount];

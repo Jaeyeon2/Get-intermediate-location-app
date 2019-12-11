@@ -3,6 +3,7 @@ package wap.example.findintermediateapp;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -75,6 +76,7 @@ public class AddedImage extends ChangeStateBar {
                 {
                     deletedImageIntent.putExtra("memoId", getIntent().getIntExtra("addedImage_memoId", 0));
                     deletedImageIntent.putExtra("memoDate", getIntent().getStringExtra("addedImage_date"));
+                    Log.d("getIntent().getStringExtra(edit_memo_date)zzzz", getIntent().getStringExtra("addedImage_date"));
                     deletedImageIntent.putExtra("memoRequest",getIntent().getStringExtra("addedImage_preRequest"));
                 }
                 startActivity(deletedImageIntent);

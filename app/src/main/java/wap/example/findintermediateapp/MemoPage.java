@@ -5,11 +5,13 @@ import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.support.design.bottomappbar.BottomAppBarTopEdgeTreatment;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.WindowManager;
@@ -21,6 +23,7 @@ import wap.example.findintermediateapp.R;
 import me.relex.circleindicator.CircleIndicator;
 
 import static android.view.View.INVISIBLE;
+import static android.view.View.VISIBLE;
 
 public class MemoPage extends ChangeStateBar {
 
@@ -40,6 +43,7 @@ public class MemoPage extends ChangeStateBar {
     int memoId;
     LinearLayout ll_yesImage;
     LinearLayout ll_memo;
+    TextView tv_noImageDate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +61,7 @@ public class MemoPage extends ChangeStateBar {
         str_filePath = intent.getStringArrayExtra("memo_allImages");
         vp_imagePager = findViewById(R.id.memo_pager);
         tv_memoDate = findViewById(R.id.memo_date);
+        tv_noImageDate = findViewById(R.id.noImage_memo_date);
         tv_memoDate.setText(intent.getStringExtra("memo_date"));
         String id = intent.getStringExtra("memo_id");
         requestPage = intent.getStringExtra("request_page");
@@ -103,6 +108,12 @@ public class MemoPage extends ChangeStateBar {
             DisplayMetrics metrics1 = getApplicationContext().getResources().getDisplayMetrics();
             int screenWidth = metrics1.widthPixels;
             int screemHeight = metrics1.heightPixels;
+            tv_memoDate.setVisibility(INVISIBLE);
+            tv_noImageDate.setVisibility(VISIBLE);
+
+            tv_memoDate.setText(intent.getStringExtra("memo_date"));
+            tv_noImageDate.setText(intent.getStringExtra("memo_date"));
+            //tv_noImageDate.setGravity(Gravity.BOTTOM);
             ll_memo.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, screemHeight));
         }
         if(getIntent().getStringExtra("request_page").equals("MyMemoPage_noimage"))
@@ -174,8 +185,6 @@ public class MemoPage extends ChangeStateBar {
                             str_allImage = str_allImage + strArr_allImage[i] + "|";
                         }
                     }
-
-
                     memoEditIntent.putExtra("edit_memo_allImages", str_allImage);
                 }
                 memoEditIntent.putExtra("edit_memo_date", tv_memoDate.getText().toString());

@@ -52,7 +52,7 @@ public class EditMemo extends ChangeStateBar {
         tv_editMemoLocation = findViewById(R.id.edit_memo_location);
         tv_editMemoAddress = findViewById(R.id.edit_memo_address);
         et_editMemoContent = findViewById(R.id.edit_memo_content);
-        
+
         Toolbar toolbar = findViewById(R.id.edit_memo_toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
@@ -250,6 +250,7 @@ public class EditMemo extends ChangeStateBar {
                         addedImageIntent.putExtra("addedImage_requestPage", "EditMemo");
                         addedImageIntent.putExtra("addedImage_memoId", memoId);
                         addedImageIntent.putExtra("addedImage_date", getIntent().getStringExtra("edit_memo_date"));
+                        Log.d("getIntent().getStringExtra(edit_memo_date)", getIntent().getStringExtra("edit_memo_date"));
                         addedImageIntent.putExtra("addedImage_mapx", getIntent().getStringExtra("edit_memo_x"));
                         addedImageIntent.putExtra("addedImage_mapy", getIntent().getStringExtra("edit_memo_y"));
                         addedImageIntent.putExtra("addedImage_preRequest", getIntent().getStringExtra("edit_memo_request"));

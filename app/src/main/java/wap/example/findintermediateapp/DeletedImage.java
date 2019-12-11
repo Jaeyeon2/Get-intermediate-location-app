@@ -62,6 +62,7 @@ public class DeletedImage extends ChangeStateBar {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d("memoTimeaaa", String.valueOf(getIntent().getStringExtra("memoDate")));
         location_x = getIntent().getStringExtra("mapx");
         location_y = getIntent().getStringExtra("mapy");
         super.onCreate(savedInstanceState);
@@ -136,6 +137,7 @@ public class DeletedImage extends ChangeStateBar {
                     memoPageIntent.putExtra("memo_address", tv_address.getText().toString());
                     memoPageIntent.putExtra("memo_content", et_memoContent.getText().toString());
                     memoPageIntent.putExtra("memo_date", getIntent().getStringExtra("memoDate"));
+                    Log.d("memo_data", String.valueOf(getIntent().getStringExtra("memoDate")));
                     memoPageIntent.putExtra("memo_id", String.valueOf(memoId));
                     memoPageIntent.putExtra("request_page",getIntent().getStringExtra("memoRequest"));
                     if(str_allImage.equals("noImage"))
@@ -284,7 +286,7 @@ public class DeletedImage extends ChangeStateBar {
                         if(getIntent().getStringExtra("request_page").equals("EditMemo"))
                         {
                             addedImageIntent.putExtra("addedImage_memoId", memoId);
-                            addedImageIntent.putExtra("addedImage_date", getIntent().getStringExtra("edit_memo_date"));
+                            addedImageIntent.putExtra("addedImage_date", getIntent().getStringExtra("memoDate"));
                         }
                         addedImageIntent.putExtra("addedImage_mapx", getIntent().getStringExtra("mapx"));
                         addedImageIntent.putExtra("addedImage_mapy", getIntent().getStringExtra("mapy"));
