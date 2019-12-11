@@ -4,12 +4,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MyMemo"
+    tools:context="wap.example.findintermediateapp.MyMemo"
     android:orientation="vertical">
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="45dp"
         android:layout_gravity="center">
 
 
@@ -18,8 +18,7 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?attr/colorPrimary"
-        android:minHeight="?attr/actionBarSize"
+        android:background="#ffffff"
         android:theme="?attr/actionBarTheme" />
 
         <TextView
@@ -28,7 +27,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:text="내 메모 페이지"
-            android:textSize="20sp"
+            android:textSize="19sp"
             android:textColor="#000"
             />
 

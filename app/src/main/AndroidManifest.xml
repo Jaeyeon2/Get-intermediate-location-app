@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.example.findintermediateapp">
+    package="wap.example.findintermediateapp">
     <application
         android:allowBackup="true"
         android:configChanges="keyboardHidden|orientation"
@@ -12,19 +12,19 @@
         android:theme="@style/AppTheme"
         android:hardwareAccelerated="true"
         android:windowSoftInputMode="adjustResize">
-        <activity android:name=".DeletedImage" />
-        <activity android:name=".AddedImage" />
-        <activity android:name=".EditMemo" />
-        <activity android:name=".MemoListPage" />
-        <activity android:name=".MemoPage" />
-        <activity android:name=".AddMemo" />
-        <activity android:name=".MyMemo" />
-        <activity android:name=".ImageActivity" />
+        <activity android:name="wap.example.findintermediateapp.DeletedImage" />
+        <activity android:name="wap.example.findintermediateapp.AddedImage" />
+        <activity android:name="wap.example.findintermediateapp.EditMemo" />
+        <activity android:name="wap.example.findintermediateapp.MemoListPage" />
+        <activity android:name="wap.example.findintermediateapp.MemoPage" />
+        <activity android:name="wap.example.findintermediateapp.AddMemo" />
+        <activity android:name="wap.example.findintermediateapp.MyMemo" />
+        <activity android:name="wap.example.findintermediateapp.ImageActivity" />
         <activity
-            android:name=".SearchActivity"
+            android:name="wap.example.findintermediateapp.SearchActivity"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".LoadingActivity"
+            android:name="wap.example.findintermediateapp.LoadingActivity"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
             android:label="@string/app_name" >
             <intent-filter>
@@ -32,7 +32,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MainActivity">
+        <activity android:name="wap.example.findintermediateapp.MainActivity">
         </activity>
         <meta-data
             android:name="com.naver.maps.map.CLIENT_ID"

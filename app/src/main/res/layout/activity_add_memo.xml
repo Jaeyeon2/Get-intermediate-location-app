@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".AddMemo"
+    tools:context="wap.example.findintermediateapp.AddMemo"
     android:orientation="vertical"
     android:weightSum="10"
     android:background="#ffffff"
@@ -48,7 +48,7 @@
             android:layout_height="67dp"
             android:orientation="vertical"
             android:paddingLeft="10dp"
-            android:paddingTop="0dp"
+            android:paddingTop="0.5dp"
             >
             <EditText
                 android:id="@+id/add_memo_myLocation"

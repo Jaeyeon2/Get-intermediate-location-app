@@ -1,4 +1,4 @@
-package com.example.findintermediateapp;
+package wap.example.findintermediateapp;
 
 import android.app.Activity;
 import android.content.Context;

@@ -17,7 +17,7 @@
             android:padding="7dp">
      <TextView
          android:gravity="center"
-         android:text="asdad"
+         android:text=""
          android:id="@+id/recylcerview_row_text"
          android:layout_width="match_parent"
          android:layout_height="match_parent"
