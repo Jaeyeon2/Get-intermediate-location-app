@@ -319,7 +319,7 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
     }
 
     public void myLocationOnClick(View view) {
-        
+
         int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
 
         if (permissionCheck!= PackageManager.PERMISSION_GRANTED) {
@@ -973,7 +973,6 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
 
 
         if (addresses == null || addresses.size() == 0) {
-            Toast.makeText(this, "주소 미발견", Toast.LENGTH_LONG).show();
             return "주소 미발견";
 
         }
