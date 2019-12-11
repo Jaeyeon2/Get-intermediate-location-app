@@ -84,7 +84,6 @@ public class AddMemo extends ChangeStateBar {
         x = getIntent();
         LinearLayout searchView = findViewById(R.id.add_memo_ll);
         LinearLayout locationView = findViewById(R.id.add_memo_my);
-
         if(x.getStringExtra("location").equals("MyLocation"))
         {
             searchView.setVisibility(INVISIBLE);

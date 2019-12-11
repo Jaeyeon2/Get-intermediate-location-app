@@ -52,7 +52,7 @@ public class EditMemo extends ChangeStateBar {
         tv_editMemoLocation = findViewById(R.id.edit_memo_location);
         tv_editMemoAddress = findViewById(R.id.edit_memo_address);
         et_editMemoContent = findViewById(R.id.edit_memo_content);
-
+        
         Toolbar toolbar = findViewById(R.id.edit_memo_toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);

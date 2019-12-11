@@ -70,6 +70,7 @@ public class MemoPage extends ChangeStateBar {
             }
         }
         memoX = intent.getStringExtra("memo_x");
+        Log.d("intent.getStrgExtra(memo_x)", String.valueOf(intent.getStringExtra("memo_x")));
         memoY = intent.getStringExtra("memo_y");
         ll_yesImage = findViewById(R.id.yes_image_layout);
         ll_memo = findViewById(R.id.memo_layout);
@@ -177,7 +178,6 @@ public class MemoPage extends ChangeStateBar {
 
                     memoEditIntent.putExtra("edit_memo_allImages", str_allImage);
                 }
-
                 memoEditIntent.putExtra("edit_memo_date", tv_memoDate.getText().toString());
                 memoEditIntent.putExtra("edit_memo_x", memoX);
                 memoEditIntent.putExtra("edit_memo_y", memoY);

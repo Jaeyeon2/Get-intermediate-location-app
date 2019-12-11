@@ -76,7 +76,6 @@ public class DeletedImage extends ChangeStateBar {
         et_memoContent.setText(intent.getStringExtra("content"));
         tv_location.setText(y);
         tv_address.setText(addr);
-
         memoId = getIntent().getIntExtra("memoId", 0);
         if(intent.getStringExtra("request_page").equals("EditMemo"))
         {
@@ -383,7 +382,7 @@ public class DeletedImage extends ChangeStateBar {
         values.put(FeedReaderContract.FeedEntry.MEMO, et_memoContent.getText().toString());
         values.put(FeedReaderContract.FeedEntry.PHOTO, str_allImage);
         values.put(FeedReaderContract.FeedEntry.COORDINATE_X, location_x);
-        Log.d("edit_memo_x", location_x);
+        Log.d("edit_memo_x", String.valueOf(location_x));
         values.put(FeedReaderContract.FeedEntry.COORDINATE_Y, location_y);
         return mDB.update(FeedReaderContract.FeedEntry.TABLE_NAME, values, "_id=" + id, null) > 0;
     }

@@ -463,8 +463,8 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
                 String tempPhoto = cursor.getString(3);
                 Log.d("tempPhoto22", tempPhoto);
                     String tempDate = cursor.getString(4);
-                    String tempX = cursor.getString(5);
-                    String tempY = cursor.getString(6);
+                    String tempX = String.valueOf(cursor.getString(5));
+                    String tempY = String.valueOf(cursor.getString(6));
                 Bitmap bitmap2 = null;
                     Uri imageUri = null;
                     boolean existingPhoto = false;
