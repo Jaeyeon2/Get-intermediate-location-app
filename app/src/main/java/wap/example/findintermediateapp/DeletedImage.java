@@ -312,10 +312,16 @@ public class DeletedImage extends ChangeStateBar {
         Log.d("location_x1", location_x);
         String str_allRegPhoto = "";
 
-        for (int i = 0; i < addcount-1; i++) {
-            str_allRegPhoto = str_allRegPhoto + String.valueOf(uri_imageArr[i]) + "|";
-            Log.d("uri_imageArrgg", String.valueOf(uri_imageArr[i]));
+        if(uri_imageArr.length == 1)
+        {
+            str_allRegPhoto = "noImage";
+        } else {
+            for (int i = 0; i < addcount-1; i++) {
+                str_allRegPhoto = str_allRegPhoto + String.valueOf(uri_imageArr[i]) + "|";
+                Log.d("uri_imageArrgg", String.valueOf(uri_imageArr[i]));
+            }
         }
+
 
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
