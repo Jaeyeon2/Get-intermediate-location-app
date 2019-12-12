@@ -363,18 +363,23 @@ public class AddMemo extends ChangeStateBar {
 
             if (getIntent().getStringExtra("request_page").equals("MainActivity")) {
                 Intent mainIntent = new Intent(AddMemo.this, MainActivity.class);
+                mainIntent.putExtra("added_locationX", location_x);
+                mainIntent.putExtra("added_locationY", location_y);
                 startActivity(mainIntent);
                 finish();
             } else if (getIntent().getStringExtra("request_page").equals("MemoListPage")) {
                 // MainActivity 새로 고침
+                /*
                 Intent mainIntent2 = new Intent(AddMemo.this, MainActivity.class);
                 MainActivity mainActivity2 = new MainActivity();
                 startActivity(mainIntent2);
                 mainActivity2.finish();
-
+                 */
                 Intent memoListIntent = new Intent(AddMemo.this, MemoListPage.class);
                 memoListIntent.putExtra("memo_location", location);
                 memoListIntent.putExtra("memo_address", location_address);
+                memoListIntent.putExtra("added_locationX", location_x);
+                memoListIntent.putExtra("added_locationY", location_y);
                 startActivity(memoListIntent);
                 finish();
         }

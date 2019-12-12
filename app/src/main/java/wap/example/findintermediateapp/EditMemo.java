@@ -119,6 +119,8 @@ public class EditMemo extends ChangeStateBar {
                 memoPageIntent.putExtra("memo_date", getIntent().getStringExtra("edit_memo_date"));
                 memoPageIntent.putExtra("memo_id", String.valueOf(memoId));
                 memoPageIntent.putExtra("request_page",getIntent().getStringExtra("edit_memo_request"));
+                memoPageIntent.putExtra("memo_x", getIntent().getStringExtra("edit_memo_x"));
+                memoPageIntent.putExtra("memo_y", getIntent().getStringExtra("edit_memo_y"));
                 if(str_allImage.equals(""))
                 {
                     memoPageIntent.putExtra("memo_allImages", images);

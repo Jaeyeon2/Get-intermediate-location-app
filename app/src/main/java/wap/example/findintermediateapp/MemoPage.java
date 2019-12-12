@@ -2,6 +2,7 @@ package wap.example.findintermediateapp;
 
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -18,6 +19,8 @@ import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.naver.maps.map.overlay.Marker;
+
 import wap.example.findintermediateapp.R;
 
 import me.relex.circleindicator.CircleIndicator;
@@ -26,6 +29,8 @@ import static android.view.View.INVISIBLE;
 import static android.view.View.VISIBLE;
 
 public class MemoPage extends ChangeStateBar {
+
+    FeedReaderDbHelper dbHelper = new FeedReaderDbHelper(this);
 
     TextView tv_memoContent;
     TextView tv_memoLocation;
@@ -44,6 +49,16 @@ public class MemoPage extends ChangeStateBar {
     LinearLayout ll_yesImage;
     LinearLayout ll_memo;
     TextView tv_noImageDate;
+
+    String[] memoName;
+    String[] memoAdress;
+    String[] memoMemo;
+    String[] memoPhoto;
+    String[] memoMemotime;
+    String[] memoX2;
+    String[] memoY2;
+    String[] memoId2;
+    int memoCount = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -152,6 +167,42 @@ public class MemoPage extends ChangeStateBar {
                   } else if(requestPage.equals("MyMemoPage"))
                   {
 
+                      SQLiteDatabase db = dbHelper.getWritableDatabase();
+                      Cursor cursor = db.rawQuery("select name, address, memo, photo, memotime, coordinate_x, coordinate_y, _id from location_memo" , null);
+                      memoCount = cursor.getCount();
+                      memoName = new String[memoCount];
+                      memoAdress = new String[memoCount];
+                      memoMemo = new String[memoCount];
+                      memoPhoto = new String[memoCount];
+                      memoMemotime = new String[memoCount];
+                      memoX2 = new String[memoCount];
+                      memoY2 = new String[memoCount];
+                      memoId2 = new String[memoCount];
+
+                      int index = 0;
+                      while(cursor.moveToNext())
+                      {
+                          memoName[index] = cursor.getString(0);
+                          memoAdress[index] = cursor.getString(1);
+                          memoMemo[index] = cursor.getString(2);
+                          memoMemotime[index] = cursor.getString(4);
+                          memoPhoto[index] = cursor.getString(3);
+                          memoX2[index] = cursor.getString(5);
+                          memoY2[index] = cursor.getString(6);
+                          memoId2[index] = cursor.getString(7);
+                          index++;
+                      }
+                      Intent myMemoIntent = new Intent(MemoPage.this, MyMemo.class);
+                      myMemoIntent.putExtra("memoName",memoName);
+                      myMemoIntent.putExtra("memoAdress",memoAdress);
+                      myMemoIntent.putExtra("memoPhoto",memoPhoto);
+                      myMemoIntent.putExtra("memoContent", memoMemo);
+                      myMemoIntent.putExtra("memoMemotime",memoMemotime);
+                      myMemoIntent.putExtra("memoX",memoX2);
+                      myMemoIntent.putExtra("memoY",memoY2);
+                      myMemoIntent.putExtra("memoId", memoId2);
+                      myMemoIntent.putExtra("memoCount",memoCount);
+                      startActivity(myMemoIntent);
                   }
                   finish();
                 return true;
@@ -193,6 +244,54 @@ public class MemoPage extends ChangeStateBar {
                 startActivity(memoEditIntent);
                 return true;
             case android.R.id.home:
+                Log.d("requestPage22", requestPage);
+                if(requestPage.equals("MemoListPage"))
+                {
+                    Intent memoListIntent = new Intent(MemoPage.this, MemoListPage.class);
+                    memoListIntent.putExtra("memo_location", tv_toolbarTitle.getText().toString());
+                    memoListIntent.putExtra("added_locationX", memoX);
+                    Log.d("added_locationXzzz", String.valueOf(memoX));
+                    memoListIntent.putExtra("added_locationY", memoY);
+                    memoListIntent.putExtra("memo_address", getIntent().getStringExtra("memo_address"));
+                    startActivity(memoListIntent);
+                } else if(requestPage.equals("MyMemoPage")) {
+                    SQLiteDatabase db = dbHelper.getWritableDatabase();
+                    Cursor cursor = db.rawQuery("select name, address, memo, photo, memotime, coordinate_x, coordinate_y, _id from location_memo" , null);
+                    memoCount = cursor.getCount();
+                    memoName = new String[memoCount];
+                    memoAdress = new String[memoCount];
+                    memoMemo = new String[memoCount];
+                    memoPhoto = new String[memoCount];
+                    memoMemotime = new String[memoCount];
+                    memoX2 = new String[memoCount];
+                    memoY2 = new String[memoCount];
+                    memoId2 = new String[memoCount];
+
+                    int index = 0;
+                    while(cursor.moveToNext())
+                    {
+                        memoName[index] = cursor.getString(0);
+                        memoAdress[index] = cursor.getString(1);
+                        memoMemo[index] = cursor.getString(2);
+                        memoMemotime[index] = cursor.getString(4);
+                        memoPhoto[index] = cursor.getString(3);
+                        memoX2[index] = cursor.getString(5);
+                        memoY2[index] = cursor.getString(6);
+                        memoId2[index] = cursor.getString(7);
+                        index++;
+                    }
+                    Intent myMemoIntent = new Intent(MemoPage.this, MyMemo.class);
+                    myMemoIntent.putExtra("memoName",memoName);
+                    myMemoIntent.putExtra("memoAdress",memoAdress);
+                    myMemoIntent.putExtra("memoPhoto",memoPhoto);
+                    myMemoIntent.putExtra("memoContent", memoMemo);
+                    myMemoIntent.putExtra("memoMemotime",memoMemotime);
+                    myMemoIntent.putExtra("memoX",memoX2);
+                    myMemoIntent.putExtra("memoY",memoY2);
+                    myMemoIntent.putExtra("memoId", memoId2);
+                    myMemoIntent.putExtra("memoCount",memoCount);
+                    startActivity(myMemoIntent);
+                }
                 finish();
             default:
                 return super.onOptionsItemSelected(item);

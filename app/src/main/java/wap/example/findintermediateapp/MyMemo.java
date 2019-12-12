@@ -1,5 +1,6 @@
 package wap.example.findintermediateapp;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -101,6 +102,8 @@ public class MyMemo extends ChangeStateBar {
     public boolean onOptionsItemSelected (MenuItem item){
         switch(item.getItemId()) {
             case android.R.id.home: {
+                Intent mainIntent = new Intent(MyMemo.this, MainActivity.class);
+                startActivity(mainIntent);
                 finish();
                 return true;
             }

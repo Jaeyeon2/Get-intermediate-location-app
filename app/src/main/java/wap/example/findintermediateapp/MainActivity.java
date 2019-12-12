@@ -445,10 +445,24 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
                 .locationButtonEnabled(false);
 
         // 초기 카메라위치 조정
-        CameraPosition earlyCameraPosition = new CameraPosition(new LatLng(36.456943, 127.829456), 6);
-        CameraUpdate earlyCameraUpdate = CameraUpdate.toCameraPosition(earlyCameraPosition);
-        naverMap.moveCamera(earlyCameraUpdate);
+        if(getIntent().getStringExtra("added_locationX") != null)
+        {
+            Double x = Double.valueOf(getIntent().getStringExtra("added_locationX"));
+            Double y = Double.valueOf(getIntent().getStringExtra("added_locationY"));
+            GeoTransPoint oKA = new GeoTransPoint(x, y);
+            GeoTransPoint oGeo = GeoTrans.convert(GeoTrans.KATEC, GeoTrans.GEO, oKA);
+            Double added_x = oGeo.getY();
+            Double added_y = oGeo.getX();
 
+            CameraPosition earlyCameraPosition = new CameraPosition(new LatLng(added_x, added_y), 12);
+            CameraUpdate earlyCameraUpdate = CameraUpdate.toCameraPosition(earlyCameraPosition);
+            naverMap.moveCamera(earlyCameraUpdate);
+        } else {
+
+            CameraPosition earlyCameraPosition = new CameraPosition(new LatLng(36.456943, 127.829456), 6);
+            CameraUpdate earlyCameraUpdate = CameraUpdate.toCameraPosition(earlyCameraPosition);
+            naverMap.moveCamera(earlyCameraUpdate);
+        }
         int cursorCount = 0;
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         Cursor cursor = db.rawQuery("select name, address, memo, photo, memotime, coordinate_x, coordinate_y from location_memo" , null);
@@ -550,6 +564,8 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
                         savedMarker.setOnClickListener(overlay -> {
                             Intent memoListIntent = new Intent(MainActivity.this, MemoListPage.class);
                             memoListIntent.putExtra("memo_location", memo_location);
+                            memoListIntent.putExtra("added_locationX", String.valueOf(tempX));
+                            memoListIntent.putExtra("added_locationY", String.valueOf(tempY));
                             memoListIntent.putExtra("memo_address", tempAddress);
                             startActivity(memoListIntent);
                             return true;
@@ -607,7 +623,7 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
                 if(tempName.equals(intent.getStringExtra("location_name")))
                 {
 
-                    CameraPosition existingCameraPosition = new CameraPosition(new LatLng(user_mapX, user_mapY), 11);
+                    CameraPosition existingCameraPosition = new CameraPosition(new LatLng(user_mapX, user_mapY), 12);
                     CameraUpdate existingCamemraUpdate = CameraUpdate.toCameraPosition(existingCameraPosition);
                     naverMap.moveCamera(existingCamemraUpdate);
                     existingLocation = true;
@@ -619,7 +635,7 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
 //                CameraUpdate cameraUpdate = CameraUpdate.scrollTo(new LatLng(user_mapX, user_mapY), 5);
 //                naverMap.moveCamera(cameraUpdate);
 
-                CameraPosition addCameraPosition = new CameraPosition(new LatLng(user_mapX, user_mapY), 11);
+                CameraPosition addCameraPosition = new CameraPosition(new LatLng(user_mapX, user_mapY), 12);
                 CameraUpdate addCamemraUpdate = CameraUpdate.toCameraPosition(addCameraPosition);
                 naverMap.moveCamera(addCamemraUpdate);
 
@@ -641,7 +657,7 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
 
             if(cursor.getCount() == 0)
             {
-                CameraPosition addCameraPosition = new CameraPosition(new LatLng(user_mapX, user_mapY), 11);
+                CameraPosition addCameraPosition = new CameraPosition(new LatLng(user_mapX, user_mapY), 12);
                 CameraUpdate addCamemraUpdate = CameraUpdate.toCameraPosition(addCameraPosition);
                 naverMap.moveCamera(addCamemraUpdate);
 
@@ -777,7 +793,7 @@ public class MainActivity extends ChangeStateBar implements OnMapReadyCallback {
                 addMemoMarker.setMap(null);
                 myLocationMarker.setMap(null);
 
-                CameraPosition addMemoCameraPosition = new CameraPosition(new LatLng(latitude, longitude), 11);
+                CameraPosition addMemoCameraPosition = new CameraPosition(new LatLng(latitude, longitude), 12);
                 CameraUpdate addMemoCameraUpdate = CameraUpdate.toCameraPosition(addMemoCameraPosition);
                 naverMap.moveCamera(addMemoCameraUpdate);
                 boolean existingLocation = false;

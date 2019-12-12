@@ -137,6 +137,8 @@ public class DeletedImage extends ChangeStateBar {
                     memoPageIntent.putExtra("memo_address", tv_address.getText().toString());
                     memoPageIntent.putExtra("memo_content", et_memoContent.getText().toString());
                     memoPageIntent.putExtra("memo_date", getIntent().getStringExtra("memoDate"));
+                    memoPageIntent.putExtra("memo_x", location_x);
+                    memoPageIntent.putExtra("memo_y", location_y);
                     Log.d("memo_data", String.valueOf(getIntent().getStringExtra("memoDate")));
                     memoPageIntent.putExtra("memo_id", String.valueOf(memoId));
                     memoPageIntent.putExtra("request_page",getIntent().getStringExtra("memoRequest"));
@@ -338,12 +340,16 @@ public class DeletedImage extends ChangeStateBar {
 
         if(getIntent().getStringExtra("request_page").equals("MainActivity")) {
             Intent mainIntent = new Intent(DeletedImage.this, MainActivity.class);
+            mainIntent.putExtra("added_locationX", location_x);
+            mainIntent.putExtra("added_locationY", location_y);
             startActivity(mainIntent);
             finish();
         } else if(getIntent().getStringExtra("request_page").equals("MemoListPage")){
             Intent memoListIntent = new Intent(DeletedImage.this, MemoListPage.class);
             memoListIntent.putExtra("memo_location", location_name);
             memoListIntent.putExtra("memo_address", location_address);
+            memoListIntent.putExtra("added_locationX", location_x);
+            memoListIntent.putExtra("added_locationY", location_y);
             startActivity(memoListIntent);
             finish();
         }

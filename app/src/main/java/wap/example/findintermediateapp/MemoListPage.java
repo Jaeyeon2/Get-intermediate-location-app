@@ -107,6 +107,10 @@ public class MemoListPage extends ChangeStateBar {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()) {
             case android.R.id.home:
+                Intent mainIntent2 = new Intent(MemoListPage.this, MainActivity.class);
+                mainIntent2.putExtra("added_locationX", getIntent().getStringExtra("added_locationX"));
+                mainIntent2.putExtra("added_locationY", getIntent().getStringExtra("added_locationY"));
+                startActivity(mainIntent2);
                 finish();
                 return true;
             case R.id.action_addMemo:
